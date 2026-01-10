@@ -45,6 +45,17 @@ const universities = [
   { name: `한양대학교`, logo: 'logo_hanyang' },
   { name: `한남대학교`, logo: 'logo_hannam' },
   { name: `협성대학교`, logo: 'logo_hyupsung' },
+  { name: `홍익대학교`, logo: 'logo_hongik' },
+  { name: `국립부경대학교`, logo: 'logo_pukyong' },
+  { name: `조선대학교`, logo: 'logo_chosun' },
+  { name: `연합동아리 SURI` },
+  { name: `연합동아리 바이시그널` },
+  { name: `연합동아리 위닝펀드` },
+  { name: `연합동아리 GROWTH` },
+  { name: `연합동아리 PRIDE` },
+  { name: `연합동아리 STONKS` },
+  { name: `연합동아리 S.E.S` },
+  { name: `연합동아리 UFIC` },
 ];
 
 const UICNetwork = () => {
@@ -64,7 +75,9 @@ const UICNetwork = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
 
   return (
-    <section className="relative h-screen w-full snap-start flex items-center justify-center overflow-hidden">
+    <section 
+      id='network'
+      className="relative h-screen w-full snap-start flex items-center justify-center overflow-hidden">
       {/* 1. motion.div를 일반 div로 변경 및 scale 애니메이션 제거 */}
       <div className="relative z-10 bg-white w-[90%] h-[65%] max-w-[1300px] max-h-[850px] rounded-[40px] shadow-xl flex flex-col items-center justify-between p-6 md:p-10">
         {/* 헤더 */}
@@ -112,7 +125,12 @@ const UICNetwork = () => {
                   '가톨릭대학교',
                   '경기대학교',
                   '한성대학교',
+                  '홍익대학교',
                 ].includes(uni.name);
+
+                const logoSrc = uni.logo
+                  ? assets[uni.logo as keyof typeof assets]
+                  : null;
 
                 return (
                   <div
@@ -128,13 +146,18 @@ const UICNetwork = () => {
                         transform-gpu
                       `}
                     >
-                      <img
-                        src={assets[uni.logo as keyof typeof assets]}
-                        alt={uni.name}
-                        /* 3. 로딩 최적화: 브라우저가 필요한 이미지만 로드하게 함 */
-                        loading="lazy"
-                        className="w-full h-full object-contain p-3"
-                      />
+                      {logoSrc ? (
+                        <img
+                          src={logoSrc}
+                          alt={uni.name}
+                          loading="lazy"
+                          className="w-full h-full object-contain p-3"
+                        />
+                      ) : (
+                        <span className="text-[10px] font-bold leading-tight text-center break-keep text-gray-600">
+                          {uni.name}
+                        </span>
+                      )}
                     </div>
                     <span className="text-[10px] md:text-xs text-gray-700 font-semibold truncate max-w-[90px] text-center">
                       {uni.name}

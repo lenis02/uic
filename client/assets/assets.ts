@@ -46,6 +46,13 @@ import logo_hansung from './logo_hansung.svg';
 import logo_hanyang from './logo_hanyang.svg';
 import logo_hannam from './logo_hannam.svg';
 import logo_hyupsung from './logo_hyupsung.svg';
+import logo_hongik from './logo_hongik.svg';
+import logo_pukyong from './logo_pukyong.svg';
+import logo_chosun from './logo_chosun.svg';
+
+import logo_instagram from './logo_instagram.svg';
+import logo_naver_cafe from './logo_naver_cafe.png';
+import logo_kakao from './logo_kakao.png';
 
 export const assets = {
   bg_main,
@@ -94,4 +101,11 @@ export const assets = {
   logo_hanyang,
   logo_hannam,
   logo_hyupsung,
+  logo_hongik,
+  logo_pukyong,
+  logo_chosun,
+
+  logo_instagram,
+  logo_naver_cafe,
+  logo_kakao,
 };

@@ -10,7 +10,7 @@ const Navbar = () => {
       fixed top-0 w-full h-[120px] bg-transparent 
        z-50 transition-all duration-500 select-none py-8 ease-in-out
        
-      hover:h-96 hover:bg-deep-purple/20
+      hover:h-96 hover:bg-deep-purple/90
        "
     >
       {/* 로고 영역 */}
@@ -30,7 +30,7 @@ const Navbar = () => {
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="text-sm font-medium text-gray hover:text-[#5833aa] transition-colors duration-200 tracking-widest"
+              className="text-lg font-medium text-gray-200 hover:text-[#5833aa] transition-colors duration-200 tracking-widest"
             >
               {item}
             </a>

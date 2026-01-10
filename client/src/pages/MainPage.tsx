@@ -1,21 +1,40 @@
-import { assets } from '../../assets/assets.ts';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Navbar from '../components/Navbar';
+import MainSidebar from '../components/MainSidebar.tsx';
 import SectionsBase from '../components/SectionsBase.tsx';
 import Vision from './MainSections/Vision.tsx';
 import UICNetwork from './MainSections/UICNetwork.tsx';
 import JoinUs from './MainSections/JoinUs.tsx';
+import ContactUs from './MainSections/ContactUs.tsx';
 
 const MainPage = () => {
+  const [showArrow, setShowArrow] = useState(true);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    // 마지막 섹션 근처인지 확인 (바닥에서 50px 여유)
+    const isAtBottom =
+      target.scrollTop + target.clientHeight >= target.scrollHeight - 50;
+    setShowArrow(!isAtBottom);
+  };
+
   return (
     /* 최상위 컨테이너: 배경색을 설정하고 스냅 적용 */
-    <div className="relative font-pre h-screen w-full overflow-y-auto snap-y snap-mandatory bg-uic-dark scroll-smooth scrollbar-hide">
+    <div
+      id="main-container"
+      onScroll={handleScroll} // 스크롤 이벤트 연결
+      className="relative font-pre h-screen w-full overflow-y-auto snap-y snap-mandatory bg-uic-dark scroll-smooth scrollbar-hide"
+    >
       <Navbar />
 
-      <SectionsBase />
+      <MainSidebar/>
+
+      <SectionsBase showArrow={showArrow} />
 
       {/* [SECTION 1] 메인 타이틀 */}
-      <section className="relative h-screen w-full snap-start flex items-center justify-center z-10">
+      <section 
+        id='home'
+        className="relative h-screen w-full snap-start flex items-center justify-center z-10">
         <div className="text-center px-4 select-none">
           <h1 className="text-[48px] font-bold text-white leading-none m-0">
             대한민국의 금융의 미래
@@ -34,6 +53,9 @@ const MainPage = () => {
 
       {/* [SECTION 4] UIC 지원하기 */}
       <JoinUs />
+
+      {/* [SECTION 4] UIC 지원하기 */}
+      <ContactUs />
     </div>
   );
 };

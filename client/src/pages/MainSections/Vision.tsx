@@ -42,7 +42,9 @@ const Vision = () => {
   return (
     <>
       {/* 배경을 살짝 어둡게 하려면 bg-black/40 유지, 완전히 투명하려면 bg-transparent */}
-      <section className="h-screen w-full pt-32 bg-black/40 flex-col items-center justify-center snap-start relative overflow-hidden">
+      <section 
+        id='vision'
+        className="h-screen w-full pt-32 bg-black/40 flex-col items-center justify-center snap-start relative overflow-hidden">
         {/* [중앙 정렬 핵심 수정]
           1. w-[900px]: 내용물이 들어갈 충분한 너비 지정 (선+텍스트 포함)
           2. mx-auto: 이 박스를 화면 가로 중앙에 배치
@@ -146,10 +148,10 @@ const Vision = () => {
             whileInView="visible"
           >
             <div className="-translate-y-1/2">
-              <h3 className="text-5xl font-bold text-purple-300">
+              <h3 className="text-5xl font-bold text-center text-purple-300">
                 Development
               </h3>
-              <p className="text-gray-300 text-sm mt-2 font-light">
+              <p className="text-gray-300 text-sm text-center mt-2 font-light">
                 기업 및 기관들과의 제휴를 통해
                 <br />
                 지속가능한 발전의 기회 제공
@@ -166,8 +168,8 @@ const Vision = () => {
             whileInView="visible"
           >
             <div className="-translate-y-1/2">
-              <h3 className="text-5xl font-bold text-blue-300">Platform</h3>
-              <p className="text-gray-300 text-sm mt-2 font-light">
+              <h3 className="text-5xl font-bold text-center text-blue-300">Platform</h3>
+              <p className="text-gray-300 text-center text-sm mt-2 font-light">
                 취업/진로에 도움될
                 <br />
                 다양한 분야의 경험 제공
@@ -184,8 +186,8 @@ const Vision = () => {
             whileInView="visible"
           >
             <div className="-translate-y-1/2">
-              <h3 className="text-5xl font-bold text-pink-300">Synergy</h3>
-              <p className="text-gray-300 text-sm mt-2 font-light">
+              <h3 className="text-5xl font-bold text-center text-pink-300">Synergy</h3>
+              <p className="text-gray-300 text-sm text-center mt-2 font-light">
                 대학생들간의 네트워킹을
                 <br />
                 기반으로 상호 교류
