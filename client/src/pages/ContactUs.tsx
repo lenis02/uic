@@ -21,6 +21,9 @@ const ContactUs = () => {
       id="contact"
       className="relative h-screen w-full snap-start flex flex-col items-center justify-center p-6 overflow-hidden bg-transparent"
     >
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-800/20 blur-[120px] rounded-full" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
+
       {/* [메인 카드 컨테이너]  */}
       <div
         className="relative mt-24 z-10 w-full max-w-[1200px] min-h-[700px] rounded-[40px] overflow-hidden flex flex-col md:flex-row shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-white/60"

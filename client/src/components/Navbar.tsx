@@ -27,7 +27,6 @@ const Navbar = () => {
             { path: '/contact', label: 'Contact Us' },
           ].map((menu) => {
             const isActive = location.pathname === menu.path;
-            const isAbout = menu.path === '/about' && isActive;
 
             return (
               <Link
@@ -42,7 +41,7 @@ const Navbar = () => {
                   <span
                     className={`absolute -bottom-2 left-0 w-full h-[3px] rounded-full transition-all duration-500
                       ${
-                        isAbout
+                        isActive
                           ? 'bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_10px_rgba(34,211,238,0.3)]'
                           : 'bg-purple-300'
                       }
