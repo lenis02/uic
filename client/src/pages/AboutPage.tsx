@@ -282,7 +282,7 @@ const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
       <h1 className="text-2xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
         {data.role} Greeting
       </h1>
-      <div className="w-full h-1 bg-purple-400 mt-4 rounded-full" />
+      <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
     </div>
 
     <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 items-center">
@@ -298,7 +298,7 @@ const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
           ))}
         </p>
         <p className="opacity-80 font-light">{data.content}</p>
-        <p className="opacity-80 font-light italic border-l-2 border-purple-400/50 pl-4">
+        <p className="opacity-80 font-light italic border-l-2 border-white pl-4">
           {data.quote}
         </p>
       </div>
@@ -370,7 +370,7 @@ const AboutPage = () => {
                   onClick={() => setActiveTab(tab)}
                   className={`px-6 py-2 cursor-pointer rounded-2xl font-bold transition-all duration-300 ${
                     activeTab === tab
-                      ? 'text-purple-400 bg-purple-400/10 border border-purple-400/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]'
+                      ? 'text-white bg-blue-400/20 border border-blue-400/50 shadow-[0_0_15px_rgba(23,18,142,0.2)]'
                       : 'text-gray-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
@@ -401,7 +401,7 @@ const AboutPage = () => {
                   <h1 className="text-2xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
                     History of UIC
                   </h1>
-                  <div className="w-40 h-1 bg-purple-400 mt-4 rounded-full" />
+                  <div className="w-40 h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
                 </header>
 
                 <div className="flex px-4 flex-wrap gap-2 mb-12 sticky top-0 z-30 py-4 bg-black/40 backdrop-blur-md border-b border-white/5">
@@ -411,7 +411,7 @@ const AboutPage = () => {
                       onClick={() => setActiveDecade(decade)}
                       className={`px-5 py-2 cursor-pointer rounded-full text-sm font-bold transition-all border ${
                         activeDecade === decade
-                          ? 'text-purple-400 border-purple-400 bg-purple-400/10'
+                          ? 'border-white bg-blue-400/10'
                           : 'text-gray-500 border-gray-700 hover:border-gray-500'
                       }`}
                     >
@@ -426,7 +426,7 @@ const AboutPage = () => {
                       key={item.year}
                       className="relative group animate-fadeIn"
                     >
-                      <div className="absolute -left-[45.5px] top-2 w-2.5 h-2.5 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]" />
+                      <div className="absolute -left-[45.5px] top-2 w-2.5 h-2.5 bg-blue-500 rounded-full shadow-[0_0_10px_#a855f7]" />
                       <h3 className="text-3xl font-bold text-white mb-6 tracking-tight">
                         {item.year}
                       </h3>
