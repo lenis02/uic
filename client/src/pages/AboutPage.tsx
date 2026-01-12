@@ -286,7 +286,7 @@ const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
     </div>
 
     <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 items-center">
-      <div className="xl:col-span-7 text-gray-200 leading-relaxed text-justify text-lg space-y-6 break-keep lg:pr-8">
+      <div className="xl:col-span-7 leading-relaxed text-justify text-lg space-y-6 break-keep lg:pr-8">
         <p className="font-semibold text-xl text-white">
           {data.greeting.split(data.name).map((part, i, arr) => (
             <span key={i}>
@@ -348,8 +348,8 @@ const AboutPage = () => {
         className="fixed inset-0 z-0 w-full h-full object-cover opacity-40 pointer-events-none"
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 h-full">
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-8 md:p-12 overflow-hidden rounded-[3rem] border border-white/5 shadow-2xl">
+      <div className="relative z-10 max-w-[1600px] mx-auto px-6 md:px-12 h-full">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-8 md:p-12 overflow-hidden mt-8 border border-white/5 shadow-2xl">
           <aside className="lg:w-40 shrink-0 z-20">
             <nav className="flex flex-row lg:flex-col gap-3">
               {(['greeting', 'history'] as const).map((tab) => (
