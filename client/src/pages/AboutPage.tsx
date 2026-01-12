@@ -1,6 +1,31 @@
 import { useState } from 'react';
 import { assets } from '../../assets/assets';
 
+const executiveData = [
+  {
+    role: 'President',
+    name: '이동원',
+    fullRole: '제19대 전국 대학생 투자동아리 연합(UIC) 회장',
+    greeting:
+      '안녕하십니까, 전국 대학생 투자동아리 연합(UIC) 제19대 회장 이동원입니다.',
+    content:
+      '1990년 겨울에 싹을 틔운 나무가 어느덧 울창한 숲을 이루듯, 우리 UIC 또한 수많은 선배님들의 열정과 헌신 덕분에 대한민국 대학생 금융 커뮤니티의 중심으로 우뚝 설 수 있었습니다.',
+    quote: '"지엽에 시선을 빼앗겨 근본을 소홀히 해서는 안 된다"',
+    image: assets.logo_uic,
+  },
+  {
+    role: 'Vice President',
+    name: '황민성',
+    fullRole: '제19대 전국 대학생 투자동아리 연합(UIC) 부회장',
+    greeting:
+      '안녕하십니까, 전국 대학생 투자동아리 연합(UIC) 제19대 부회장 황민성입니다.',
+    content:
+      '금융의 본질을 이해하고 함께 성장하는 가치를 실현하기 위해 노력하겠습니다. UIC는 여러분의 열정이 실질적인 통찰로 이어지는 최고의 장이 될 것입니다.',
+    quote: '"함께할 때 더 멀리 갈 수 있습니다"',
+    image: assets.logo_uic,
+  },
+];
+
 const historyData = [
   {
     year: '2020',
@@ -251,139 +276,131 @@ const historyData = [
   },
 ];
 
+const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
+  <div className="snap-start min-h-full flex flex-col justify-center pb-20">
+    <div className="mb-12 w-fit">
+      <h1 className="text-2xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
+        {data.role} Greeting
+      </h1>
+      <div className="w-full h-1 bg-purple-400 mt-4 rounded-full" />
+    </div>
+
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 items-center">
+      <div className="xl:col-span-7 text-gray-200 leading-relaxed text-justify text-lg space-y-6 break-keep lg:pr-8">
+        <p className="font-semibold text-xl text-white">
+          {data.greeting.split(data.name).map((part, i, arr) => (
+            <span key={i}>
+              {part}
+              {i < arr.length - 1 && (
+                <span className="font-bold">{data.name}</span>
+              )}
+            </span>
+          ))}
+        </p>
+        <p className="opacity-80 font-light">{data.content}</p>
+        <p className="opacity-80 font-light italic border-l-2 border-purple-400/50 pl-4">
+          {data.quote}
+        </p>
+      </div>
+
+      <div className="xl:col-span-5">
+        <div className="relative w-full aspect-[3/4] rounded-[2rem] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl group">
+          <img
+            src={data.image}
+            className="w-full h-full object-contain p-12 opacity-50 transition-transform duration-500 group-hover:scale-105"
+            alt={data.name}
+          />
+        </div>
+        <div className="text-right pt-6">
+          <span className="text-xl font-semibold tracking-widest text-white">
+            {data.name}
+          </span>
+          <p className="text-gray-500 text-sm">{data.fullRole}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// --- 메인 컴포넌트 ---
 const AboutPage = () => {
-  // 메인 탭 상태: 'greeting' | 'history'
   const [activeTab, setActiveTab] = useState<'greeting' | 'history'>(
     'greeting'
   );
-
-  // [추가] 연혁 필터 상태: 'ALL' | '2020s' | '2010s' | '2000s'
   const [activeDecade, setActiveDecade] = useState('ALL');
-
-  const menuItems = [
-    { id: 'greeting', label: 'Greeting' },
-    { id: 'history', label: 'History' },
-  ];
 
   const decadeButtons = ['ALL', '2020s', '2010s', '2000s'];
 
-  // 연대별 필터링 로직
-  const getFilteredHistory = () => {
-    if (activeDecade === 'ALL') return historyData;
-
-    return historyData.filter((item) => {
-      const year = parseInt(item.year);
-      if (activeDecade === '2020s') return year >= 2020;
-      if (activeDecade === '2010s') return year >= 2010 && year < 2020;
-      if (activeDecade === '2000s') return year < 2010;
-      return true;
-    });
-  };
-
-  const filteredData = getFilteredHistory();
+  const filteredHistory = historyData.filter((item) => {
+    if (activeDecade === 'ALL') return true;
+    const year = parseInt(item.year);
+    if (activeDecade === '2020s') return year >= 2020;
+    if (activeDecade === '2010s') return year >= 2010 && year < 2020;
+    if (activeDecade === '2000s') return year < 2010;
+    return true;
+  });
 
   return (
-    <main className="w-full h-screen overflow-hidden bg-white pt-32 pb-10">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 h-full">
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 h-full">
-          {/* [왼쪽] 사이드바 메뉴 */}
-          <aside className="lg:w-1/8 shrink-0">
-            <nav className="flex flex-row lg:flex-col gap-2">
-              {menuItems.map((item) => (
+    <main className="relative w-full h-screen overflow-hidden text-white pt-32 pb-10">
+      <img
+        src={assets.bg_about}
+        alt="배경"
+        className="fixed inset-0 z-0 w-full h-full object-cover opacity-40 pointer-events-none"
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 h-full">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-8 md:p-12 overflow-hidden rounded-[3rem] border border-white/5 shadow-2xl">
+          <aside className="lg:w-40 shrink-0 z-20">
+            <nav className="flex flex-row lg:flex-col gap-3">
+              {(['greeting', 'history'] as const).map((tab) => (
                 <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id as any)}
-                  className={`px-6 py-4 rounded-2xl text-center cursor-pointer font-bold transition-all duration-200 select-none ${
-                    activeTab === item.id
-                      ? 'text-cyan-600 shadow-md'
-                      : 'text-gray-600 hover:bg-gray-50'
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-2 cursor-pointer rounded-2xl font-bold transition-all duration-300 ${
+                    activeTab === tab
+                      ? 'text-purple-400 bg-purple-400/10 border border-purple-400/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  {item.label}
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
               ))}
             </nav>
           </aside>
 
-          {/* [오른쪽] 컨텐츠 영역 */}
-          <section className="lg:w-7/8 h-full overflow-y-auto pr-4 custom-scrollbar">
+          <section
+            className={`flex-1 h-full overflow-y-auto pr-4 custom-scrollbar z-20 scroll-smooth scrollbar-hide ${
+              activeTab === 'greeting' ? 'snap-y snap-mandatory' : ''
+            }`}
+          >
             {activeTab === 'greeting' ? (
-              // --- 회장 인사말 섹션 (기존 동일) ---
-              <div className="pb-20">
-                <div className="mb-12">
-                  <h1 className="text-3xl text-center font-black md:text-4xl bg-clip-text text-transparent bg-gradient-to-br from-cyan-600 via-blue-800 to-gray-900 p-4">
-                    Greeting
-                  </h1>
-                  <div className="w-12 h-1 bg-uic-teal mt-4 rounded-full" />
-                </div>
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 items-start">
-                  <div className="xl:col-span-7 text-gray-700 leading-loose text-justify text-lg space-y-6 break-keep lg:pr-8">
-                    <p className="font-medium">
-                      안녕하십니까,{' '}
-                      <strong className="">
-                        전국 대학생 투자동아리 연합회(UIC) 제19대 회장 이동원
-                      </strong>
-                      입니다.
-                      <br />
-                      <br />
-                      1990년 겨울에 싹을 틔운 나무가 어느덧 울창한 숲을 이루듯,
-                      우리 UIC 또한 수많은 선배님들의 열정과 헌신 덕분에
-                      대한민국 대학생 금융 커뮤니티의 중심으로 우뚝 설 수
-                      있었습니다.
-                      <br />
-                      <br />
-                      시장은 끊임없이 변동하고, 불확실성은 언제나 우리 곁에
-                      있습니다. 하지만 "지엽에 시선을 빼앗겨 근본을 소홀히
-                      해서는 안 된다"는 말처럼, UIC는 투자의 본질을 탐구하고
-                      건강한 토론 문화를 정착시키는 데 집중하고자 합니다.
-                      <br />
-                      <br />
-                      수치 너머의 가치를 볼 줄 아는 통찰력, 치열한 분석 끝에
-                      얻어지는 확신, 그리고 서로를 통해 배우는 겸손함까지. UIC는
-                      단순한 지식의 공유를 넘어, 차세대 금융 리더들이 서로의
-                      꿈을 응원하고 함께 성장하는 단단한 뿌리가 되겠습니다.
-                      <br />
-                      <br />
-                      여러분의 뜨거운 열정이 금융의 미래를 밝힐 수 있도록, 저와
-                      19대 운영진 모두가 성실하게 소통하고 발로 뛰겠습니다.
-                    </p>
-                    <p>감사합니다.</p>
-                  </div>
-                  <div className="xl:col-span-5">
-                    <div className="relative w-full aspect-[3/4] rounded-[2rem] overflow-hidden bg-gray-50 shadow-xl border border-gray-100">
-                      <img
-                        src={assets.logo_uic_color}
-                        className="w-full h-full object-contain p-10"
-                        alt="회장 프로필"
-                      />
-                    </div>
-                    <div className="pt-10 flex flex-col items-end">
-                      <p className="text-xl font-bold">이 동 원</p>
-                      <p className="text-sm text-gray-500">19대 UIC 회장</p>
-                    </div>
-                  </div>
+              <div className="h-full">
+                {executiveData.map((exec) => (
+                  <GreetingSection key={exec.name} data={exec} />
+                ))}
+                <div className="mt-10 animate-bounce text-center text-gray-500 text-sm">
+                  ↓ scroll
                 </div>
               </div>
             ) : (
-              // --- 연혁 섹션 (필터 버튼 추가됨) ---
-              <div className="pb-20">
-                <div className="mb-8">
-                  <h1 className="text-3xl p-4 md:text-4xl text-center font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-cyan-600 via-blue-800 to-gray-900">
-                    UIC History
+              /* History 섹션 실질 로직 복구 */
+              <div className="pb-32">
+                <header className="mb-12">
+                  <h1 className="text-2xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
+                    History of UIC
                   </h1>
-                  <div className="w-12 h-1 mt-4 rounded-full" />
-                </div>
+                  <div className="w-40 h-1 bg-purple-400 mt-4 rounded-full" />
+                </header>
 
-                {/* [NEW] 연대별 필터 버튼 그룹 */}
-                <div className="flex flex-wrap gap-2 mb-12 sticky top-0 bg-white/95 backdrop-blur z-10 py-4 border-b border-gray-100">
+                <div className="flex px-4 flex-wrap gap-2 mb-12 sticky top-0 z-30 py-4 bg-black/40 backdrop-blur-md border-b border-white/5">
                   {decadeButtons.map((decade) => (
                     <button
                       key={decade}
                       onClick={() => setActiveDecade(decade)}
-                      className={`px-5 py-2 rounded-full cursor-pointer text-sm font-bold transition-all duration-200 border ${
+                      className={`px-5 py-2 cursor-pointer rounded-full text-sm font-bold transition-all border ${
                         activeDecade === decade
-                          ? 'text-cyan-600 border-cyan-600 shadow-md'
-                          : 'bg-white text-gray-500 border-gray-500 hover:border-cyan-600 hover:text-cyan-600'
+                          ? 'text-purple-400 border-purple-400 bg-purple-400/10'
+                          : 'text-gray-500 border-gray-700 hover:border-gray-500'
                       }`}
                     >
                       {decade}
@@ -391,37 +408,30 @@ const AboutPage = () => {
                   ))}
                 </div>
 
-                <div className="space-y-12 border-l-2 border-gray-100 ml-4 pl-10 relative">
-                  {filteredData.length > 0 ? (
-                    filteredData.map((item) => (
-                      <div
-                        key={item.year}
-                        className="relative group animate-fadeIn"
-                      >
-                        {/* 타임라인 점 */}
-                        <div className="absolute -left-[51px] top-2 w-5 h-5 border-2 bg-white rounded-full" />
-                        <h3 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-br from-cyan-600 via-blue-800 to-gray-900 mb-6">
-                          {item.year}
-                        </h3>
-                        <ul className="space-y-5">
-                          {item.events.map((event, i) => (
-                            <li key={i} className="flex flex-col">
-                              <span className="text-uic-teal font-semibold text-xl tracking-tighter">
-                                {event.date}
-                              </span>
-                              <span className="text-gray-800 font-semibold mt-1 break-keep leading-snug whitespace-pre-wrap">
-                                {event.title}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-400 py-10">
-                      해당 기간의 기록이 없습니다.
-                    </p>
-                  )}
+                <div className="space-y-16 border-l border-white/10 ml-4 pl-10 relative">
+                  {filteredHistory.map((item) => (
+                    <div
+                      key={item.year}
+                      className="relative group animate-fadeIn"
+                    >
+                      <div className="absolute -left-[45.5px] top-2 w-2.5 h-2.5 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]" />
+                      <h3 className="text-3xl font-bold text-white mb-6 tracking-tight">
+                        {item.year}
+                      </h3>
+                      <ul className="space-y-6">
+                        {item.events.map((event, i) => (
+                          <li key={i} className="flex flex-col group/item">
+                            <span className="font-bold text-lg">
+                              {event.date}
+                            </span>
+                            <span className="text-gray-300 font-medium mt-1 break-keep leading-relaxed whitespace-pre-wrap group-hover/item:text-white transition-colors italic">
+                              {event.title}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

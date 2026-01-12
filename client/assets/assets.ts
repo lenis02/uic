@@ -1,4 +1,5 @@
 import bg_main from './bg_main.svg';
+import bg_about from './bg_about.svg';
 import bg_joinus from './bg_joinus.jpg';
 
 import logo_uic from './logo_uic.png';
@@ -57,6 +58,7 @@ import logo_kakao from './logo_kakao.png';
 
 export const assets = {
   bg_main,
+  bg_about,
   bg_joinus,
 
   logo_uic,
