@@ -1,7 +1,8 @@
 import bg_main from './bg_main.svg';
 import bg_joinus from './bg_joinus.jpg';
 
-import logo_uic from './logo_uic.svg';
+import logo_uic from './logo_uic.png';
+import logo_uic_color from './logo_uic_color.png';
 
 // 대학 로고 임포트 (부산대, 상명대 제외 모두 .svg)
 import logo_gachon from './logo_gachon.svg';
@@ -59,6 +60,8 @@ export const assets = {
   bg_joinus,
 
   logo_uic,
+  logo_uic_color,
+
   logo_gachon,
   logo_catholic,
   logo_kangnam,

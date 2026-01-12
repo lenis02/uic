@@ -6,8 +6,6 @@ const sections = [
   { id: 'home', label: 'Home' },
   { id: 'vision', label: 'Vision' },
   { id: 'network', label: 'Network' },
-  { id: 'join', label: 'Join Us' },
-  { id: 'contact', label: 'Contact' },
 ];
 
 const Sidebar = () => {
@@ -60,13 +58,15 @@ const Sidebar = () => {
           {/* 라벨 (호버 시에만 등장) */}
           <span
             className={`
-              absolute whitespace-nowrap left-8 px-2 py-1 rounded-md text-xs font-bold tracking-widest uppercase transition-all duration-300
-              ${
-                activeSection === id
-                  ? 'opacity-100 translate-x-0 text-white bg-purple-800/80'
-                  : 'opacity-0 -translate-x-2 text-gray-400 group-hover:opacity-100 group-hover:translate-x-0'
-              }
-            `}
+        absolute whitespace-nowrap left-8 px-2 py-1 rounded-md text-xs font-bold tracking-widest uppercase transition-all duration-300
+        opacity-0 -translate-x-2
+        group-hover:opacity-100 group-hover:translate-x-0
+        ${
+          activeSection === id
+            ? 'text-white bg-purple-800/80' // 활성화됐을 때의 색상
+            : 'text-gray-400' // 비활성화됐을 때의 색상
+        }
+      `}
           >
             {label}
           </span>

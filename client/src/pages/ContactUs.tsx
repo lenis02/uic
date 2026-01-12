@@ -1,5 +1,5 @@
 import React from 'react';
-import { assets } from '../../../assets/assets';
+import { assets } from '../../assets/assets';
 
 const ContactUs = () => {
   const handleSubmit = (e: React.FormEvent) => {
@@ -36,14 +36,14 @@ const ContactUs = () => {
 
           <div className="relative z-10">
             {/* 텍스트 색상을 어두운 톤(Gray-900)으로 변경 */}
-            <h2 className="text-3xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
               Let's create <br />
               future{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
                 together.
               </span>
             </h2>
-            <p className="text-lg text-gray-600 font-medium leading-relaxed max-w-md">
+            <p className="text-lg md:text-m text-gray-600 font-medium leading-relaxed max-w-md">
               UIC는 여러분의 혁신적인 아이디어와 열정을 기다립니다.{' '}
               <br className="hidden md:block" />
               금융의 새로운 챕터를 함께 열어갈 준비가 되셨나요?
@@ -60,7 +60,7 @@ const ContactUs = () => {
               },
               {
                 label: 'Direct Contact',
-                value: '부회장 황민성 | +82 10-5713-6900',
+                value: `부회장 황민성 +82 10-5713-6900`,
                 icon: '📞',
               },
               {
@@ -69,7 +69,7 @@ const ContactUs = () => {
                 icon: '✉️',
               },
             ].map((item, idx) => (
-              <div key={idx} className="flex items-start gap-5 group">
+              <div key={idx} className="flex items-center gap-5 group">
                 <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-white/50 group-hover:scale-110 transition-all duration-300">
                   {item.icon}
                 </div>

@@ -1,10 +1,9 @@
-import { assets } from '../../../assets/assets';
-
 const JoinUs = () => {
   return (
-    <section 
-      id='join'
-      className="relative h-screen w-full snap-start flex flex-col items-center bg-[#050505] text-white overflow-hidden pt-32">
+    <section
+      id="join"
+      className="relative h-screen w-full snap-start flex flex-col items-center bg-[#050505] text-white overflow-hidden pt-32"
+    >
       {/* 배경 장식 (은은한 그라데이션 빛) */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-800/20 blur-[120px] rounded-full" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-800/20 blur-[120px] rounded-full" />
