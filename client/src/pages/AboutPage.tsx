@@ -304,7 +304,18 @@ const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
       </div>
 
       <div className="xl:col-span-5 flex flex-col items-end xl:items-end justify-end">
-        <div className="relative w-[280px] h-[350px] xl:w-[400px] xl:h-[500px] aspect-[3/4] rounded-[2rem] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl group">
+        <div
+          className="relative 
+          h-[35vh] xl:h-[45vh] 
+          aspect-[3/4] 
+          rounded-[2rem] 
+          overflow-hidden 
+          bg-white/5 
+          backdrop-blur-sm 
+          border border-white/10 
+          shadow-2xl 
+          group"
+        >
           <img
             src={data.image}
             className="w-full h-full object-contain p-12 opacity-50 transition-transform duration-500 group-hover:scale-105"
