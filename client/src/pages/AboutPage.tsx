@@ -303,15 +303,16 @@ const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
         </p>
       </div>
 
-      <div className="xl:col-span-5">
-        <div className="relative w-full aspect-[3/4] rounded-[2rem] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl group">
+      <div className="xl:col-span-5 flex flex-col items-end xl:items-end justify-end">
+        <div className="relative w-[280px] h-[350px] xl:w-[400px] xl:h-[500px] aspect-[3/4] rounded-[2rem] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl group">
           <img
             src={data.image}
             className="w-full h-full object-contain p-12 opacity-50 transition-transform duration-500 group-hover:scale-105"
             alt={data.name}
           />
         </div>
-        <div className="text-right pt-6">
+        {/* 이름과 직함도 이미지 오른쪽 끝에 맞춰 정렬 */}
+        <div className="text-right pt-6 w-full xl:max-w-[400px]">
           <span className="text-xl font-semibold tracking-widest text-white">
             {data.name}
           </span>
