@@ -64,8 +64,8 @@ const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
             </span>
           ))}
         </p>
-        <p className="opacity-80 font-light">{data.content}</p>
-        <p className="opacity-80 font-light italic border-l-2 border-white pl-4">
+        <p className="font-light">{data.content}</p>
+        <p className="font-light italic border-l-2 border-white pl-4">
           {data.quote}
         </p>
       </div>
@@ -153,11 +153,11 @@ const AboutPage = () => {
         <img
           src={assets.bg_about}
           alt="배경"
-          className="fixed inset-0 z-0 w-full h-full object-cover opacity-60 pointer-events-none"
+          className="fixed inset-0 z-0 w-full h-full object-cover opacity-20 pointer-events-none"
         />
 
         <div className="relative z-10 max-w-[1600px] mx-auto px-6 md:px-12 h-full">
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-8 md:p-12 overflow-hidden mt-8 border border-white/5 shadow-2xl">
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-2xl p-8 md:p-12 overflow-hidden mt-8 border border-white/5 shadow-2xl">
             <aside className="lg:w-40 shrink-0 z-20">
               <nav className="flex flex-row lg:flex-col gap-3">
                 {(['greeting', 'history'] as const).map((tab) => (
