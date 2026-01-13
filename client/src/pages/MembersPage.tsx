@@ -1,53 +1,98 @@
-import { useState } from 'react';
+// src/pages/MembersPage.tsx
+import { useEffect, useState } from 'react';
 import { assets } from '../../assets/assets';
+import { api } from '../api/api';
 
-// 데이터 구조에 image 필드 추가
-const alumniData = Array.from({ length: 19 }, (_, i) => ({
-  generation: 19 - i,
-  members: [
-    {
-      name: '이동원',
-      role: '회장',
-      image: assets.logo_uic,
-    }, // assets에 실제 이미지 경로가 있다면 교체
-    {
-      name: '황민성',
-      role: '부회장',
-      image: assets.logo_uic,
-    },
-    {
-      name: '송민규',
-      role: '기획',
-      image: assets.logo_uic,
-    },
-    {
-      name: '이승호',
-      role: '대외협력',
-      image: assets.logo_uic,
-    },
-    {
-      name: '지수민',
-      role: '마케팅',
-      image: assets.logo_uic,
-    },
-    {
-      name: '장소연',
-      role: '재무',
-      image: assets.logo_uic,
-    },
-    {
-      name: ' ',
-      role: '인사',
-      image: assets.logo_uic,
-    },
-  ],
-}));
+// 백엔드 데이터 타입 정의
+interface Member {
+  id: number;
+  name: string;
+  position: string; // DB: President, Member, etc.
+  generation: number;
+  imageUrl?: string; // 나중에 멤버 이미지 업로드 기능이 생기면 사용
+}
+
+// 직책 한글 매핑 (DB 영어 값 -> 화면 표시용 한글)
+const roleMapping: { [key: string]: string } = {
+  President: '회장',
+  'Vice President': '부회장',
+  'Planning Head': '기획 팀장',
+  'External Relations Head': '대외협력 팀장',
+  'Marketing Head': '마케팅 팀장',
+  'Finance Head': '재무 팀장',
+  'HR Head': '인사 팀장',
+  Member: '부원',
+};
+
+// 직책 정렬 순서 (높은 순)
+const rolePriority = [
+  'President',
+  'Vice President',
+  'Planning Head',
+  'External Relations Head',
+  'Marketing Head',
+  'Finance Head',
+  'HR Head',
+  'Member',
+];
 
 const MembersPage = () => {
-  const [activeGen, setActiveGen] = useState(19);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [activeGen, setActiveGen] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
+
+  // 1. 데이터 불러오기
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await api.getMembers();
+        const data = res.data;
+        setMembers(data);
+
+        // 데이터에서 기수 추출 및 최신 기수 자동 선택
+        if (data.length > 0) {
+          const uniqueGens = Array.from(
+            new Set(data.map((m: Member) => m.generation))
+          ) as number[];
+          const latestGen = Math.max(...uniqueGens);
+          setActiveGen(latestGen);
+        }
+      } catch (err) {
+        console.error('멤버 로딩 실패:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, []);
+
+  // 2. 기수 목록 추출 (중복 제거 + 내림차순 정렬)
+  const generations = Array.from(
+    new Set(members.map((m) => m.generation))
+  ).sort((a, b) => b - a);
+
+  // 3. 현재 선택된 기수의 멤버 필터링 및 직책순 정렬
+  const currentMembers = members
+    .filter((m) => m.generation === activeGen)
+    .sort((a, b) => {
+      const idxA = rolePriority.indexOf(a.position);
+      const idxB = rolePriority.indexOf(b.position);
+      // 리스트에 없는 직책은 맨 뒤로
+      return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+    });
+
+  if (loading) {
+    return (
+      <div className="h-screen bg-[#050505] text-white flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <main className="relative w-full h-screen overflow-hidden bg-[#050505] text-white pt-32 pb-10">
+      {/* 배경 효과 */}
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-800/20 blur-[120px] rounded-full" />
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
 
@@ -59,20 +104,24 @@ const MembersPage = () => {
               Generations
             </h2>
             <nav className="flex flex-row lg:flex-col gap-2 md:gap-3 overflow-x-auto lg:overflow-y-auto pb-2 lg:pb-0 pr-2 custom-scrollbar scrollbar-hide lg:scrollbar-default">
-              {alumniData.map((data) => (
-                <button
-                  key={data.generation}
-                  onClick={() => setActiveGen(data.generation)}
-                  className={`px-4 py-3 rounded-xl text-left font-bold transition-all duration-300 whitespace-nowrap lg:whitespace-normal cursor-pointer ${
-                    activeGen === data.generation
-                      ? 'text-blue-400 bg-blue-400/10 border-b-4 lg:border-b-0 lg:border-r-4 border-blue-400 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
-                      : 'text-gray-600 hover:text-gray-400 hover:bg-white/5'
-                  }`}
-                >
-                  {data.generation}th{' '}
-                  <span className="text-[10px] opacity-40 ml-1">Gen</span>
-                </button>
-              ))}
+              {generations.length === 0 ? (
+                <div className="text-gray-600 text-sm">데이터 없음</div>
+              ) : (
+                generations.map((gen) => (
+                  <button
+                    key={gen}
+                    onClick={() => setActiveGen(gen)}
+                    className={`px-4 py-3 rounded-xl text-left font-bold transition-all duration-300 whitespace-nowrap lg:whitespace-normal cursor-pointer ${
+                      activeGen === gen
+                        ? 'text-blue-400 bg-blue-400/10 border-b-4 lg:border-b-0 lg:border-r-4 border-blue-400 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
+                        : 'text-gray-600 hover:text-gray-400 hover:bg-white/5'
+                    }`}
+                  >
+                    {gen}th{' '}
+                    <span className="text-[10px] opacity-40 ml-1">Gen</span>
+                  </button>
+                ))
+              )}
             </nav>
           </aside>
 
@@ -87,43 +136,48 @@ const MembersPage = () => {
               </div>
               <p className="mt-6 text-white font-medium tracking-widest text-sm uppercase">
                 UIC의 역사를 함께 만든{' '}
-                <span className="font-bold text-lg">{activeGen}대 임원진</span>
-                을 소개합니다.
+                <span className="font-bold text-lg">{activeGen}기 멤버</span>
+                들을 소개합니다.
               </p>
             </header>
 
-            {/* 멤버 카드 그리드: 이미지 비율에 맞춰 간격 조절 */}
+            {/* 멤버 카드 그리드 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-5 lg:gap-6 pb-20 justify-items-center lg:justify-items-start">
-              {' '}
-              {alumniData
-                .find((d) => d.generation === activeGen)
-                ?.members.map((member, idx) => (
+              {currentMembers.length > 0 ? (
+                currentMembers.map((member) => (
                   <div
-                    key={idx}
-                    className="group max-w-[280px] cursor-pointer relative bg-white/[0.03] backdrop-blur-md border border-white/10 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-blue-500/50 shadow-2xl"
+                    key={member.id}
+                    className="group w-full max-w-[280px] cursor-pointer relative bg-white/[0.03] backdrop-blur-md border border-white/10 overflow-hidden transition-all duration-500 hover:border-blue-500/50 shadow-2xl"
                   >
                     {/* 1. 이미지 영역 (4:5 비율 고정) */}
-                    <div className="relative aspect-[4/5] overflow-hidden bg-zinc-900">
+                    <div className="relative aspect-[4/5] overflow-hidden bg-zinc-900 flex items-center justify-center">
                       <img
-                        src={member.image}
-                        className="w-full h-full object-cover opacity-80 transition-all duration-700 group-hover:opacity-100"
+                        src={
+                          member.imageUrl
+                            ? `${import.meta.env.VITE_API_URL}${
+                                member.imageUrl
+                              }`
+                            : assets.logo_uic
+                        }
+                        className={`object-cover transition-all duration-700 ${
+                          member.imageUrl
+                            ? 'w-full h-full opacity-80 group-hover:opacity-100'
+                            : 'w-1/2 opacity-30 group-hover:opacity-50 grayscale'
+                        }`}
                         alt={member.name}
                       />
-                      {/* 이미지 위 오버레이 그라데이션 */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-
-                      {/* 배지 (이미지 위 배치) */}
                     </div>
 
                     {/* 2. 텍스트 정보 영역 */}
                     <div className="p-6 relative">
-                      {/* 호버 시 나타나는 배경 광채 */}
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                       <div className="relative z-10 flex justify-between items-end">
                         <div className="flex flex-col gap-1">
+                          {/* 직책 표시 (매핑된 한글 사용, 없으면 영어 그대로) */}
                           <span className="w-fit text-[10px] font-black text-cyan-400 tracking-[0.1em] bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-cyan-400/30">
-                            {member.role}
+                            {roleMapping[member.position] || member.position}
                           </span>
                           <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">
                             {member.name}
@@ -137,7 +191,12 @@ const MembersPage = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                ))
+              ) : (
+                <div className="col-span-full py-10 text-gray-500 text-center w-full">
+                  등록된 멤버가 없습니다.
+                </div>
+              )}
             </div>
           </section>
         </div>

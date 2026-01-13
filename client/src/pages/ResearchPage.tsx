@@ -1,62 +1,95 @@
-import { useState, useMemo } from 'react';
+// src/pages/ResearchPage.tsx
+import { useState, useMemo, useEffect } from 'react';
 import { assets } from '../../assets/assets';
 import FooterBar from '../components/FooterBar';
+import { api } from '../api/api';
 
-// 샘플 데이터
-const dummyReports = Array.from({ length: 12 }).map((_, i) => ({
-  id: i,
-  title: [
-    '2024년 하반기 반도체 산업 전망: AI가 이끄는 슈퍼사이클',
-    '전기차 시장의 캐즘(Chasm) 극복 시나리오 분석',
-    '글로벌 헬스케어 트렌드: 비만 치료제의 부상',
-    '생성형 AI 밸류체인 심층 분석 보고서',
-    '국내 방산 기업 수출 모멘텀 점검',
-    '엔터테인먼트 산업: K-POP의 글로벌 확장성',
-    '재생에너지 정책 변화에 따른 태양광 산업 전망',
-    '자율주행 기술의 현주소와 미래 투자 전략',
-    '핀테크 산업의 규제 혁신과 기회',
-    '우주 항공 산업: New Space 시대의 도래',
-    '메타버스: 과장된 거품인가, 미래의 인터넷인가',
-    'ESG 경영: 기업 가치 평가의 새로운 기준',
-  ][i],
-  author: [
-    '김민수',
-    '이서연',
-    '박준호',
-    '최지훈',
-    '정다은',
-    '강현우',
-    '윤서아',
-    '임도현',
-    '한지민',
-    '송민호',
-    '류수정',
-    '오지훈',
-  ][i],
-  date: `2024.0${9 - Math.floor(i / 2)}.1${i % 9}`,
-  thumbnail: assets.logo_uic,
-  fileUrl: '#',
-}));
+// 백엔드 데이터 타입 정의
+interface Research {
+  id: number;
+  title: string;
+  type: string; // Weekly, Industry, etc.
+  description: string;
+  pdfUrl: string;
+  thumbnailUrl: string;
+  createdAt: string; // ISO Date String (e.g., 2024-01-15T...)
+}
 
 const ResearchPage = () => {
+  const [reports, setReports] = useState<Research[]>([]);
   const [activeTab, setActiveTab] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
 
+  // 1. 데이터 불러오기
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const res = await api.getResearch();
+        // 최신순 정렬 (ID 내림차순 또는 날짜 내림차순)
+        const sortedData = res.data.sort(
+          (a: Research, b: Research) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setReports(sortedData);
+      } catch (err) {
+        console.error('리서치 로딩 실패:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
+
+  // 2. 월별 탭 생성 (YYYY.MM 형식)
   const availableMonths = useMemo(() => {
-    const months = dummyReports.map((item) => item.date.substring(0, 7));
+    if (reports.length === 0) return ['All'];
+
+    const months = reports.map((item) => {
+      const date = new Date(item.createdAt);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      return `${year}.${month}`;
+    });
+
     const uniqueMonths = Array.from(new Set(months)).sort((a, b) =>
       b.localeCompare(a)
     );
     return ['All', ...uniqueMonths];
-  }, []);
+  }, [reports]);
 
-  const filteredData = dummyReports.filter((item) => {
-    const matchesTab = activeTab === 'All' || item.date.startsWith(activeTab);
+  // 3. 필터링 로직
+  const filteredData = reports.filter((item) => {
+    const date = new Date(item.createdAt);
+    const itemMonth = `${date.getFullYear()}.${String(
+      date.getMonth() + 1
+    ).padStart(2, '0')}`;
+
+    const matchesTab = activeTab === 'All' || itemMonth === activeTab;
     const matchesSearch = item.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
+
     return matchesTab && matchesSearch;
   });
+
+  // 날짜 포맷팅 함수 (YYYY.MM.DD)
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(
+      2,
+      '0'
+    )}.${String(date.getDate()).padStart(2, '0')}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="h-screen bg-[#050505] text-white flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <main className="relative w-full h-screen overflow-hidden bg-[#050505] text-white pt-32 pb-10">
@@ -67,7 +100,7 @@ const ResearchPage = () => {
       />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 h-full flex flex-col mb-3">
-        {/* 전체 컨테이너: 사이드바 대신 상단 레이아웃 사용 */}
+        {/* 전체 컨테이너 */}
         <div className="flex flex-col w-full h-full bg-black/40 backdrop-blur-xl p-8 md:p-12 overflow-hidden border border-white/5 shadow-2xl rounded-sm">
           {/* [상단 영역] 타이틀 & 검색바 */}
           <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -102,7 +135,7 @@ const ResearchPage = () => {
             </div>
           </header>
 
-          {/* [중단 영역] Timeline 가로 탭 (스크린샷 스타일 반영) */}
+          {/* [중단 영역] Timeline 가로 탭 */}
           <div className="mb-12 border-b border-white/5">
             <p className="text-[10px] font-black tracking-[0.3em] uppercase text-white/40 mb-4 ml-1">
               Timeline
@@ -124,7 +157,7 @@ const ResearchPage = () => {
             </nav>
           </div>
 
-          {/* [하단 영역] 리포트 카드 그리드 (스크롤 가능 공간) */}
+          {/* [하단 영역] 리포트 카드 그리드 */}
           <section className="flex-1 overflow-y-auto pr-2 custom-scrollbar scrollbar-hide">
             {filteredData.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-10">
@@ -134,12 +167,34 @@ const ResearchPage = () => {
                     className="group relative bg-[#0a0a0a] border border-white/5 overflow-hidden hover:border-blue-500/30 transition-all duration-500 flex flex-col h-full min-h-[440px] pb-20 shadow-lg"
                   >
                     {/* 썸네일 */}
-                    <div className="relative w-full h-44 overflow-hidden bg-[#111] flex items-center justify-center p-10 border-b border-white/5">
-                      <img
-                        src={item.thumbnail}
-                        alt="UIC"
-                        className="w-full h-full object-contain opacity-40 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
-                      />
+                    <div className="relative w-full h-44 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
+                      {item.thumbnailUrl ? (
+                        <img
+                          src={`${import.meta.env.VITE_API_URL}${
+                            item.thumbnailUrl
+                          }`}
+                          alt={item.title}
+                          className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <img
+                            src={assets.logo_uic}
+                            className="w-16 opacity-20"
+                            alt="logo"
+                          />
+                          <span className="text-xs text-white/20">
+                            No Thumbnail
+                          </span>
+                        </div>
+                      )}
+
+                      {/* 타입 배지 (좌측 상단) */}
+                      <div className="absolute top-4 left-4">
+                        <span className="px-3 py-1 bg-black/60 backdrop-blur border border-white/10 text-[10px] font-bold text-blue-400 rounded-full uppercase tracking-wider">
+                          {item.type}
+                        </span>
+                      </div>
                     </div>
 
                     {/* 텍스트 내용 */}
@@ -147,28 +202,36 @@ const ResearchPage = () => {
                       <div className="flex justify-between items-center mb-4 text-[14px] font-medium text-white/30">
                         <span className="flex items-center gap-1.5">
                           <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />{' '}
-                          {item.date}
+                          {formatDate(item.createdAt)}
                         </span>
-                        <span>{item.author}</span>
+                        {/* 작성자 필드가 없으므로 제거하거나 고정값 사용 */}
+                        <span className="text-xs border border-white/10 px-2 py-0.5 rounded text-white/20">
+                          UIC Research
+                        </span>
                       </div>
-                      <h3 className="text-lg font-bold leading-[1.4] text-white/90 group-hover:text-white transition-colors line-clamp-2">
+                      <h3 className="text-lg font-bold leading-[1.4] text-white/90 group-hover:text-white transition-colors line-clamp-2 mb-2">
                         {item.title}
                       </h3>
+                      <p className="text-sm text-gray-500 line-clamp-2 font-light">
+                        {item.description}
+                      </p>
                     </div>
 
-                    {/* [요청하신] 다운로드 버튼 (평소 투명 -> 호버시 묵직한 블루 그라데이션) */}
+                    {/* 다운로드 버튼 */}
                     <div className="absolute bottom-6 left-6 right-6 h-12">
                       <a
-                        href={item.fileUrl}
-                        download
+                        href={`${import.meta.env.VITE_API_URL}${item.pdfUrl}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        // download 속성은 cross-origin 정책 때문에 작동 안 할 수 있어 target="_blank" 추가
                         className="flex items-center justify-center w-full h-full gap-3 text-[13px] font-black tracking-widest uppercase
                                    text-white/40 bg-transparent border border-white/10 rounded-sm
                                    hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] 
                                    hover:border-blue-500/50 hover:text-white
                                    hover:shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(30,58,138,0.4)]
-                                   active:scale-[0.97] transition-all duration-500 group/btn"
+                                   active:scale-[0.97] transition-all duration-500 group/btn cursor-pointer"
                       >
-                        Download Report
+                        Download PDF
                         <svg
                           className="w-4 h-4 group-hover/btn:translate-y-1 transition-transform duration-300"
                           fill="none"
@@ -188,8 +251,8 @@ const ResearchPage = () => {
                 ))}
               </div>
             ) : (
-              <div className="w-full h-64 flex items-center justify-center text-white/20 font-medium border border-white/5 dashed">
-                해당 월의 리포트가 존재하지 않습니다.
+              <div className="w-full h-64 flex flex-col items-center justify-center text-white/20 font-medium border border-white/5 dashed rounded-lg gap-2">
+                <p>해당 기간의 리포트가 존재하지 않습니다.</p>
               </div>
             )}
           </section>

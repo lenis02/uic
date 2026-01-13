@@ -15,6 +15,7 @@ export const api = {
   deleteHistory: (id: number | string) => instance.delete(`/history/${id}`),
 
   // --- 리서치 (Research) ---
+  // 리서치 생성 (파일 업로드 포함)
   createResearch: (formData: FormData) => {
     return instance.post('/research', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -24,22 +25,39 @@ export const api = {
   deleteResearch: (id: number) => instance.delete(`/research/${id}`),
 
   // --- 멤버 (Members) ---
-  getMembers: () => instance.get('/members'), // 전체 멤버 조회
-  createMember: (data: any) => instance.post('/members', data), // 멤버 등록
-  updateMember: (id: number, data: any) =>
-    instance.patch(`/members/${id}`, data),
-  deleteMember: (id: number) => instance.delete(`/members/${id}`), // 멤버 삭제
+  // 전체 멤버 조회
+  getMembers: () => instance.get('/members'),
+
+  // [수정됨] 멤버 등록 (이미지 파일 업로드 지원)
+  createMember: (data: FormData) =>
+    instance.post('/members', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+
+  // [수정됨] 멤버 수정 (이미지 파일 수정 지원)
+  updateMember: (id: number, data: FormData) =>
+    instance.patch(`/members/${id}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+
+  // 멤버 삭제
+  deleteMember: (id: number) => instance.delete(`/members/${id}`),
+
+  // (옵션) 다음 기수 계산용 API가 있다면 유지
   getNextGen: () => instance.post('/members/next-gen'),
 
   // --- 인사말 (Greeting) ---
-  getGreetingByRole: (role: string) => instance.get(`/greeting/${role}`), // 👈 세 번째 스크린샷 오류 해결
+  // 직책별 인사말 조회
+  getGreetingByRole: (role: string) => instance.get(`/greeting/${role}`),
 
-  // 직책별로 수정하기
+  // 직책별 인사말 수정 (이미지 포함)
   updateGreeting: (role: string, data: FormData | any) =>
     instance.patch(`/greeting/${role}`, data, {
       headers: {
-        // FormData를 보낼 때는 Content-Type을 지정하지 않거나(브라우저 자동 설정),
-        // 'multipart/form-data'로 명시해야 합니다.
         'Content-Type': 'multipart/form-data',
       },
     }),

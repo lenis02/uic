@@ -11,7 +11,7 @@ import {
   UseGuards,
   UploadedFile,
   UseInterceptors,
-  ParseIntPipe, // ID 파싱을 위해 추가하면 좋습니다
+  ParseIntPipe,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -29,32 +29,28 @@ export class MembersController {
     return this.membersService.findAll();
   }
 
+  // [수정] 생성 시에도 이미지가 있을 수 있으므로 Interceptor 추가 권장
   @Post()
   @UseGuards(AdminGuard)
-  create(@Body() dto: CreateMemberDto) {
-    return this.membersService.create(dto);
+  @UseInterceptors(FileInterceptor('image', multerOptions)) // 'image' 키 확인
+  create(
+    @Body() dto: CreateMemberDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.membersService.create(dto, file);
   }
 
-  // 수정 로직: ParseIntPipe를 사용해 숫자로 확실하게 변환
+  // [핵심 수정] update 메서드에서 파일 처리 추가
   @Patch(':id')
   @UseGuards(AdminGuard)
+  @UseInterceptors(FileInterceptor('image', multerOptions)) // 프론트엔드의 formData key인 'image'와 일치해야 함
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: Partial<CreateMemberDto>,
+    @UploadedFile() file?: Express.Multer.File, // 파일이 있으면 받음
   ) {
-    return this.membersService.update(id, dto);
-  }
-
-  @Patch(':id/profile')
-  @UseGuards(AdminGuard)
-  @UseInterceptors(FileInterceptor('file', multerOptions))
-  async uploadProfile(
-    @Param('id', ParseIntPipe) id: number,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    const profileImageUrl = `/uploads/${file.filename}`;
-    // 파일 경로만 업데이트하는 것도 기존 update 로직 재사용
-    return await this.membersService.update(id, { profileImageUrl });
+    // 서비스로 파일도 함께 전달
+    return this.membersService.update(id, dto, file);
   }
 
   @Delete(':id')

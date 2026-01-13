@@ -12,41 +12,52 @@ export class MembersService {
     private memberRepository: Repository<Member>,
   ) {}
 
-  // 1. 전체 조회
   async findAll() {
     return await this.memberRepository.find({
-      // [중요] 이름을 수정해도 순서가 바뀌지 않으려면 'id' 기준으로 정렬해야 합니다.
-      // 기존: name: 'ASC' -> 이름 바꾸면 순서 바뀜
-      // 변경: id: 'ASC' -> 등록순(고정)
       order: { generation: 'DESC', id: 'ASC' },
     });
   }
 
-  // 2. 특정 기수 조회
   async findByGeneration(gen: number) {
     return await this.memberRepository.find({
       where: { generation: gen },
-      order: { id: 'ASC' }, // 여기도 id 순으로 고정 추천
+      order: { id: 'ASC' },
     });
   }
 
-  // 3. 멤버 추가
-  async create(dto: CreateMemberDto) {
-    const member = this.memberRepository.create(dto);
+  // [수정] create 메서드도 파일 처리
+  async create(dto: CreateMemberDto, file?: Express.Multer.File) {
+    const memberData = { ...dto };
+
+    // 파일이 있으면 이미지 경로 추가
+    if (file) {
+      memberData['imageUrl'] = `/uploads/${file.filename}`;
+    }
+
+    const member = this.memberRepository.create(memberData);
     return await this.memberRepository.save(member);
   }
 
-  // 4. 멤버 정보 수정 (핵심 로직 개선)
-  async update(id: number, dto: Partial<CreateMemberDto>) {
-    // [안전 장치] DTO에 혹시 id가 들어있다면 제거합니다.
-    // (JavaScript에서는 const { id, ...rest } = dto; 문법 사용 가능)
+  // [핵심 수정] update 메서드 로직 변경
+  async update(
+    id: number,
+    dto: Partial<CreateMemberDto>,
+    file?: Express.Multer.File, // 파일 인자 추가
+  ) {
     const updateData = { ...dto };
     delete (updateData as any).id;
 
-    // preload: 해당 id를 가진 엔티티를 찾아 updateData를 덮어씌운 객체를 만듦
+    // 1. 파일이 존재하면 이미지 경로를 업데이트 데이터에 추가
+    if (file) {
+      // Entity의 컬럼명이 'imageUrl'인지 'profileImageUrl'인지 확인 필요
+      // 프론트엔드 인터페이스에 맞춰 'imageUrl'로 저장합니다.
+      updateData['imageUrl'] = `/uploads/${file.filename}`;
+    }
+
+    // 2. preload로 기존 엔티티 + 변경 데이터 병합
     const member = await this.memberRepository.preload({
-      id, // URL 파라미터로 받은 id를 기준 (절대 불변)
-      ...updateData, // 변경할 데이터만 병합
+      id,
+      ...updateData,
     });
 
     if (!member) throw new NotFoundException('멤버를 찾을 수 없습니다.');
@@ -54,7 +65,6 @@ export class MembersService {
     return await this.memberRepository.save(member);
   }
 
-  // 5. 멤버 삭제
   async remove(id: number) {
     const result = await this.memberRepository.delete(id);
     if (result.affected === 0)
@@ -84,9 +94,8 @@ export class MembersService {
       return this.memberRepository.create({
         generation: nextGen,
         name: '이름을 입력하세요',
-        school: '학교를 입력하세요',
         position: pos,
-        profileImageUrl: null,
+        imageUrl: null, // 초기 생성 시 이미지 없음
       });
     });
 

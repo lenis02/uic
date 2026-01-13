@@ -6,8 +6,8 @@ interface Member {
   id: number;
   name: string;
   position: string;
-  school: string;
   generation: number;
+  imageUrl?: string; // 이미지 URL 필드 추가
 }
 
 export default function AdminMembers() {
@@ -17,14 +17,17 @@ export default function AdminMembers() {
   // --- 수정 모드 상태 ---
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Member>>({});
+  const [editFile, setEditFile] = useState<File | null>(null); // 수정용 파일 상태
+  const [editPreview, setEditPreview] = useState<string>(''); // 수정용 미리보기
 
   // --- 등록 폼 상태 ---
   const [form, setForm] = useState({
     name: '',
     position: 'Member',
-    school: '',
-    generation: 20,
+    generation: 21,
   });
+  const [file, setFile] = useState<File | null>(null); // 등록용 파일
+  const [preview, setPreview] = useState<string>(''); // 등록용 미리보기
 
   const fetchMembers = async () => {
     try {
@@ -50,16 +53,50 @@ export default function AdminMembers() {
       ? members
       : members.filter((m) => m.generation === selectedGen);
 
+  // --- 파일 선택 핸들러 (등록용) ---
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setFile(selected);
+      setPreview(URL.createObjectURL(selected));
+    }
+  };
+
+  // --- 파일 선택 핸들러 (수정용) ---
+  const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setEditFile(selected);
+      setEditPreview(URL.createObjectURL(selected));
+    }
+  };
+
   // --- 핸들러: 등록 ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.school) return alert('이름과 학교는 필수입니다.');
+    if (!form.name) return alert('이름은 필수입니다.');
+
+    // FormData 생성
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('position', form.position);
+    formData.append('generation', String(form.generation));
+    if (file) {
+      formData.append('image', file); // 백엔드 @UploadedFile('image')
+    }
+
     try {
-      await api.createMember({ ...form, generation: Number(form.generation) });
+      await api.createMember(formData); // createMember가 FormData를 받도록 수정 필요
       alert('등록 완료!');
-      setForm({ ...form, name: '', school: '' });
+
+      // 초기화
+      setForm({ name: '', position: 'Member', generation: 20 });
+      setFile(null);
+      setPreview('');
+
       fetchMembers();
     } catch (err) {
+      console.error(err);
       alert('등록 실패!');
     }
   };
@@ -75,23 +112,36 @@ export default function AdminMembers() {
   const handleEditClick = (member: Member) => {
     setEditingId(member.id);
     setEditForm({ ...member });
+    setEditFile(null); // 파일 초기화
+    // 기존 이미지가 있으면 미리보기로 설정
+    setEditPreview(
+      member.imageUrl ? `${import.meta.env.VITE_API_URL}${member.imageUrl}` : ''
+    );
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
     setEditForm({});
+    setEditFile(null);
+    setEditPreview('');
   };
 
   const handleUpdateSave = async () => {
     if (!editingId) return;
+
+    const formData = new FormData();
+    if (editForm.name) formData.append('name', editForm.name);
+    if (editForm.position) formData.append('position', editForm.position);
+    if (editForm.generation)
+      formData.append('generation', String(editForm.generation));
+    if (editFile) {
+      formData.append('image', editFile);
+    }
+
     try {
-      await api.updateMember(editingId, editForm);
-      setMembers((prevMembers) =>
-        prevMembers.map((m) =>
-          m.id === editingId ? ({ ...m, ...editForm } as Member) : m
-        )
-      );
+      await api.updateMember(editingId, formData); // updateMember가 FormData 받도록 수정 필요
       alert('수정되었습니다.');
+      fetchMembers(); // 이미지가 바뀌면 URL이 달라질 수 있으므로 전체 다시 로드 권장
       setEditingId(null);
     } catch (err) {
       console.error(err);
@@ -104,7 +154,7 @@ export default function AdminMembers() {
     'w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-gray-300 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent outline-none transition-all';
 
   const smallInputStyle =
-    'w-full bg-slate-950/50 border border-white/10 rounded-lg px-2 py-1.5 text-sm text-gray-300 focus:ring-1 focus:ring-blue-500 outline-none';
+    'w-full bg-slate-950/50 text-center border border-white/10 rounded-lg px-2 py-1.5 text-sm text-gray-300 focus:ring-1 focus:ring-blue-500 outline-none';
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 animate-fade-in-up pb-20">
@@ -125,46 +175,68 @@ export default function AdminMembers() {
         </h2>
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4"
+          className="flex flex-col lg:flex-row gap-6"
         >
-          <input
-            placeholder="이름"
-            className={inputStyle}
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-          <input
-            placeholder="학교"
-            className={inputStyle}
-            value={form.school}
-            onChange={(e) => setForm({ ...form, school: e.target.value })}
-          />
-          <select
-            className={`${inputStyle} appearance-none cursor-pointer`}
-            value={form.position}
-            onChange={(e) => setForm({ ...form, position: e.target.value })}
-          >
-            <option value="Member">일반 회원</option>
-            <option value="President">회장</option>
-            <option value="Vice President">부회장</option>
-            <option value="Planning Head">기획</option>
-            <option value="External Relations Head">대외협력</option>
-            <option value="Marketing Head">마케팅</option>
-            <option value="Finance Head">재무</option>
-            <option value="HR Head">인사</option>
-          </select>
-          <input
-            type="number"
-            placeholder="기수"
-            className={inputStyle}
-            value={form.generation}
-            onChange={(e) =>
-              setForm({ ...form, generation: Number(e.target.value) })
-            }
-          />
-          <button className="lg:col-span-2 w-full h-full min-h-[48px] bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-900/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer">
-            + 멤버 등록하기
-          </button>
+          {/* 이미지 업로드 영역 (왼쪽) */}
+          <div className="shrink-0 flex flex-col items-center gap-2">
+            <div className="relative w-32 h-40 bg-slate-950 rounded-xl border border-dashed border-white/20 overflow-hidden group hover:border-blue-500/50 transition-colors">
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 gap-1">
+                  <span className="text-2xl">📷</span>
+                  <span className="text-[10px]">사진 추가</span>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          {/* 텍스트 입력 영역 (오른쪽) */}
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <input
+              placeholder="이름"
+              className={inputStyle}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+
+            <select
+              className={`${inputStyle} appearance-none cursor-pointer`}
+              value={form.position}
+              onChange={(e) => setForm({ ...form, position: e.target.value })}
+            >
+              <option value="Member">일반 회원</option>
+              <option value="President">회장</option>
+              <option value="Vice President">부회장</option>
+              <option value="Planning Head">기획</option>
+              <option value="External Relations Head">대외협력</option>
+              <option value="Marketing Head">마케팅</option>
+              <option value="Finance Head">재무</option>
+              <option value="HR Head">인사</option>
+            </select>
+            <input
+              type="number"
+              placeholder="기수"
+              className={inputStyle}
+              value={form.generation}
+              onChange={(e) =>
+                setForm({ ...form, generation: Number(e.target.value) })
+              }
+            />
+            <button className="lg:col-span-4 w-full h-12 mt-2 bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-900/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer">
+              + 멤버 등록하기
+            </button>
+          </div>
         </form>
       </div>
 
@@ -214,9 +286,35 @@ export default function AdminMembers() {
             {/* A. 수정 모드일 때 */}
             {editingId === member.id ? (
               <div className="flex flex-col gap-3 animate-fade-in">
+                {/* 수정 모드 - 이미지 변경 영역 */}
+                <div className="flex justify-center mb-2">
+                  <div className="relative w-20 h-24 bg-slate-950 rounded-lg overflow-hidden border border-dashed border-white/30 group cursor-pointer hover:border-blue-500">
+                    {editPreview ? (
+                      <img
+                        src={editPreview}
+                        alt="edit-preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">
+                        No Img
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-[10px] text-white">변경</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleEditFileChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                  </div>
+                </div>
+
                 <div className="flex gap-2">
                   <input
-                    className={`${smallInputStyle} flex-1`}
+                    className={`${smallInputStyle} min-w-[80px]flex-1`}
                     value={editForm.name}
                     onChange={(e) =>
                       setEditForm({ ...editForm, name: e.target.value })
@@ -235,14 +333,7 @@ export default function AdminMembers() {
                     }
                   />
                 </div>
-                <input
-                  className={smallInputStyle}
-                  value={editForm.school}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, school: e.target.value })
-                  }
-                  placeholder="학교"
-                />
+
                 <select
                   className={`${smallInputStyle} appearance-none cursor-pointer`}
                   value={editForm.position}
@@ -277,8 +368,23 @@ export default function AdminMembers() {
               </div>
             ) : (
               /* B. 일반 보기 모드일 때 */
-              <div className="flex justify-between items-start h-full">
-                <div className="flex flex-col justify-between h-full">
+              <div className="flex justify-between items-start h-full gap-3">
+                {/* 썸네일 (작게 표시) */}
+                <div className="w-12 h-14 bg-slate-950 rounded-lg overflow-hidden border border-white/10 shrink-0">
+                  {member.imageUrl ? (
+                    <img
+                      src={`${import.meta.env.VITE_API_URL}${member.imageUrl}`}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-slate-800 text-gray-600 text-xs">
+                      No Img
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-col justify-between h-full flex-1">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-lg font-bold text-white tracking-tight">
@@ -288,14 +394,11 @@ export default function AdminMembers() {
                         {member.generation}기
                       </span>
                     </div>
-                    <p className="text-gray-300 text-sm font-light mb-4">
-                      {member.school}
-                    </p>
                   </div>
 
                   <div className="mt-auto">
                     <p
-                      className={`text-xs font-bold uppercase tracking-wider ${
+                      className={`text-xs font-bold uppercase tracking-wider truncate ${
                         member.position.includes('Head') ||
                         member.position.includes('President')
                           ? 'text-blue-400'
@@ -308,45 +411,19 @@ export default function AdminMembers() {
                 </div>
 
                 <div className="flex flex-col gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
-                  {/* 수정 버튼 */}
                   <button
                     onClick={() => handleEditClick(member)}
                     className="text-white hover:text-blue-700 p-1.5 rounded-lg hover:bg-blue-500/10 transition-colors cursor-pointer"
                     title="수정"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                      />
-                    </svg>
+                    ✏️
                   </button>
-                  {/* 삭제 버튼 */}
                   <button
                     onClick={() => handleDelete(member.id)}
                     className="text-white hover:text-red-700 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors cursor-pointer"
                     title="삭제"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
+                    🗑️
                   </button>
                 </div>
               </div>

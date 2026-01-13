@@ -11,14 +11,10 @@ export class CreateMemberDto {
   name: string;
 
   @IsString()
-  @IsNotEmpty({ message: '학교를 입력해주세요' })
-  school: string;
-
-  @IsString()
   @IsNotEmpty({ message: '직책을 입력해주세요 (예: 회장, 리서처)' })
   position: string;
 
   @IsString()
   @IsOptional()
-  profileImageUrl?: string;
+  imageUrl?: string;
 }
