@@ -1,6 +1,9 @@
 import bg_main from './bg_main.svg';
 import bg_about from './bg_about.svg';
+import bg_research from './bg_research.svg';
+import bg_activity from './bg_activity.svg';
 import bg_joinus from './bg_joinus.jpg';
+import bg_contact from './bg_contact.svg';
 
 import logo_uic from './logo_uic.png';
 import logo_uic_color from './logo_uic_color.png';
@@ -59,7 +62,10 @@ import logo_kakao from './logo_kakao.png';
 export const assets = {
   bg_main,
   bg_about,
+  bg_research,
+  bg_activity,
   bg_joinus,
+  bg_contact,
 
   logo_uic,
   logo_uic_color,

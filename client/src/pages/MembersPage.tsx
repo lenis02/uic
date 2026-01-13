@@ -52,20 +52,20 @@ const MembersPage = () => {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
 
       <div className="relative mt-8 z-10 max-w-[1600px] mx-auto px-6 md:px-12 h-full">
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-8 md:p-12 overflow-hidden rounded-[3rem] border border-white/5 shadow-2xl">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-6 md:p-12 overflow-hidden border border-white/5 shadow-2xl ">
           {/* [좌측] 기수 선택 사이드바 */}
-          <aside className="lg:w-40 shrink-0 z-20 flex flex-col h-full border-r border-white/5 pr-6">
-            <h2 className="text-gray-500 text-xs font-black tracking-[0.3em] uppercase mb-8 select-none">
+          <aside className="w-full lg:w-40 h-auto lg:h-full shrink-0 z-20 flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pb-4 lg:pb-0 lg:pr-6">
+            <h2 className="text-gray-500 text-xs font-black tracking-[0.3em] uppercase mb-4 lg:mb-8 select-none px-1">
               Generations
             </h2>
-            <nav className="flex flex-row lg:flex-col gap-3 overflow-y-auto pr-2 custom-scrollbar scrollbar-hide lg:scrollbar-default">
+            <nav className="flex flex-row lg:flex-col gap-2 md:gap-3 overflow-x-auto lg:overflow-y-auto pb-2 lg:pb-0 pr-2 custom-scrollbar scrollbar-hide lg:scrollbar-default">
               {alumniData.map((data) => (
                 <button
                   key={data.generation}
                   onClick={() => setActiveGen(data.generation)}
                   className={`px-4 py-3 rounded-xl text-left font-bold transition-all duration-300 whitespace-nowrap lg:whitespace-normal cursor-pointer ${
                     activeGen === data.generation
-                      ? 'text-blue-400 bg-blue-400/10 border-r-4 border-blue-400 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
+                      ? 'text-blue-400 bg-blue-400/10 border-b-4 lg:border-b-0 lg:border-r-4 border-blue-400 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
                       : 'text-gray-600 hover:text-gray-400 hover:bg-white/5'
                   }`}
                 >
@@ -80,26 +80,27 @@ const MembersPage = () => {
           <section className="flex-1 h-full overflow-y-auto pr-4 z-20 scrollbar-hide">
             <header className="mb-16">
               <div className="group w-fit">
-                <h1 className="text-3xl md:text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
+                <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-white/80">
                   Alumni {activeGen}th.
                 </h1>
-                <div className="w-full h-[2px] bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] mt-4 transition-all duration-500 group-hover:scale-x-110" />
+                <div className="w-full h-[3px] bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] mt-4 transition-all duration-500 group-hover:scale-x-110" />
               </div>
               <p className="mt-6 text-white font-medium tracking-widest text-sm uppercase">
                 UIC의 역사를 함께 만든{' '}
-                <span className="font-bold text-lg">{activeGen}기 운영진</span>
+                <span className="font-bold text-lg">{activeGen}대 임원진</span>
                 을 소개합니다.
               </p>
             </header>
 
             {/* 멤버 카드 그리드: 이미지 비율에 맞춰 간격 조절 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 pb-20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-5 lg:gap-6 pb-20 justify-items-center lg:justify-items-start">
+              {' '}
               {alumniData
                 .find((d) => d.generation === activeGen)
                 ?.members.map((member, idx) => (
                   <div
                     key={idx}
-                    className="group cursor-pointer relative bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-blue-500/50 shadow-2xl"
+                    className="group max-w-[280px] cursor-pointer relative bg-white/[0.03] backdrop-blur-md border border-white/10 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-blue-500/50 shadow-2xl"
                   >
                     {/* 1. 이미지 영역 (4:5 비율 고정) */}
                     <div className="relative aspect-[4/5] overflow-hidden bg-zinc-900">
@@ -127,9 +128,6 @@ const MembersPage = () => {
                           <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">
                             {member.name}
                           </h3>
-                          <p className="text-gray-400 text-sm font-medium italic">
-                            {member.univ}
-                          </p>
                         </div>
                         <img
                           src={assets.logo_uic}

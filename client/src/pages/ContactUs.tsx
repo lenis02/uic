@@ -1,118 +1,158 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { assets } from '../../assets/assets';
+import FooterBar from '../components/FooterBar';
 
 const ContactUs = () => {
+  const [copyStatus, setCopyStatus] = useState<string | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert('문의사항이 접수되었습니다.');
   };
 
-  // [수정] 입력 필드: 밝은 배경에 어울리는 화이트 톤 + 진한 텍스트
-  const inputClasses =
-    'w-full bg-white/50 border border-gray-200 rounded-xl p-5 text-sm text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-500/10 outline-none transition-all duration-300 backdrop-blur-sm';
+  // 클립보드 복사 함수
+  const handleCopy = (text: string, label: string) => {
+    const cleanText =
+      label === 'Direct Contact' ? text.replace(/[^0-9+]/g, '') : text;
+    navigator.clipboard.writeText(cleanText).then(() => {
+      setCopyStatus(`${label} 복사 완료!`);
+      setTimeout(() => setCopyStatus(null), 2000);
+    });
+  };
 
-  // [수정] 라벨: 진한 회색으로 가독성 확보
+  const inputClasses =
+    'w-full bg-white/5 border border-white/10 p-5 text-sm text-white placeholder-gray-500 focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all duration-300 backdrop-blur-sm';
+
   const labelClasses =
-    'text-[11px] uppercase tracking-[0.2em] text-gray-500 font-bold ml-1 mb-2 block';
+    'text-[11px] uppercase tracking-[0.2em] text-gray-500 font-black ml-1 mb-2 block';
 
   return (
-    // 섹션 배경은 투명(transparent) 유지
     <section
       id="contact"
-      className="relative h-screen w-full snap-start flex flex-col items-center justify-center p-6 overflow-hidden bg-transparent"
+      className="relative min-h-screen w-full flex flex-col items-center justify-center p-6 overflow-hidden bg-[#050505]"
     >
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-800/20 blur-[120px] rounded-full" />
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
+      <img
+        src={assets.bg_contact}
+        alt="배경"
+        className="fixed inset-0 z-0 w-full h-full object-cover opacity-20 pointer-events-none"
+      />
 
-      {/* [메인 카드 컨테이너]  */}
+      {/* 복사 알림 토스트 (중앙 상단) */}
       <div
-        className="relative mt-24 z-10 w-full max-w-[1200px] min-h-[700px] rounded-[40px] overflow-hidden flex flex-col md:flex-row shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-white/60"
-        style={{
-          backdropFilter: 'blur(30px)', // 블러 효과
-          backgroundColor: 'rgba(255, 255, 255, 0.65)', // 밝은 화이트 글래스 색상
-        }}
+        className={`fixed top-24 z-[120] transition-all duration-500 transform ${
+          copyStatus ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'
+        }`}
       >
-        {/* [왼쪽 영역] 브랜드 메시지 (약간 더 투명한 화이트) */}
-        <div className="flex-1 p-12 md:p-16 bg-white/30 flex flex-col justify-between relative overflow-hidden border-r border-white/40">
-          {/* 내부 장식: 은은한 보라색 빛 */}
-          <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-purple-400/20 blur-[120px] rounded-full pointer-events-none mix-blend-multiply" />
+        <div className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-[0_0_20px_rgba(37,99,235,0.4)] text-sm">
+          {copyStatus}
+        </div>
+      </div>
 
-          <div className="relative z-10">
-            {/* 텍스트 색상을 어두운 톤(Gray-900)으로 변경 */}
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
-              Let's create <br />
-              future{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
-                together.
-              </span>
-            </h2>
-            <p className="text-lg md:text-m text-gray-600 font-medium leading-relaxed max-w-md">
-              UIC는 여러분의 혁신적인 아이디어와 열정을 기다립니다.{' '}
-              <br className="hidden md:block" />
-              금융의 새로운 챕터를 함께 열어갈 준비가 되셨나요?
-            </p>
+      <div className="relative mt-12 z-10 w-full max-w-[1200px] min-h-[650px] rounded-sm overflow-hidden flex flex-col md:flex-row bg-black/40 backdrop-blur-md border border-white/5 shadow-2xl">
+        {/* [왼쪽 영역] 연락처 정보 (중앙 정렬 배치) */}
+        <div className="flex-1 p-12 md:p-16 flex flex-col justify-center relative overflow-hidden border-b md:border-b-0 md:border-r border-white/5">
+          {/* 배경 대형 심볼 */}
+          <div className="absolute -left-10 -bottom-10 opacity-[0.03] select-none pointer-events-none">
+            <img src={assets.logo_uic} alt="" className="w-[500px] grayscale" />
           </div>
 
-          {/* 연락처 정보 */}
-          <div className="relative z-10 space-y-8 mt-12 md:mt-0">
-            {[
-              {
-                label: 'Address',
-                value: '서울특별시 중구 필동로 1길 30, UIC 본부',
-                icon: '📍',
-              },
-              {
-                label: 'Direct Contact',
-                value: `부회장 황민성 +82 10-5713-6900`,
-                icon: '📞',
-              },
-              {
-                label: 'Official Email',
-                value: 'uic_official@naver.com',
-                icon: '✉️',
-              },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center gap-5 group">
-                <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-white/50 group-hover:scale-110 transition-all duration-300">
-                  {item.icon}
-                </div>
-                <div>
-                  <p className="text-[10px] text-purple-600 uppercase font-bold tracking-[0.2em] mb-1">
-                    {item.label}
-                  </p>
-                  <p className="text-base font-bold text-gray-800 tracking-wide">
-                    {item.value}
-                  </p>
-                </div>
-              </div>
-            ))}
+          <div className="relative z-10 space-y-10">
+            <div className="text-center md:text-left">
+              <h2 className="text-sm font-black tracking-[0.4em] text-blue-500 uppercase mb-2">
+                Contact Info
+              </h2>
+              <p className="text-xs text-gray-500 uppercase tracking-widest">
+                Click to copy details
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {[
+                {
+                  label: 'Direct Contact',
+                  value: `+82 10-3607-6307`,
+                  sub: '회장 이동원',
+                  icon: (
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                  ),
+                },
+                {
+                  label: 'Official Email',
+                  value: 'uic_official@naver.com',
+                  sub: '공식 이메일',
+                  icon: (
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                  ),
+                },
+              ].map((item, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleCopy(item.value, item.label)}
+                  className="w-full cursor-pointer flex items-center gap-6 p-6 bg-black/30 border border-white/5 hover:bg-white/[0.08] hover:border-blue-500/30 transition-all duration-500 group text-left"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover:scale-110 transition-transform">
+                    {item.icon}
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-blue-500 uppercase font-black tracking-[0.2em] mb-1">
+                      {item.label}
+                    </p>
+                    <p className="text-lg font-bold text-white/90">
+                      {item.value}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">{item.sub}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* [오른쪽 영역] 문의하기 폼 (더 불투명한 화이트) */}
-        <div className="flex-[1.3] p-12 md:p-16 bg-white/60 relative flex flex-col justify-center">
-          {/* 내부 장식: 은은한 파란색 빛 */}
-          <div className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] bg-blue-400/10 blur-[120px] rounded-full pointer-events-none mix-blend-multiply" />
-
-          <div className="relative z-10 mb-10">
-            <h3 className="text-3xl font-bold text-gray-900 mb-2">
+        {/* [오른쪽 영역] 문의하기 폼 (유지 및 디자인 정돈) */}
+        <div className="flex-[1.3] p-12 md:p-16 bg-white/[0.01] relative flex flex-col justify-center">
+          <div className="group w-fit">
+            <h3 className="text-3xl md:text-4xl font-black tracking-tighter text-white/80">
               Send us a message
             </h3>
-            <p className="text-gray-500">빠른 시일 내에 답변 드리겠습니다.</p>
+            <div className="mb-4 w-full h-[2px] bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] mt-4 transition-all duration-500 group-hover:scale-x-110" />
           </div>
 
-          <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+          <form onSubmit={handleSubmit} className="relative z-10 space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
                 <label className={labelClasses}>Your Name</label>
                 <input
                   type="text"
-                  placeholder="홍길동"
+                  placeholder="성함 또는 기업명"
                   className={inputClasses}
                 />
               </div>
-              <div>
-                <label className={labelClasses}>Your Email Address</label>
+              <div className="space-y-2">
+                <label className={labelClasses}>Your Email</label>
                 <input
                   type="email"
                   placeholder="example@uic.com"
@@ -121,36 +161,32 @@ const ContactUs = () => {
               </div>
             </div>
 
-            <div>
+            <div className="space-y-2">
               <label className={labelClasses}>Message</label>
               <textarea
-                rows={6}
-                placeholder="문의하실 내용을 자유롭게 적어주세요."
+                rows={5}
+                placeholder="문의 내용을 자유롭게 입력해 주세요."
                 className={`${inputClasses} resize-none`}
               ></textarea>
             </div>
 
-            <div className="flex items-center justify-between pt-6">
-              {/* SNS 아이콘 */}
-              <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-8 pt-6">
+              <div className="flex gap-4">
                 {[
                   {
                     src: assets.logo_instagram,
-                    alt: 'Instagram',
-                    border: 'hover:border-purple-300',
                     link: 'https://www.instagram.com/uic.korea/',
+                    hover: 'hover:border-purple-500/50',
                   },
                   {
                     src: assets.logo_kakao,
-                    alt: 'Kakao',
-                    border: 'hover:border-yellow-300',
                     link: 'https://pf.kakao.com/_xfecmM',
+                    hover: 'hover:border-yellow-500/50',
                   },
                   {
                     src: assets.logo_naver_cafe,
-                    alt: 'Naver Cafe',
-                    border: 'hover:border-green-300',
                     link: 'https://cafe.naver.com/koreauic.cafe',
+                    hover: 'hover:border-green-500/50',
                   },
                 ].map((sns, idx) => (
                   <a
@@ -158,12 +194,12 @@ const ContactUs = () => {
                     href={sns.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`w-12 h-12 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center transition-all duration-300 hover:-translate-y-1 ${sns.border}`}
+                    className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 hover:-translate-y-1"
                   >
                     <img
                       src={sns.src}
-                      alt={sns.alt}
-                      className="w-7 h-7 opacity-80 hover:opacity-100 transition-opacity"
+                      alt="SNS"
+                      className="w-7 h-7 opacity-40 hover:opacity-100 transition-opacity"
                     />
                   </a>
                 ))}
@@ -171,7 +207,12 @@ const ContactUs = () => {
 
               <button
                 type="submit"
-                className="px-12 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-purple-700 transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-95"
+                className="w-full sm:w-auto px-12 py-4 text-xs font-black tracking-[0.2em] uppercase
+                           text-white/60 bg-transparent border border-white/10
+                           hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] 
+                           hover:border-blue-500/50 hover:text-white
+                           hover:shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(30,58,138,0.4)]
+                           active:scale-[0.97] transition-all duration-500"
               >
                 Send Message
               </button>
@@ -180,10 +221,7 @@ const ContactUs = () => {
         </div>
       </div>
 
-      {/* 하단 푸터 텍스트 (배경에 따라 잘 보이도록 밝은색 유지, 필요시 drop-shadow 추가) */}
-      <p className="mt-8 text-white/60 text-[13px] tracking-[0.4em] uppercase select-none drop-shadow-md">
-        University student Investment Club · All rights reserved.
-      </p>
+      <FooterBar />
     </section>
   );
 };

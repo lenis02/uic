@@ -279,7 +279,7 @@ const historyData = [
 const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
   <div className="snap-start min-h-full flex flex-col justify-center pb-20">
     <div className="mb-12 w-fit">
-      <h1 className="text-2xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
+      <h1 className="text-4xl font-semibold tracking-tight text-white/80">
         {data.role} Greeting
       </h1>
       <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
@@ -322,7 +322,6 @@ const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
             alt={data.name}
           />
         </div>
-        {/* 이름과 직함도 이미지 오른쪽 끝에 맞춰 정렬 */}
         <div className="text-right pt-6 w-full xl:max-w-[400px]">
           <span className="text-xl font-semibold tracking-widest text-white">
             {data.name}
@@ -353,104 +352,108 @@ const AboutPage = () => {
   });
 
   return (
-    <main className="relative w-full h-screen overflow-hidden text-white pt-32 pb-10">
-      <img
-        src={assets.bg_about}
-        alt="배경"
-        className="fixed inset-0 z-0 w-full h-full object-cover opacity-40 pointer-events-none"
-      />
+    <>
+      <main className="relative w-full h-screen overflow-hidden text-white pt-32 pb-10">
+        <img
+          src={assets.bg_about}
+          alt="배경"
+          className="fixed inset-0 z-0 w-full h-full object-cover opacity-60 pointer-events-none"
+        />
 
-      <div className="relative z-10 max-w-[1600px] mx-auto px-6 md:px-12 h-full">
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-8 md:p-12 overflow-hidden mt-8 border border-white/5 shadow-2xl">
-          <aside className="lg:w-40 shrink-0 z-20">
-            <nav className="flex flex-row lg:flex-col gap-3">
-              {(['greeting', 'history'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 cursor-pointer rounded-2xl font-bold transition-all duration-300 ${
-                    activeTab === tab
-                      ? 'text-white bg-blue-400/20 border border-blue-400/50 shadow-[0_0_15px_rgba(23,18,142,0.2)]'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </nav>
-          </aside>
-
-          <section
-            className={`flex-1 h-full overflow-y-auto pr-4 custom-scrollbar z-20 scroll-smooth scrollbar-hide ${
-              activeTab === 'greeting' ? 'snap-y snap-mandatory' : ''
-            }`}
-          >
-            {activeTab === 'greeting' ? (
-              <div className="h-full">
-                {executiveData.map((exec) => (
-                  <GreetingSection key={exec.name} data={exec} />
+        <div className="relative z-10 max-w-[1600px] mx-auto px-6 md:px-12 h-full">
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-8 md:p-12 overflow-hidden mt-8 border border-white/5 shadow-2xl">
+            <aside className="lg:w-40 shrink-0 z-20">
+              <nav className="flex flex-row lg:flex-col gap-3">
+                {(['greeting', 'history'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-6 py-2.5 cursor-pointer rounded-lg text-sm font-bold transition-all duration-300 whitespace-nowrap ${
+                      activeTab === tab
+                        ? 'bg-blue-600/10 text-blue-400 border border-blue-500/50 shadow-[0_4px_15px_rgba(37,99,235,0.2)]'
+                        : 'text-white/40 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
                 ))}
-                <div className="mt-10 animate-bounce text-center text-gray-500 text-sm">
-                  ↓ scroll
-                </div>
-              </div>
-            ) : (
-              /* History 섹션 실질 로직 복구 */
-              <div className="pb-32">
-                <header className="mb-12">
-                  <h1 className="text-2xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
-                    History of UIC
-                  </h1>
-                  <div className="w-40 h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
-                </header>
+              </nav>
+            </aside>
 
-                <div className="flex px-4 flex-wrap gap-2 mb-12 sticky top-0 z-30 py-4 bg-black/40 backdrop-blur-md border-b border-white/5">
-                  {decadeButtons.map((decade) => (
-                    <button
-                      key={decade}
-                      onClick={() => setActiveDecade(decade)}
-                      className={`px-5 py-2 cursor-pointer rounded-full text-sm font-bold transition-all border ${
-                        activeDecade === decade
-                          ? 'border-white bg-blue-400/10'
-                          : 'text-gray-500 border-gray-700 hover:border-gray-500'
-                      }`}
-                    >
-                      {decade}
-                    </button>
+            <section
+              className={`flex-1 h-full overflow-y-auto pr-4 custom-scrollbar z-20 scroll-smooth scrollbar-hide ${
+                activeTab === 'greeting' ? 'snap-y snap-mandatory' : ''
+              }`}
+            >
+              {activeTab === 'greeting' ? (
+                <div className="h-full">
+                  {executiveData.map((exec) => (
+                    <GreetingSection key={exec.name} data={exec} />
                   ))}
+                  <div className="mt-10 animate-bounce text-center text-gray-500 text-sm">
+                    ↓ scroll
+                  </div>
                 </div>
-
-                <div className="space-y-16 border-l border-white/10 ml-4 pl-10 relative">
-                  {filteredHistory.map((item) => (
-                    <div
-                      key={item.year}
-                      className="relative group animate-fadeIn"
-                    >
-                      <div className="absolute -left-[45.5px] top-2 w-2.5 h-2.5 bg-blue-500 rounded-full shadow-[0_0_10px_#a855f7]" />
-                      <h3 className="text-3xl font-bold text-white mb-6 tracking-tight">
-                        {item.year}
-                      </h3>
-                      <ul className="space-y-6">
-                        {item.events.map((event, i) => (
-                          <li key={i} className="flex flex-col group/item">
-                            <span className="font-bold text-lg">
-                              {event.date}
-                            </span>
-                            <span className="text-gray-300 font-medium mt-1 break-keep leading-relaxed whitespace-pre-wrap group-hover/item:text-white transition-colors italic">
-                              {event.title}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
+              ) : (
+                <div className="pb-32">
+                  <header className="">
+                    <div className="mb-4 w-fit">
+                      <h1 className="text-4xl font-semibold tracking-tight text-white/80">
+                        History of UIC
+                      </h1>
+                      <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
                     </div>
-                  ))}
+                  </header>
+
+                  {/* [수정됨] Decade 버튼 스타일링 */}
+                  <div className="flex px-6 flex-wrap gap-4 mb-12 sticky top-0 z-30 py-6 border-b border-white/10 rounded-xl">
+                    {decadeButtons.map((decade) => (
+                      <button
+                        key={decade}
+                        onClick={() => setActiveDecade(decade)}
+                        className={`px-6 py-2.5 cursor-pointer rounded-lg text-sm font-bold  whitespace-nowrap ${
+                          activeDecade === decade
+                            ? 'bg-blue-600/10 text-blue-400 border border-blue-500/50 shadow-[0_4px_15px_rgba(37,99,235,0.2)]'
+                            : 'text-white/40 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        {decade}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="space-y-16 border-l border-white/10 ml-4 pl-10 relative">
+                    {filteredHistory.map((item) => (
+                      <div
+                        key={item.year}
+                        className="relative group animate-fadeIn"
+                      >
+                        <div className="absolute -left-[45.5px] top-2 w-2.5 h-2.5 bg-blue-500 rounded-full shadow-[0_0_10px_#a855f7]" />
+                        <h3 className="text-3xl font-bold text-white mb-6 tracking-tight">
+                          {item.year}
+                        </h3>
+                        <ul className="space-y-6">
+                          {item.events.map((event, i) => (
+                            <li key={i} className="flex flex-col group/item">
+                              <span className="font-bold text-lg">
+                                {event.date}
+                              </span>
+                              <span className="text-gray-300 font-medium mt-1 break-keep leading-relaxed whitespace-pre-wrap group-hover/item:text-white transition-colors italic">
+                                {event.title}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </section>
+              )}
+            </section>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 };
 
