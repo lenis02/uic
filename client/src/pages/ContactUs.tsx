@@ -48,7 +48,7 @@ const ContactUs = () => {
         </div>
       </div>
 
-      <div className="relative mt-12 z-10 w-full max-w-[1200px] min-h-[650px] rounded-sm overflow-hidden flex flex-col md:flex-row bg-black/40 backdrop-blur-md border border-white/5 shadow-2xl">
+      <div className="relative mt-32 z-10 w-full max-w-[1200px] min-h-[650px] rounded-sm overflow-hidden flex flex-col md:flex-row bg-black/40 backdrop-blur-md border border-white/5 shadow-2xl">
         {/* [왼쪽 영역] 연락처 정보 (중앙 정렬 배치) */}
         <div className="flex-1 p-12 md:p-16 flex flex-col justify-center relative overflow-hidden border-b md:border-b-0 md:border-r border-white/5">
           {/* 배경 대형 심볼 */}
