@@ -136,7 +136,7 @@ const MembersPage = () => {
               </div>
               <p className="mt-6 text-white font-medium tracking-widest text-sm uppercase">
                 UIC의 역사를 함께 만든{' '}
-                <span className="font-bold text-lg">{activeGen}기 멤버</span>
+                <span className="font-bold text-lg">{activeGen}대 멤버</span>
                 들을 소개합니다.
               </p>
             </header>
