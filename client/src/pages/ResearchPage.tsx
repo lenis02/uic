@@ -101,7 +101,7 @@ const ResearchPage = () => {
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 h-full flex flex-col mb-3">
         {/* 전체 컨테이너 */}
-        <div className="flex flex-col w-full h-full bg-black/40 backdrop-blur-xl p-8 md:p-12 overflow-hidden border border-white/5 shadow-2xl rounded-sm">
+        <div className="flex flex-col w-full h-full bg-black/40 backdrop-blur-xl p-8 mt-4 md:p-12 overflow-hidden border border-white/5 shadow-2xl rounded-sm">
           {/* [상단 영역] 타이틀 & 검색바 */}
           <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="w-fit">

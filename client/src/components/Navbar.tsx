@@ -27,7 +27,7 @@ const Navbar = () => {
           <img
             src={assets.logo_uic}
             alt="UIC Logo"
-            className="w-48 -mt-4 aspect-[5/4] transition-all select-none duration-300 hover:brightness-125"
+            className="w-60 -mt-4 aspect-[5/3] transition-all select-none duration-300 hover:brightness-125"
           />
         </Link>
 
