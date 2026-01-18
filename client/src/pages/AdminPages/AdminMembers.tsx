@@ -24,7 +24,7 @@ export default function AdminMembers() {
   const [form, setForm] = useState({
     name: '',
     position: 'Member',
-    generation: 21,
+    generation: 0,
   });
   const [file, setFile] = useState<File | null>(null); // 등록용 파일
   const [preview, setPreview] = useState<string>(''); // 등록용 미리보기
@@ -32,7 +32,20 @@ export default function AdminMembers() {
   const fetchMembers = async () => {
     try {
       const res = await api.getMembers();
-      setMembers(res.data);
+      const data = res.data;
+      setMembers(data);
+
+      // [추가된 로직] 최신 기수 계산 및 폼 초기값 설정
+      if (data.length > 0) {
+        // 모든 멤버의 기수 중 가장 큰 값을 찾음
+        const maxGen = Math.max(...data.map((m: Member) => m.generation));
+
+        // 폼의 generation을 최신 기수로 업데이트 (단, 사용자가 이미 입력 중이면 덮어쓰지 않게 조건 추가 가능)
+        setForm((prev) => ({
+          ...prev,
+          generation: maxGen,
+        }));
+      }
     } catch (err) {
       console.error('로딩 실패:', err);
     }
@@ -90,7 +103,12 @@ export default function AdminMembers() {
       alert('등록 완료!');
 
       // 초기화
-      setForm({ name: '', position: 'Member', generation: 20 });
+      setForm((prev) => ({
+        name: '',
+        position: 'Member',
+        generation: prev.generation, // 👈 방금 등록한 기수 그대로 유지 (연속 등록 편의성)
+        // 또는 항상 최신 기수를 원하면 fetchMembers()가 다시 실행되면서 업데이트 됨
+      }));
       setFile(null);
       setPreview('');
 
@@ -218,11 +236,11 @@ export default function AdminMembers() {
               <option value="Member">일반 회원</option>
               <option value="President">회장</option>
               <option value="Vice President">부회장</option>
-              <option value="Planning Head">기획</option>
-              <option value="External Relations Head">대외협력</option>
-              <option value="Marketing Head">마케팅</option>
-              <option value="Finance Head">재무</option>
-              <option value="HR Head">인사</option>
+              <option value="Planning">기획</option>
+              <option value="External Relations">대외협력</option>
+              <option value="Marketing">마케팅</option>
+              <option value="Finance">재무</option>
+              <option value="HR">인사</option>
             </select>
             <input
               type="number"
@@ -344,11 +362,11 @@ export default function AdminMembers() {
                   <option value="Member">일반 회원</option>
                   <option value="President">회장</option>
                   <option value="Vice President">부회장</option>
-                  <option value="Planning Head">기획</option>
-                  <option value="External Relations Head">대외협력</option>
-                  <option value="Marketing Head">마케팅</option>
-                  <option value="Finance Head">재무</option>
-                  <option value="HR Head">인사</option>
+                  <option value="Planning">기획</option>
+                  <option value="External Relations">대외협력</option>
+                  <option value="Marketing">마케팅</option>
+                  <option value="Finance">재무</option>
+                  <option value="HR">인사</option>
                 </select>
 
                 <div className="flex justify-end gap-2 mt-2 pt-3 border-t border-white/10">
@@ -384,7 +402,7 @@ export default function AdminMembers() {
                   )}
                 </div>
 
-                <div className="flex flex-col justify-between h-full flex-1">
+                <div className="flex flex-col justify-center pb-4 h-full flex-1">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-lg font-bold text-white tracking-tight">
@@ -396,7 +414,7 @@ export default function AdminMembers() {
                     </div>
                   </div>
 
-                  <div className="mt-auto">
+                  <div className="">
                     <p
                       className={`text-xs font-bold uppercase tracking-wider truncate ${
                         member.position.includes('Head') ||

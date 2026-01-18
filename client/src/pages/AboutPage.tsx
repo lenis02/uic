@@ -1,9 +1,9 @@
 // src/pages/AboutPage.tsx
 import { useState, useEffect } from 'react';
 import { assets } from '../../assets/assets';
-import { api } from '../api/api'; // 👈 아까 분리한 api 임포트
+import { api } from '../api/api';
 
-// --- 타입 정의 (TypeScript용) ---
+// --- 타입 정의 ---
 interface HistoryItem {
   year: string;
   date: string;
@@ -16,34 +16,19 @@ interface GroupedHistory {
   events: { date: string; title: string }[];
 }
 
-// 임원진 데이터 (정적 데이터 유지)
-const executiveData = [
-  {
-    role: 'President',
-    name: '이동원',
-    fullRole: '제19대 전국 대학생 투자동아리 연합(UIC) 회장',
-    greeting:
-      '안녕하십니까, 전국 대학생 투자동아리 연합(UIC) 제19대 회장 이동원입니다.',
-    content:
-      '1990년 겨울에 싹을 틔운 나무가 어느덧 울창한 숲을 이루듯, 우리 UIC 또한 수많은 선배님들의 열정과 헌신 덕분에 대한민국 대학생 금융 커뮤니티의 중심으로 우뚝 설 수 있었습니다.',
-    quote: '"지엽에 시선을 빼앗겨 근본을 소홀히 해서는 안 된다"',
-    image: assets.logo_uic,
-  },
-  {
-    role: 'Vice President',
-    name: '황민성',
-    fullRole: '제19대 전국 대학생 투자동아리 연합(UIC) 부회장',
-    greeting:
-      '안녕하십니까, 전국 대학생 투자동아리 연합(UIC) 제19대 부회장 황민성입니다.',
-    content:
-      '금융의 본질을 이해하고 함께 성장하는 가치를 실현하기 위해 노력하겠습니다. UIC는 여러분의 열정이 실질적인 통찰로 이어지는 최고의 장이 될 것입니다.',
-    quote: '"함께할 때 더 멀리 갈 수 있습니다"',
-    image: assets.logo_uic,
-  },
-];
+// [수정] Greeting 데이터 타입 정의
+interface Executive {
+  role: string;
+  name: string;
+  fullRole: string;
+  greeting: string;
+  content: string;
+  quote: string;
+  image: string;
+}
 
 // --- 컴포넌트들 ---
-const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
+const GreetingSection = ({ data }: { data: Executive }) => (
   <div className="snap-start min-h-full flex flex-col justify-center pb-20">
     <div className="mb-12 w-fit">
       <h1 className="text-4xl font-semibold tracking-tight text-white/80">
@@ -64,7 +49,7 @@ const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
             </span>
           ))}
         </p>
-        <p className="font-light">{data.content}</p>
+        <p className="font-light whitespace-pre-line">{data.content}</p>
         <p className="font-light italic border-l-2 border-white pl-4">
           {data.quote}
         </p>
@@ -74,7 +59,7 @@ const GreetingSection = ({ data }: { data: (typeof executiveData)[0] }) => (
         <div className="relative h-[35vh] xl:h-[45vh] aspect-[3/4] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl group">
           <img
             src={data.image}
-            className="w-full h-full object-contain p-12 opacity-50 transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover p-0 opacity-90 transition-transform duration-500 group-hover:scale-105" // object-contain -> cover로 변경, opacity 조정
             alt={data.name}
           />
         </div>
@@ -95,49 +80,74 @@ const AboutPage = () => {
     'greeting'
   );
   const [activeDecade, setActiveDecade] = useState('ALL');
-
-  // 1️⃣ 데이터를 담을 State 생성 (기존 const historyData 삭제)
   const [historyData, setHistoryData] = useState<GroupedHistory[]>([]);
+
+  // 1️⃣ [수정] 임원진 데이터 State 추가
+  const [executives, setExecutives] = useState<Executive[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const decadeButtons = ['ALL', '2020s', '2010s', '2000s'];
 
-  // 2️⃣ API 호출 및 데이터 가공 (useEffect)
   useEffect(() => {
-    const fetchHistory = async () => {
+    // 2️⃣ API 호출 함수
+    const fetchData = async () => {
       try {
-        const res = await api.getHistory(); // 백엔드 호출
-        const rawData: HistoryItem[] = res.data;
+        setLoading(true);
 
-        // [데이터 가공 로직]
-        // 백엔드에서 받은 평평한 배열을 -> 연도별로 묶인 형태로 변환
-        const groupedMap = rawData.reduce((acc, curr) => {
+        // (1) 연혁 데이터 가져오기
+        const historyRes = await api.getHistory();
+        const rawHistory: HistoryItem[] = historyRes.data;
+
+        const groupedMap = rawHistory.reduce((acc, curr) => {
           const { year, date, title } = curr;
-          if (!acc[year]) {
-            acc[year] = [];
-          }
+          if (!acc[year]) acc[year] = [];
           acc[year].push({ date, title });
           return acc;
         }, {} as Record<string, { date: string; title: string }[]>);
 
-        // 객체를 배열로 변환하고 연도 내림차순 정렬 (2024 -> 2023)
-        const groupedArray: GroupedHistory[] = Object.entries(groupedMap)
+        const groupedArray = Object.entries(groupedMap)
           .map(([year, events]) => ({
             year,
-            // 같은 연도 내에서는 날짜별 정렬 (선택사항)
             events: events.sort((a, b) => b.date.localeCompare(a.date)),
           }))
           .sort((a, b) => Number(b.year) - Number(a.year));
 
-        setHistoryData(groupedArray); // State 업데이트
+        setHistoryData(groupedArray);
+
+        // (2) 인사말 데이터 가져오기 (Promise.all로 병렬 처리)
+        // 백엔드에서 역할 이름이 'President', 'Researcher'(부회장용) 라고 가정
+        const [presRes, viceRes] = await Promise.all([
+          api.getGreetingByRole('President'),
+          api.getGreetingByRole('Vice President'),
+        ]);
+
+        const formatExecutive = (res: any, role: string): Executive => ({
+          role,
+          name: res.data.name || '',
+          fullRole: res.data.fullRole || '',
+          greeting: res.data.greeting || '',
+          content: res.data.content || '',
+          quote: res.data.quote || '',
+          // 이미지가 없으면 기본 로고 사용
+          image: res.data.imageUrl
+            ? `${import.meta.env.VITE_API_URL}${res.data.imageUrl}`
+            : assets.logo_uic,
+        });
+
+        setExecutives([
+          formatExecutive(presRes, 'President'),
+          formatExecutive(viceRes, 'Vice President'),
+        ]);
       } catch (error) {
-        console.error('연혁 불러오기 실패:', error);
+        console.error('데이터 로딩 실패:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchHistory();
+    fetchData();
   }, []);
 
-  // 3️⃣ 필터링 로직 (State 기반으로 작동)
   const filteredHistory = historyData.filter((item) => {
     if (activeDecade === 'ALL') return true;
     const year = parseInt(item.year);
@@ -146,6 +156,14 @@ const AboutPage = () => {
     if (activeDecade === '2000s') return year < 2010;
     return true;
   });
+
+  if (loading) {
+    return (
+      <div className="h-screen bg-[#050505] text-white flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <>
@@ -183,8 +201,9 @@ const AboutPage = () => {
             >
               {activeTab === 'greeting' ? (
                 <div className="h-full">
-                  {executiveData.map((exec) => (
-                    <GreetingSection key={exec.name} data={exec} />
+                  {/* [수정] 백엔드에서 받아온 executives 배열 매핑 */}
+                  {executives.map((exec) => (
+                    <GreetingSection key={exec.role} data={exec} />
                   ))}
                   <div className="mt-10 animate-bounce text-center text-gray-500 text-sm">
                     ↓ scroll
@@ -201,7 +220,6 @@ const AboutPage = () => {
                     </div>
                   </header>
 
-                  {/* Decade 버튼 */}
                   <div className="flex px-6 flex-wrap gap-4 mb-12 sticky top-0 z-30 py-6 border-b border-white/10 rounded-xl bg-black/40 backdrop-blur-xl">
                     {decadeButtons.map((decade) => (
                       <button
@@ -218,7 +236,6 @@ const AboutPage = () => {
                     ))}
                   </div>
 
-                  {/* 연혁 리스트 */}
                   <div className="space-y-16 border-l border-white/10 ml-4 pl-10 relative">
                     {filteredHistory.length > 0 ? (
                       filteredHistory.map((item) => (
@@ -246,7 +263,7 @@ const AboutPage = () => {
                       ))
                     ) : (
                       <div className="text-white/50 text-lg">
-                        등록된 연혁이 없거나 불러오는 중입니다...
+                        등록된 연혁이 없습니다.
                       </div>
                     )}
                   </div>

@@ -13,9 +13,9 @@ interface GreetingData {
 }
 
 export default function AdminGreeting() {
-  const [selectedRole, setSelectedRole] = useState<'President' | 'Researcher'>(
-    'President'
-  );
+  const [selectedRole, setSelectedRole] = useState<
+    'President' | 'Vice President'
+  >('President');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>('');
 
@@ -112,7 +112,7 @@ export default function AdminGreeting() {
 
       {/* 탭 메뉴 */}
       <div className="flex gap-2 p-1 bg-slate-800/50 rounded-xl w-fit border border-white/5 mx-2">
-        {(['President', 'Researcher'] as const).map((r) => (
+        {(['President', 'Vice President'] as const).map((r) => (
           <button
             key={r}
             onClick={() => setSelectedRole(r)}

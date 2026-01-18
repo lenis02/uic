@@ -6,7 +6,7 @@ export default function AdminResearch() {
   const [researchList, setResearchList] = useState<any[]>([]);
   const [form, setForm] = useState({
     title: '',
-    type: 'Weekly', // Weekly, Industry, Company, Macro
+    author: '',
     description: '',
   });
 
@@ -17,7 +17,7 @@ export default function AdminResearch() {
   const fetchResearch = async () => {
     try {
       const res = await api.getResearch();
-      // 최신순 정렬 (ID 기준 내림차순 가정)
+      // 최신순 정렬 (ID 기준 내림차순)
       const sorted = res.data.sort((a: any, b: any) => b.id - a.id);
       setResearchList(sorted);
     } catch (err) {
@@ -35,7 +35,7 @@ export default function AdminResearch() {
 
     const formData = new FormData();
     formData.append('title', form.title);
-    formData.append('type', form.type);
+    formData.append('author', form.author);
     formData.append('description', form.description);
     formData.append('pdf', pdfFile);
     if (thumbnailFile) {
@@ -46,7 +46,7 @@ export default function AdminResearch() {
       await api.createResearch(formData);
       alert('리서치가 성공적으로 업로드되었습니다!');
       // 초기화
-      setForm({ title: '', type: 'Weekly', description: '' });
+      setForm({ title: '', author: '', description: '' });
       setPdfFile(null);
       setThumbnailFile(null);
       // 파일 input 초기화를 위해 DOM 조작 대신 key를 바꾸거나 해야하지만,
@@ -64,23 +64,7 @@ export default function AdminResearch() {
 
   // 파일 인풋 스타일 (Tailwind file modifier 사용)
   const fileInputStyle =
-    'block w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white hover:file:bg-slate-600 cursor-pointer';
-
-  // 타입별 배지 색상 매핑
-  const getTypeBadgeStyle = (type: string) => {
-    switch (type) {
-      case 'Weekly':
-        return 'bg-cyan-900/50 text-cyan-300 border-cyan-500/30';
-      case 'Industry':
-        return 'bg-purple-900/50 text-purple-300 border-purple-500/30';
-      case 'Company':
-        return 'bg-blue-900/50 text-blue-300 border-blue-500/30';
-      case 'Macro':
-        return 'bg-orange-900/50 text-orange-300 border-orange-500/30';
-      default:
-        return 'bg-gray-800 text-gray-300 border-gray-600';
-    }
-  };
+    'block w-full file:cursor-pointer text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white hover:file:bg-slate-600 cursor-pointer';
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 animate-fade-in-up pb-20">
@@ -90,7 +74,7 @@ export default function AdminResearch() {
           리서치 관리
         </h1>
         <p className="text-sm text-gray-300">
-          Weekly Report 및 리서치 자료를 업로드하고 관리합니다.
+          리서치 자료를 업로드하고 관리합니다.
         </p>
       </div>
 
@@ -102,16 +86,28 @@ export default function AdminResearch() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 상단 입력 필드 */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* 제목 */}
             <div className="md:col-span-3">
               <input
-                placeholder="리서치 제목 (예: 2024년 1월 3주차 Weekly)"
+                placeholder="리서치 제목 (예: SK하이닉스)"
                 className={inputStyle}
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
               />
             </div>
+
+            {/* 작성자 */}
+            <div className="md:col-span-1">
+              <input
+                placeholder="작성자 (예: 홍길동)"
+                className={inputStyle}
+                value={form.author}
+                onChange={(e) => setForm({ ...form, author: e.target.value })}
+              />
+            </div>
           </div>
 
+          {/* 간략한 설명 */}
           <textarea
             placeholder="간략한 설명 (선택사항)"
             rows={3}
@@ -159,7 +155,7 @@ export default function AdminResearch() {
             </div>
           </div>
 
-          <button className="w-full h-12 bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-900/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer">
+          <button className="cursor-pointer w-full h-12 bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-900/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer">
             리서치 업로드 시작
           </button>
         </form>
@@ -205,17 +201,6 @@ export default function AdminResearch() {
                     PDF 보기
                   </a>
                 </div>
-
-                {/* 타입 배지 (절대 위치) */}
-                <div className="absolute top-3 left-3">
-                  <span
-                    className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-md ${getTypeBadgeStyle(
-                      r.type
-                    )}`}
-                  >
-                    {r.type}
-                  </span>
-                </div>
               </div>
 
               {/* 정보 영역 */}
@@ -236,7 +221,7 @@ export default function AdminResearch() {
                         fetchResearch();
                       }
                     }}
-                    className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-400 px-2 py-1 rounded hover:bg-red-500/10 transition-colors cursor-pointer"
+                    className="cursor-pointer flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-400 px-2 py-1 rounded hover:bg-red-500/10 transition-colors cursor-pointer"
                   >
                     <svg
                       className="w-3.5 h-3.5"

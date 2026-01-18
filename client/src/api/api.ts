@@ -61,4 +61,8 @@ export const api = {
         'Content-Type': 'multipart/form-data',
       },
     }),
+
+  // [추가] 문의 메일 발송
+  sendContactEmail: (data: { name: string; email: string; message: string }) =>
+    instance.post('/contact', data),
 };

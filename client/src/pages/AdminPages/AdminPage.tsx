@@ -80,7 +80,7 @@ export default function AdminLayout() {
 
       {/* 메인 콘텐츠 영역 */}
       {/* [수정 포인트] overflow-y-auto를 여기에 주어 내부에서만 스크롤 되도록 함 */}
-      <main className="flex-1 h-full overflow-y-auto bg-slate-950 relative custom-scroll scrollbar-hide">
+      <main className="flex-1 h-full overflow-y-auto bg-slate-950 relative custom-scroll">
         <div className="max-w-7xl mx-auto p-10 pb-32">
           <Outlet />
         </div>
