@@ -44,20 +44,20 @@ const JoinUs = () => {
                 </span>
               </h2>
               <p className="text-gray-400 text-sm leading-relaxed mb-8 break-keep">
-                신규 동아리 가입을 위한 단체 지원 프로세스입니다.
+                동아리 가입을 위한 단체 지원 프로세스입니다.
               </p>
               {/* ... (설명 텍스트 동일) ... */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 bg-purple-500 shadow-[0_0_8px_#a855f7]" />
                   <p className="text-sm text-gray-400 font-medium">
-                    활동 계획서 및 동아리 소개서 필수
+                    PDF 형식 변환 제출 준수
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 bg-purple-500 shadow-[0_0_8px_#a855f7]" />
                   <p className="text-sm text-gray-400 font-medium">
-                    PDF 형식 변환 제출 준수
+                    활동 계획서 및 동아리 소개서 필수
                   </p>
                 </div>
               </div>
@@ -86,21 +86,20 @@ const JoinUs = () => {
                 </span>
               </h2>
               <p className="text-gray-400 text-sm leading-relaxed mb-8 break-keep">
-                UIC 정회원 등록을 위한 개인 지원서입니다. 소속 동아리가 UIC
-                네트워크에 가입되어 있어야 합니다.
+                신규 회원을 위한 개인 지원 프로세스입니다.
               </p>
               {/* ... (설명 텍스트 동일) ... */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
                   <p className="text-sm text-gray-400 font-medium">
-                    소속 동아리장 승인 확인 필수
+                    PDF 형식 변환 제출 준수
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
                   <p className="text-sm text-gray-400 font-medium">
-                    학기별 정해진 기한 내 제출
+                    주 단위로 합격 여부 발표
                   </p>
                 </div>
               </div>

@@ -86,7 +86,7 @@ const UICNetwork = () => {
             NETWORK
           </h2>
           <p className="text-sm mt-2 text-gray-500">
-            전국 46개 대학 투자동아리와 함께하는 UIC
+            전국 53개 대학 투자동아리와 함께하는 UIC
           </p>
         </div>
 

@@ -5,7 +5,6 @@ const activities = [
   {
     id: 'general-meeting',
     title: '정기총회',
-    subtitle: 'Regular General Meeting',
     description: [
       '월 1회 정기적으로 총회 진행',
       '소속원 니즈 바탕의 연사 초청 (투교협)',
@@ -17,7 +16,6 @@ const activities = [
   {
     id: 'joint-session',
     title: '연합세션',
-    subtitle: 'Joint Academic Session',
     description: [
       'UIC 소속 동아리들 간의 소규모 학술 교류',
       '3개 이상의 학교 혹은 동아리 간 진행',
@@ -28,7 +26,6 @@ const activities = [
   {
     id: 'investment-concert',
     title: '투자콘서트',
-    subtitle: 'UIC Investment Concert',
     description: [
       '매년 개최되는 UIC 최대 규모의 리서치 대회',
       '금융투자협회 회장상 수여',
@@ -41,22 +38,10 @@ const activities = [
   {
     id: 'job-concert',
     title: '직무콘서트',
-    subtitle: 'CFA x UIC Job Talk Show',
     description: [
       'CFA 한국협회 X UIC 금융권 직무 토크쇼 개최',
       'IB, WM, 리서치 등 다양한 직무의 현직자 멘토링',
       '자유로운 분위기 속에서 현직자와의 직접 소통 가능',
-    ],
-    image: assets.logo_uic,
-  },
-  {
-    id: 'infomax',
-    title: 'UIC x 연합 인포맥스',
-    subtitle: 'Investment Insight Competition',
-    description: [
-      'UIC 주최, 연합 인포맥스 후원 투자 인사이트 대회',
-      '회원들의 실력을 뽐낼 수 있는 화합의 장 마련',
-      '인포맥스 단말기 제공 등 대학생 금융 교육 지원',
     ],
     image: assets.logo_uic,
   },
@@ -133,9 +118,6 @@ const ActivityPage = () => {
             {/* 텍스트 설명 */}
             <div className="w-full md:w-[500px] space-y-8">
               <div>
-                <h3 className="text-sm font-black tracking-[0.5em] text-blue-500 uppercase mb-3">
-                  {act.subtitle}
-                </h3>
                 <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white/95">
                   {act.title}
                 </h2>
