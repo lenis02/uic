@@ -164,7 +164,7 @@ const ContactUs = () => {
                 },
                 {
                   label: 'Official Email',
-                  value: 'uic_official@naver.com',
+                  value: 'koreauic@gmail.com',
                   sub: '공식 이메일',
                   icon: (
                     <svg

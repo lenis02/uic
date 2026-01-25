@@ -4,12 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Member } from './entities/member.entity';
 import { CreateMemberDto } from './dto/create-member.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class MembersService {
   constructor(
     @InjectRepository(Member)
     private memberRepository: Repository<Member>,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   async findAll() {
@@ -27,41 +29,36 @@ export class MembersService {
 
   // [수정] create 메서드도 파일 처리
   async create(dto: CreateMemberDto, file?: Express.Multer.File) {
-    const memberData = { ...dto };
+    let uploadedImageUrl = null; // 초기값은 null (이미지 없을 경우)
 
-    // 파일이 있으면 이미지 경로 추가
+    // 파일이 있으면 Cloudinary에 업로드
     if (file) {
-      memberData['imageUrl'] = `/uploads/${file.filename}`;
+      const uploadResult = await this.cloudinaryService.uploadImage(file);
+      uploadedImageUrl = uploadResult.secure_url;
     }
 
-    const member = this.memberRepository.create(memberData);
+    const member = this.memberRepository.create({
+      ...dto,
+      imageUrl: uploadedImageUrl, // ✅ 수정됨: image -> imageUrl
+    });
     return await this.memberRepository.save(member);
   }
 
-  // [핵심 수정] update 메서드 로직 변경
   async update(
     id: number,
     dto: Partial<CreateMemberDto>,
-    file?: Express.Multer.File, // 파일 인자 추가
+    file?: Express.Multer.File,
   ) {
-    const updateData = { ...dto };
-    delete (updateData as any).id;
-
-    // 1. 파일이 존재하면 이미지 경로를 업데이트 데이터에 추가
-    if (file) {
-      // Entity의 컬럼명이 'imageUrl'인지 'profileImageUrl'인지 확인 필요
-      // 프론트엔드 인터페이스에 맞춰 'imageUrl'로 저장합니다.
-      updateData['imageUrl'] = `/uploads/${file.filename}`;
-    }
-
-    // 2. preload로 기존 엔티티 + 변경 데이터 병합
-    const member = await this.memberRepository.preload({
-      id,
-      ...updateData,
-    });
-
+    const member = await this.memberRepository.findOne({ where: { id } });
     if (!member) throw new NotFoundException('멤버를 찾을 수 없습니다.');
 
+    // 새 파일이 올라오면 URL 교체
+    if (file) {
+      const uploadResult = await this.cloudinaryService.uploadImage(file);
+      member.imageUrl = uploadResult.secure_url; // ✅ 수정됨: image -> imageUrl
+    }
+
+    Object.assign(member, dto);
     return await this.memberRepository.save(member);
   }
 

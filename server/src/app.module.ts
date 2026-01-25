@@ -8,6 +8,8 @@ import { GreetingModule } from './greeting/greeting.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { ContactModule } from './contact/contact.module';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { ContactModule } from './contact/contact.module';
     ResearchModule,
     GreetingModule,
     ContactModule,
+    CloudinaryModule,
   ],
+  providers: [CloudinaryService],
 })
 export class AppModule {}
