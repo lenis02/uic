@@ -9,10 +9,12 @@ interface Member {
   name: string;
   position: string; // DB: President, Member, etc.
   generation: number;
-  imageUrl?: string; // 나중에 멤버 이미지 업로드 기능이 생기면 사용
+  imageUrl?: string;
+  workplace?: string;
+  email?: string;
 }
 
-// 직책 한글 매핑 (DB 영어 값 -> 화면 표시용 한글)
+// 직책 한글 매핑
 const roleMapping: { [key: string]: string } = {
   President: '회장',
   'Vice President': '부회장',
@@ -24,7 +26,7 @@ const roleMapping: { [key: string]: string } = {
   Member: '부원',
 };
 
-// 직책 정렬 순서 (높은 순)
+// 직책 정렬 순서
 const rolePriority = [
   'President',
   'Vice President',
@@ -49,7 +51,6 @@ const MembersPage = () => {
         const data = res.data;
         setMembers(data);
 
-        // 데이터에서 기수 추출 및 최신 기수 자동 선택
         if (data.length > 0) {
           const uniqueGens = Array.from(
             new Set(data.map((m: Member) => m.generation))
@@ -67,18 +68,17 @@ const MembersPage = () => {
     fetchMembers();
   }, []);
 
-  // 2. 기수 목록 추출 (중복 제거 + 내림차순 정렬)
+  // 2. 기수 목록 추출
   const generations = Array.from(
     new Set(members.map((m) => m.generation))
   ).sort((a, b) => b - a);
 
-  // 3. 현재 선택된 기수의 멤버 필터링 및 직책순 정렬
+  // 3. 필터링 및 정렬
   const currentMembers = members
     .filter((m) => m.generation === activeGen)
     .sort((a, b) => {
       const idxA = rolePriority.indexOf(a.position);
       const idxB = rolePriority.indexOf(b.position);
-      // 리스트에 없는 직책은 맨 뒤로
       return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
     });
 
@@ -147,7 +147,7 @@ const MembersPage = () => {
                 currentMembers.map((member) => (
                   <div
                     key={member.id}
-                    className="group w-full max-w-[280px] cursor-pointer relative bg-white/[0.03] backdrop-blur-md border border-white/10 overflow-hidden transition-all duration-500 hover:border-blue-500/50 shadow-2xl"
+                    className="group w-full max-w-[280px] relative bg-white/[0.03] backdrop-blur-md border border-white/10 overflow-hidden transition-all duration-500 hover:border-blue-500/50 shadow-2xl hover:-translate-y-1"
                   >
                     {/* 1. 이미지 영역 (4:5 비율 고정) */}
                     <div className="relative aspect-[4/5] overflow-hidden bg-zinc-900 flex items-center justify-center">
@@ -161,33 +161,47 @@ const MembersPage = () => {
                         }
                         className={`object-cover transition-all duration-700 ${
                           member.imageUrl
-                            ? 'w-full h-full opacity-80 group-hover:opacity-100'
+                            ? 'w-full h-full opacity-80 group-hover:opacity-100 group-hover:scale-105'
                             : 'w-1/2 opacity-30 group-hover:opacity-50 grayscale'
                         }`}
                         alt={member.name}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
                     </div>
 
                     {/* 2. 텍스트 정보 영역 */}
-                    <div className="p-6 relative">
+                    <div className="p-5 relative">
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                      <div className="relative z-10 flex justify-between items-end">
-                        <div className="flex flex-col gap-1">
-                          {/* 직책 표시 (매핑된 한글 사용, 없으면 영어 그대로) */}
-                          <span className="w-fit text-[10px] font-black text-cyan-400 tracking-[0.1em] bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-cyan-400/30">
-                            {roleMapping[member.position] || member.position}
-                          </span>
-                          <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">
+                      <div className="relative z-10 flex flex-col gap-2">
+                        {/* 직책 */}
+                        <span className="w-fit text-[10px] font-black text-cyan-400 tracking-[0.1em] bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-cyan-400/30">
+                          {roleMapping[member.position] || member.position}
+                        </span>
+
+                        <div className="mt-1 flex flex-col gap-1 overflow-hidden">
+                          {/* 이름 */}
+                          <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">
                             {member.name}
                           </h3>
+
+                          {/* 🏢 직장/소속 (있을 경우만) */}
+                          {member.workplace && (
+                            <p className="text-xs text-gray-300 font-medium truncate flex items-center gap-1.5">
+                              {member.workplace}
+                            </p>
+                          )}
+
+                          {/* 📧 이메일 (있을 경우만 - 텍스트로 표시) */}
+                          {member.email && (
+                            <a
+                              href={`mailto:${member.email}`}
+                              className="text-xs text-gray-300 hover:text-white font-medium truncate flex items-center gap-1.5 transition-colors"
+                            >
+                              {member.email}
+                            </a>
+                          )}
                         </div>
-                        <img
-                          src={assets.logo_uic}
-                          className="w-6 opacity-20 group-hover:opacity-60 transition-opacity mb-1"
-                          alt="uic"
-                        />
                       </div>
                     </div>
                   </div>

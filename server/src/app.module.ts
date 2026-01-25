@@ -6,41 +6,59 @@ import { MembersModule } from './members/members.module';
 import { ResearchModule } from './research/research.module';
 import { GreetingModule } from './greeting/greeting.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config'; // ConfigService 추가
 import { ContactModule } from './contact/contact.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
+    // 1. 환변 변수 설정 (가장 먼저 실행됨)
     ConfigModule.forRoot({
-      isGlobal: true, // 전역 모듈로 설정 (어디서든 process.env 사용 가능)
+      isGlobal: true,
     }),
 
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.EMAIL_USER, // .env 파일에 정의된 내 구글 이메일
-          pass: process.env.EMAIL_PASS, // .env 파일에 정의된 앱 비밀번호
+    // 2. 메일 설정 (비동기로 변경!)
+    // .env가 다 로드된 뒤에 ConfigService를 통해 값을 확실히 가져옵니다.
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        transport: {
+          host: 'smtp.gmail.com',
+
+          // 👇 [핵심 변경] 587 대신 465 사용 (보안 수준 높음, 차단 잘 안 됨)
+          port: 465,
+
+          // 👇 [필수] 465 포트는 반드시 true여야 합니다.
+          secure: true,
+
+          auth: {
+            user: config.get<string>('EMAIL_USER'),
+            pass: config.get<string>('EMAIL_PASS'),
+          },
+
+          // 👇 [추가] 터미널에 로그를 찍어서 멈춘 건지 진행 중인지 확인
+          logger: true,
+          debug: true,
         },
-      },
+        defaults: {
+          from: `"UIC Website" <${config.get<string>('EMAIL_USER')}>`,
+        },
+      }),
     }),
 
-    // 1. SQLite 연결 설정
+    // 3. DB 설정
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url: process.env.DATABASE_URL, // .env에서 주소 가져옴
-      autoLoadEntities: true, // 엔티티 자동 로드 (매우 편리함)
-      synchronize: true, // 개발 중에는 true (엔티티 수정 시 DB 자동 반영)
+      url: process.env.DATABASE_URL,
+      autoLoadEntities: true,
+      synchronize: true,
       ssl: {
-        rejectUnauthorized: false, // 클라우드 DB 연결 시 SSL 필수 설정
+        rejectUnauthorized: false,
       },
     }),
 
-    // 2. 구현한 각 기능 모듈 등록
     AuthModule,
     HistoryModule,
     MembersModule,

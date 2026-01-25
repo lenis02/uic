@@ -18,5 +18,13 @@ export class CreateMemberDto {
 
   @IsString()
   @IsOptional()
+  workplace: string;
+
+  @IsString()
+  @IsOptional()
+  email: string;
+
+  @IsString()
+  @IsOptional()
   imageUrl?: string;
 }
