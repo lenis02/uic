@@ -6,6 +6,11 @@ export class CreateResearchDto {
   @IsNotEmpty()
   title: string;
 
+  // 카테고리 (필수)
+  @IsString()
+  @IsNotEmpty()
+  category: string;
+
   // 작성자 (필수)
   @IsString()
   @IsNotEmpty()

@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../api/api';
 
+// ✅ 선택 가능한 카테고리 ('전체' 제외)
+const CATEGORIES = ['경제', '산업', '정책', '금융', '기술', '기타'];
+
 export default function AdminResearch() {
   const [researchList, setResearchList] = useState<any[]>([]);
 
   // 수정 모드인지 확인하기 위한 상태 (null이면 생성 모드, ID가 있으면 수정 모드)
   const [editingId, setEditingId] = useState<number | null>(null);
 
+  // 🔹 [변경] category 상태 추가 (기본값: 경제)
   const [form, setForm] = useState({
     title: '',
+    category: '경제',
     author: '',
     description: '',
   });
@@ -19,6 +24,7 @@ export default function AdminResearch() {
   const fetchResearch = async () => {
     try {
       const res = await api.getResearch();
+      // 최신순 정렬
       const sorted = res.data.sort((a: any, b: any) => b.id - a.id);
       setResearchList(sorted);
     } catch (err) {
@@ -35,21 +41,19 @@ export default function AdminResearch() {
     setEditingId(item.id);
     setForm({
       title: item.title,
+      category: item.category || '경제', // 기존 데이터에 카테고리 없으면 기본값
       author: item.author,
       description: item.description || '',
     });
-    // 파일은 보안상 value를 직접 넣을 수 없으므로 초기화
     setPdfFile(null);
     setThumbnailFile(null);
-
-    // 폼 위치로 스크롤 이동
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // [취소 함수]
   const handleCancelEdit = () => {
     setEditingId(null);
-    setForm({ title: '', author: '', description: '' });
+    setForm({ title: '', category: '경제', author: '', description: '' });
     setPdfFile(null);
     setThumbnailFile(null);
   };
@@ -57,34 +61,27 @@ export default function AdminResearch() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 생성 모드일 때는 PDF 필수, 수정 모드일 때는 PDF 없어도 됨(기존 유지)
     if (!editingId && (!pdfFile || !form.title)) {
       return alert('제목과 PDF 파일은 필수입니다.');
     }
 
     const formData = new FormData();
     formData.append('title', form.title);
+    formData.append('category', form.category); // 👈 카테고리 전송
     formData.append('author', form.author);
     formData.append('description', form.description);
 
-    // 파일이 새로 선택된 경우에만 append
     if (pdfFile) formData.append('pdf', pdfFile);
     if (thumbnailFile) formData.append('thumbnail', thumbnailFile);
 
     try {
       if (editingId) {
-        // [수정 요청]
-        // api.updateResearch 메서드가 없다면 api.js에 추가 필요:
-        // updateResearch: (id, data) => instance.patch(`/research/${id}`, data)
         await api.updateResearch(editingId, formData);
         alert('리서치가 수정되었습니다!');
       } else {
-        // [생성 요청]
         await api.createResearch(formData);
         alert('리서치가 등록되었습니다!');
       }
-
-      // 초기화 및 목록 갱신
       handleCancelEdit();
       fetchResearch();
     } catch (err) {
@@ -133,7 +130,11 @@ export default function AdminResearch() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="md:col-span-3">
+            {/* 제목 */}
+            <div className="md:col-span-2">
+              <label className="text-xs text-gray-400 ml-1 mb-1 block">
+                제목
+              </label>
               <input
                 placeholder="리서치 제목"
                 className={inputStyle}
@@ -141,7 +142,34 @@ export default function AdminResearch() {
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
               />
             </div>
+
+            {/* 🔹 카테고리 선택 (Select Box) */}
             <div className="md:col-span-1">
+              <label className="text-xs text-gray-400 ml-1 mb-1 block">
+                카테고리
+              </label>
+              <select
+                className={inputStyle}
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              >
+                {CATEGORIES.map((cat) => (
+                  <option
+                    key={cat}
+                    value={cat}
+                    className="bg-slate-900 text-white"
+                  >
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* 작성자 */}
+            <div className="md:col-span-1">
+              <label className="text-xs text-gray-400 ml-1 mb-1 block">
+                작성자
+              </label>
               <input
                 placeholder="작성자"
                 className={inputStyle}
@@ -151,13 +179,20 @@ export default function AdminResearch() {
             </div>
           </div>
 
-          <textarea
-            placeholder="간략한 설명"
-            rows={3}
-            className={`${inputStyle} resize-none`}
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-          />
+          <div className="w-full">
+            <label className="text-xs text-gray-400 ml-1 mb-1 block">
+              설명
+            </label>
+            <textarea
+              placeholder="간략한 설명"
+              rows={3}
+              className={`${inputStyle} resize-none`}
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+            />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-slate-900/60 rounded-xl border border-dashed border-white/10">
             <div className="space-y-2">
@@ -214,11 +249,15 @@ export default function AdminResearch() {
               key={r.id}
               className="group bg-slate-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/30 hover:shadow-lg transition-all flex flex-col"
             >
-              {/* ... 썸네일 부분은 동일 ... */}
               <div className="relative aspect-video bg-slate-950 overflow-hidden border-b border-white/5">
                 {r.thumbnailUrl ? (
                   <img
-                    src={r.thumbnailUrl}
+                    // 여기도 Cloudinary URL 처리 (관리자 페이지용)
+                    src={
+                      r.thumbnailUrl.startsWith('http')
+                        ? r.thumbnailUrl
+                        : `${import.meta.env.VITE_API_URL}${r.thumbnailUrl}`
+                    }
                     alt="thumb"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                   />
@@ -227,16 +266,20 @@ export default function AdminResearch() {
                     No Image
                   </div>
                 )}
+                {/* 카드 위에 카테고리 표시 */}
+                <div className="absolute top-2 left-2 bg-black/60 px-2 py-0.5 rounded text-[10px] text-blue-300 border border-blue-500/30">
+                  {r.category || '미분류'}
+                </div>
               </div>
 
               <div className="p-4 flex flex-col flex-1">
                 <h3 className="font-bold text-gray-100 mb-1">{r.title}</h3>
-                <p className="text-xs text-gray-500 mb-4 flex-1">
+                <p className="text-xs text-gray-400 mb-2">{r.author}</p>
+                <p className="text-xs text-gray-500 mb-4 flex-1 line-clamp-2">
                   {r.description || '설명 없음'}
                 </p>
 
                 <div className="mt-auto pt-3 border-t border-white/5 flex justify-end gap-2">
-                  {/* [수정 버튼 추가] */}
                   <button
                     onClick={() => handleEditClick(r)}
                     className="cursor-pointer flex items-center gap-1 text-xs text-gray-400 hover:text-blue-400 px-2 py-1 rounded hover:bg-blue-500/10 transition-colors"
