@@ -70,4 +70,10 @@ export class ResearchController {
   remove(@Param('id') id: string) {
     return this.researchService.remove(+id);
   }
+
+  // 조회수 증가 API
+  @Patch(':id/views')
+  async increaseViewCount(@Param('id') id: string) {
+    return await this.researchService.increaseViewCount(+id);
+  }
 }

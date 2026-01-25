@@ -90,4 +90,10 @@ export class ResearchService {
     if (!research) throw new NotFoundException('리서치를 찾을 수 없습니다.');
     return await this.researchRepository.remove(research);
   }
+
+  async increaseViewCount(id: number) {
+    // id에 해당하는 row의 'views' 컬럼을 1 증가시킵니다.
+    await this.researchRepository.increment({ id }, 'views', 1);
+    return { success: true };
+  }
 }

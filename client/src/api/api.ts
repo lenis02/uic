@@ -25,6 +25,7 @@ export const api = {
   updateResearch: (id: number, data: FormData) =>
     instance.patch(`/research/${id}`, data),
   deleteResearch: (id: number) => instance.delete(`/research/${id}`),
+  increaseResearchView: (id: number) => instance.patch(`/research/${id}/views`),
 
   // --- 멤버 (Members) ---
   // 전체 멤버 조회

@@ -96,6 +96,48 @@ const ResearchPage = () => {
       : `${import.meta.env.VITE_API_URL}${url}`;
   };
 
+  const handleDownload = (e: React.MouseEvent, item: Research) => {
+    e.preventDefault();
+
+    const originalUrl = getImageUrl(item.pdfUrl);
+    if (!originalUrl) return alert('PDF 파일이 없습니다.');
+
+    // 1. 조회수 집계 (결과 안 기다림)
+    api.increaseResearchView(item.id).catch(err => 
+      console.error('조회수 집계 실패:', err)
+    );
+
+    // 2. 화면 즉시 업데이트
+    setReports((prev) =>
+      prev.map((r) =>
+        r.id === item.id ? { ...r, views: r.views + 1 } : r
+      )
+    );
+
+    // 3. ✨ [핵심] 파일명 커스터마이징
+    let downloadUrl = originalUrl;
+    
+    if (originalUrl.includes('/upload/')) {
+      // (1) 제목 안전하게 다듬기 (특수문자 제거, 공백 -> 언더바)
+      // 예: "2026년 경제 전망!" -> "2026년_경제_전망"
+      const safeTitle = item.title
+        .replace(/[^a-zA-Z0-9가-힣\s_-]/g, '') // 한글, 영어, 숫자, 공백, -, _ 만 허용
+        .trim()
+        .replace(/\s+/g, '_'); // 공백을 _로 변경
+
+      // (2) URL에 파일명 심기 (확장자는 Cloudinary가 원본에 맞춰 자동 부착)
+      downloadUrl = originalUrl.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`);
+    }
+
+    // 4. 다운로드 실행
+    try {
+        window.location.href = downloadUrl;
+    } catch (error) {
+        console.error('다운로드 시작 실패s:', error);
+        window.open(originalUrl, '_blank');
+    }
+  };
+
   if (loading) {
     return (
       <div className="h-screen bg-[#050505] text-white flex items-center justify-center">
@@ -267,7 +309,7 @@ const ResearchPage = () => {
                           {formatDate(item.createdAt)}
                         </span>
 
-                        <span className="text-white/60 text-xs border border-white/10 px-2 py-0.5 rounded">
+                        <span className="text-white/70 text-xs border border-white/10 px-2 py-0.5 rounded">
                           {item.author}
                         </span>
                       </div>
@@ -275,7 +317,7 @@ const ResearchPage = () => {
                       <h3 className="text-lg font-bold leading-[1.4] text-white/90 group-hover:text-white transition-colors line-clamp-2 mb-2">
                         {item.title}
                       </h3>
-                      <p className="text-sm text-gray-500 line-clamp-2 font-light">
+                      <p className="text-sm text-gray-400 line-clamp-2 font-light">
                         {item.description}
                       </p>
                     </div>
@@ -284,10 +326,9 @@ const ResearchPage = () => {
                     <div className="absolute bottom-6 left-6 right-6 h-12">
                       <a
                         href={getImageUrl(item.pdfUrl) || '#'}
-                        target="_blank"
-                        rel="noreferrer"
+                        onClick={(e) => handleDownload(e, item)}
                         className="flex items-center justify-center w-full h-full gap-3 text-[13px] font-black tracking-widest uppercase
-                                   text-white/40 bg-transparent border border-white/10 rounded-sm
+                                   text-white/60 bg-transparent border border-white/10 rounded-sm
                                    hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] 
                                    hover:border-blue-500/50 hover:text-white
                                    hover:shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(30,58,138,0.4)]
