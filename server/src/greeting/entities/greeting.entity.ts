@@ -21,6 +21,7 @@ export class Greeting extends BaseEntity {
   @Column()
   quote: string; // "지엽에 시선을 빼앗겨..."
 
-  @Column()
-  imageUrl: string; // 회장단 사진 경로
+  // 👇 [여기 수정] nullable: true 추가하고, 타입에 | null 추가
+  @Column({ nullable: true })
+  imageUrl: string | null;
 }

@@ -2,9 +2,9 @@ import {
   Controller,
   Get,
   Post,
-  Patch, // 👈 [중요] Patch 추가
+  Patch,
   Body,
-  Param, // 👈 [중요] Param 추가
+  Param,
   UseGuards,
   UseInterceptors,
   UploadedFile,
@@ -13,7 +13,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { GreetingService } from './greeting.service';
 import { CreateGreetingDto } from './dto/create-greeting.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
-import { multerOptions } from '../common/utils/multer.options';
 
 @Controller('greeting')
 export class GreetingController {
@@ -29,33 +28,28 @@ export class GreetingController {
     return await this.greetingService.findOne(role);
   }
 
-  // 👇 [기존에 있던 POST] (보통 처음 생성할 때 사용)
+  // 초기 생성용
   @Post()
   @UseGuards(AdminGuard)
-  @UseInterceptors(FileInterceptor('image', multerOptions))
+  @UseInterceptors(FileInterceptor('image')) // 로컬 저장 옵션 제거
   async create(
     @Body() dto: CreateGreetingDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    const imageUrl = file ? `/uploads/${file.filename}` : undefined;
-    return await this.greetingService.createOrUpdate(dto, imageUrl);
+    // 파일 객체를 서비스로 전달 (서비스가 업로드 처리)
+    return await this.greetingService.createOrUpdate(dto, file);
   }
 
-  // 👇 [이걸 추가해야 합니다!] PATCH 요청 처리기
+  // 수정용
   @Patch(':role')
   @UseGuards(AdminGuard)
-  @UseInterceptors(FileInterceptor('image', multerOptions))
+  @UseInterceptors(FileInterceptor('image')) // 로컬 저장 옵션 제거
   async update(
-    @Param('role') role: string, // URL에서 직책(President 등)을 가져옴
+    @Param('role') role: string,
     @Body() dto: CreateGreetingDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    const imageUrl = file ? `/uploads/${file.filename}` : undefined;
-
-    // URL로 받은 role을 DTO에 강제로 덮어씌워서 서비스로 보냄 (안전장치)
-    return await this.greetingService.createOrUpdate(
-      { ...dto, role },
-      imageUrl,
-    );
+    // role을 DTO에 합쳐서 서비스로 전달
+    return await this.greetingService.createOrUpdate({ ...dto, role }, file);
   }
 }
