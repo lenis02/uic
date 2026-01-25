@@ -4,41 +4,47 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+// 👇 [추가 1] express에서 json, urlencoded를 가져옵니다.
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
-  // 정적 파일 접근을 위해 NestExpressApplication 타입을 명시합니다.
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // 1. CORS 설정: 프론트엔드(React 등)에서 백엔드 API에 접근할 수 있게 허용
+  // 1. CORS 설정 (완벽합니다)
   app.enableCors({
-    origin: true, // 실제 배포 시에는 ['http://your-site.com'] 으로 제한하는 것이 좋습니다.
+    origin: true,
     credentials: true,
   });
 
-  // 2. 전역 파이프 설정: DTO에 작성한 @IsNotEmpty 등을 활성화
+  // 👇 [추가 2] 파일 업로드를 위해 요청 크기 제한을 늘립니다 (필수!)
+  // 이게 없으면 조금만 큰 PDF를 올려도 서버가 튕겨냅니다.
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
+
+  // 2. 전역 파이프 설정
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // DTO에 없는 속성은 거름
-      forbidNonWhitelisted: true, // DTO에 없는 속성이 오면 에러 발생
-      transform: true, // 요청 데이터를 DTO 타입으로 자동 변환
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
-  // 3. 정적 파일 서빙: 브라우저에서 'http://localhost:3000/uploads/...'로 파일 접근 가능
+  // 3. 정적 파일 서빙 (Cloudinary를 쓰더라도 일단 놔둬도 무방합니다)
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads',
   });
 
-  // Swagger 설정 시작
+  // Swagger 설정
   const config = new DocumentBuilder()
     .setTitle('UIC Backend API')
     .setDescription('UIC 동아리 웹사이트 관리자 및 데이터 API 문서입니다.')
     .setVersion('1.0')
-    .addBearerAuth() // JWT 인증 버튼 추가
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document); // http://localhost:3000/docs 로 접속
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);

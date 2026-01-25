@@ -22,6 +22,8 @@ export const api = {
     });
   },
   getResearch: () => instance.get('/research'),
+  updateResearch: (id: number, data: FormData) =>
+    instance.patch(`/research/${id}`, data),
   deleteResearch: (id: number) => instance.delete(`/research/${id}`),
 
   // --- 멤버 (Members) ---

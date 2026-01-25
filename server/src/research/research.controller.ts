@@ -1,7 +1,7 @@
-// src/modules/research/research.controller.ts
 import {
   Controller,
   Post,
+  Patch, // Patch 추가
   Get,
   Delete,
   Body,
@@ -9,50 +9,63 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFiles,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ResearchService } from './research.service';
 import { CreateResearchDto } from './dto/create-research.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
-import { multerOptions } from '../common/utils/multer.options';
 import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 
 @Controller('research')
 export class ResearchController {
   constructor(private readonly researchService: ResearchService) {}
 
-  @Get() // 리서치 목록 조회 (누구나)
+  @Get()
   findAll() {
     return this.researchService.findAll();
   }
 
-  @Post() // 리서치 등록 (관리자만)
-  @ApiBearerAuth() // 이 API는 로그인이 필요하다고 표시
-  @ApiConsumes('multipart/form-data') // 파일 업로드 UI 활성화
+  @Post()
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
   @UseGuards(AdminGuard)
   @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'pdf', maxCount: 1 },
-        { name: 'thumbnail', maxCount: 1 },
-      ],
-      multerOptions,
-    ),
+    FileFieldsInterceptor([
+      { name: 'pdf', maxCount: 1 },
+      { name: 'thumbnail', maxCount: 1 },
+    ]),
   )
   async create(
     @Body() createResearchDto: CreateResearchDto,
     @UploadedFiles()
     files: { pdf?: Express.Multer.File[]; thumbnail?: Express.Multer.File[] },
   ) {
-    const pdfUrl = files.pdf ? `/uploads/${files.pdf[0].filename}` : '';
-    const thumbnailUrl = files.thumbnail
-      ? `/uploads/${files.thumbnail[0].filename}`
-      : '';
-
-    return this.researchService.create(createResearchDto, pdfUrl, thumbnailUrl);
+    // 파일 객체를 통째로 서비스로 넘김
+    return this.researchService.create(createResearchDto, files || {});
   }
 
-  @Delete(':id') // 리서치 삭제 (관리자만)
+  // [수정 API 추가]
+  @Patch(':id')
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @UseGuards(AdminGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'pdf', maxCount: 1 },
+      { name: 'thumbnail', maxCount: 1 },
+    ]),
+  )
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateResearchDto: CreateResearchDto, // DTO 재사용 (Partial로 처리됨)
+    @UploadedFiles()
+    files: { pdf?: Express.Multer.File[]; thumbnail?: Express.Multer.File[] },
+  ) {
+    return this.researchService.update(id, updateResearchDto, files || {});
+  }
+
+  @Delete(':id')
   @UseGuards(AdminGuard)
   remove(@Param('id') id: string) {
     return this.researchService.remove(+id);

@@ -1,23 +1,24 @@
-// src/pages/AdminResearch.tsx
 import React, { useState, useEffect } from 'react';
 import { api } from '../../api/api';
 
 export default function AdminResearch() {
   const [researchList, setResearchList] = useState<any[]>([]);
+
+  // 수정 모드인지 확인하기 위한 상태 (null이면 생성 모드, ID가 있으면 수정 모드)
+  const [editingId, setEditingId] = useState<number | null>(null);
+
   const [form, setForm] = useState({
     title: '',
     author: '',
     description: '',
   });
 
-  // 파일 상태 관리
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   const fetchResearch = async () => {
     try {
       const res = await api.getResearch();
-      // 최신순 정렬 (ID 기준 내림차순)
       const sorted = res.data.sort((a: any, b: any) => b.id - a.id);
       setResearchList(sorted);
     } catch (err) {
@@ -29,46 +30,76 @@ export default function AdminResearch() {
     fetchResearch();
   }, []);
 
+  // [수정 모드 진입 함수]
+  const handleEditClick = (item: any) => {
+    setEditingId(item.id);
+    setForm({
+      title: item.title,
+      author: item.author,
+      description: item.description || '',
+    });
+    // 파일은 보안상 value를 직접 넣을 수 없으므로 초기화
+    setPdfFile(null);
+    setThumbnailFile(null);
+
+    // 폼 위치로 스크롤 이동
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // [취소 함수]
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setForm({ title: '', author: '', description: '' });
+    setPdfFile(null);
+    setThumbnailFile(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pdfFile || !form.title) return alert('제목과 PDF 파일은 필수입니다.');
+
+    // 생성 모드일 때는 PDF 필수, 수정 모드일 때는 PDF 없어도 됨(기존 유지)
+    if (!editingId && (!pdfFile || !form.title)) {
+      return alert('제목과 PDF 파일은 필수입니다.');
+    }
 
     const formData = new FormData();
     formData.append('title', form.title);
     formData.append('author', form.author);
     formData.append('description', form.description);
-    formData.append('pdf', pdfFile);
-    if (thumbnailFile) {
-      formData.append('thumbnail', thumbnailFile);
-    }
+
+    // 파일이 새로 선택된 경우에만 append
+    if (pdfFile) formData.append('pdf', pdfFile);
+    if (thumbnailFile) formData.append('thumbnail', thumbnailFile);
 
     try {
-      await api.createResearch(formData);
-      alert('리서치가 성공적으로 업로드되었습니다!');
-      // 초기화
-      setForm({ title: '', author: '', description: '' });
-      setPdfFile(null);
-      setThumbnailFile(null);
-      // 파일 input 초기화를 위해 DOM 조작 대신 key를 바꾸거나 해야하지만,
-      // 간단히 리스트 갱신만 처리 (실제 input value 리셋은 useRef가 필요하나 생략)
+      if (editingId) {
+        // [수정 요청]
+        // api.updateResearch 메서드가 없다면 api.js에 추가 필요:
+        // updateResearch: (id, data) => instance.patch(`/research/${id}`, data)
+        await api.updateResearch(editingId, formData);
+        alert('리서치가 수정되었습니다!');
+      } else {
+        // [생성 요청]
+        await api.createResearch(formData);
+        alert('리서치가 등록되었습니다!');
+      }
+
+      // 초기화 및 목록 갱신
+      handleCancelEdit();
       fetchResearch();
     } catch (err) {
       console.error(err);
-      alert('업로드 실패! 파일을 확인해주세요.');
+      alert('작업 실패! 내용을 확인해주세요.');
     }
   };
 
-  // 공통 스타일
   const inputStyle =
     'w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent outline-none transition-all';
-
-  // 파일 인풋 스타일 (Tailwind file modifier 사용)
   const fileInputStyle =
     'block w-full file:cursor-pointer text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white hover:file:bg-slate-600 cursor-pointer';
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 animate-fade-in-up pb-20">
-      {/* 헤더 섹션 */}
       <div className="flex flex-col gap-1 px-2">
         <h1 className="text-2xl font-extrabold tracking-tight text-white/90">
           리서치 관리
@@ -78,28 +109,41 @@ export default function AdminResearch() {
         </p>
       </div>
 
-      {/* 1. 업로드 폼 */}
-      <div className="bg-slate-800/50 backdrop-blur-sm p-6 border border-white/10 shadow-xl rounded-2xl mx-2">
-        <h2 className="text-lg font-bold text-white/80 mb-4 ml-1">
-          새 리서치 등록
-        </h2>
+      {/* 1. 입력 폼 */}
+      <div
+        className={`p-6 border shadow-xl rounded-2xl mx-2 transition-colors duration-300 ${
+          editingId
+            ? 'bg-blue-900/20 border-blue-500/30'
+            : 'bg-slate-800/50 border-white/10'
+        }`}
+      >
+        <div className="flex justify-between items-center mb-4 ml-1">
+          <h2 className="text-lg font-bold text-white/80">
+            {editingId ? '리서치 수정하기' : '새 리서치 등록'}
+          </h2>
+          {editingId && (
+            <button
+              onClick={handleCancelEdit}
+              className="cursor-pointer text-xs px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition"
+            >
+              수정 취소
+            </button>
+          )}
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* 상단 입력 필드 */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* 제목 */}
             <div className="md:col-span-3">
               <input
-                placeholder="리서치 제목 (예: SK하이닉스)"
+                placeholder="리서치 제목"
                 className={inputStyle}
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
               />
             </div>
-
-            {/* 작성자 */}
             <div className="md:col-span-1">
               <input
-                placeholder="작성자 (예: 홍길동)"
+                placeholder="작성자"
                 className={inputStyle}
                 value={form.author}
                 onChange={(e) => setForm({ ...form, author: e.target.value })}
@@ -107,22 +151,19 @@ export default function AdminResearch() {
             </div>
           </div>
 
-          {/* 간략한 설명 */}
           <textarea
-            placeholder="간략한 설명 (선택사항)"
+            placeholder="간략한 설명"
             rows={3}
             className={`${inputStyle} resize-none`}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
 
-          {/* 파일 업로드 구역 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-slate-900/60 rounded-xl border border-dashed border-white/10 hover:border-blue-500/30 transition-colors">
-            {/* PDF 업로드 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-slate-900/60 rounded-xl border border-dashed border-white/10">
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-bold text-blue-400">
                 <span className="bg-blue-500/10 p-1 rounded">📄</span>
-                PDF 파일 (필수)
+                PDF 파일 {editingId ? '(변경 시에만 선택)' : '(필수)'}
               </label>
               <input
                 type="file"
@@ -130,12 +171,8 @@ export default function AdminResearch() {
                 onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
                 className={fileInputStyle}
               />
-              <p className="text-xs text-gray-500 pl-1">
-                {pdfFile ? `선택됨: ${pdfFile.name}` : '최대 10MB 권장'}
-              </p>
             </div>
 
-            {/* 썸네일 업로드 */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-bold text-purple-400">
                 <span className="bg-purple-500/10 p-1 rounded">🖼️</span>
@@ -147,21 +184,22 @@ export default function AdminResearch() {
                 onChange={(e) => setThumbnailFile(e.target.files?.[0] || null)}
                 className={fileInputStyle}
               />
-              <p className="text-xs text-gray-500 pl-1">
-                {thumbnailFile
-                  ? `선택됨: ${thumbnailFile.name}`
-                  : '미선택 시 기본 이미지'}
-              </p>
             </div>
           </div>
 
-          <button className="cursor-pointer w-full h-12 bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-900/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer">
-            리서치 업로드 시작
+          <button
+            className={`cursor-pointer w-full h-12 rounded-xl font-bold text-white transition-all duration-300 ${
+              editingId
+                ? 'bg-green-600 hover:bg-green-700'
+                : 'bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 hover:shadow-lg'
+            }`}
+          >
+            {editingId ? '수정 완료' : '리서치 업로드 시작'}
           </button>
         </form>
       </div>
 
-      {/* 2. 리서치 목록 */}
+      {/* 2. 리스트 */}
       <div className="px-2">
         <h3 className="text-lg font-bold text-white/80 mb-4 ml-1">
           업로드된 리서치{' '}
@@ -174,69 +212,48 @@ export default function AdminResearch() {
           {researchList.map((r) => (
             <div
               key={r.id}
-              className="group bg-slate-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-900/10 hover:-translate-y-1 transition-all duration-300 flex flex-col"
+              className="group bg-slate-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/30 hover:shadow-lg transition-all flex flex-col"
             >
-              {/* 썸네일 영역 */}
+              {/* ... 썸네일 부분은 동일 ... */}
               <div className="relative aspect-video bg-slate-950 overflow-hidden border-b border-white/5">
                 {r.thumbnailUrl ? (
                   <img
-                    src={`${import.meta.env.VITE_API_URL}${r.thumbnailUrl}`}
+                    src={r.thumbnailUrl}
                     alt="thumb"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-600 bg-slate-900">
-                    <span className="text-xs">No Image</span>
+                  <div className="w-full h-full flex items-center justify-center text-gray-600">
+                    No Image
                   </div>
                 )}
-
-                {/* PDF 다운로드 오버레이 (Hover 시 표시) */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <a
-                    href={`${import.meta.env.VITE_API_URL}${r.pdfUrl}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 bg-white/10 hover:bg-white/20 backdrop-blur rounded-lg text-xs text-white border border-white/20 transition cursor-pointer"
-                  >
-                    PDF 보기
-                  </a>
-                </div>
               </div>
 
-              {/* 정보 영역 */}
               <div className="p-4 flex flex-col flex-1">
-                <h3 className="font-bold text-gray-100 mb-1 line-clamp-2 leading-tight min-h-[2.5rem]">
-                  {r.title}
-                </h3>
-                <p className="text-xs text-gray-500 line-clamp-2 mb-4 flex-1">
+                <h3 className="font-bold text-gray-100 mb-1">{r.title}</h3>
+                <p className="text-xs text-gray-500 mb-4 flex-1">
                   {r.description || '설명 없음'}
                 </p>
 
-                {/* 하단 액션 버튼 */}
-                <div className="mt-auto pt-3 border-t border-white/5 flex justify-end">
+                <div className="mt-auto pt-3 border-t border-white/5 flex justify-end gap-2">
+                  {/* [수정 버튼 추가] */}
+                  <button
+                    onClick={() => handleEditClick(r)}
+                    className="cursor-pointer flex items-center gap-1 text-xs text-gray-400 hover:text-blue-400 px-2 py-1 rounded hover:bg-blue-500/10 transition-colors"
+                  >
+                    ✏️ 수정
+                  </button>
+
                   <button
                     onClick={async () => {
-                      if (confirm('이 리서치를 삭제하시겠습니까?')) {
+                      if (confirm('정말 삭제하시겠습니까?')) {
                         await api.deleteResearch(r.id);
                         fetchResearch();
                       }
                     }}
-                    className="cursor-pointer flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-400 px-2 py-1 rounded hover:bg-red-500/10 transition-colors cursor-pointer"
+                    className="cursor-pointer flex items-center gap-1 text-xs text-gray-400 hover:text-red-400 px-2 py-1 rounded hover:bg-red-500/10 transition-colors"
                   >
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                    삭제
+                    🗑️ 삭제
                   </button>
                 </div>
               </div>

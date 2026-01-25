@@ -10,14 +10,16 @@ export class Research extends BaseEntity {
   author: string;
 
   @Column()
-  pdfUrl: string; // 업로드된 PDF 파일 경로
+  pdfUrl: string;
 
-  @Column({ nullable: true })
-  thumbnailUrl: string; // 업로드된 썸네일 이미지 경로
+  // 👇 [수정] type: 'varchar'를 명시해야 에러가 안 납니다!
+  @Column({ type: 'varchar', nullable: true })
+  thumbnailUrl: string | null;
 
   @Column({ default: 0 })
   views: number;
 
-  @Column({ nullable: true })
-  description: string;
+  // 👇 [수정] 여기도 type: 'text' (긴 글)라고 명시
+  @Column({ type: 'text', nullable: true })
+  description: string | null;
 }
