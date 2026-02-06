@@ -430,7 +430,11 @@ export default function AdminMembers() {
                 <div className="w-14 h-16 rounded-lg overflow-hidden bg-slate-950 shrink-0 border border-white/10">
                   {member.imageUrl ? (
                     <img
-                      src={`${import.meta.env.VITE_API_URL}${member.imageUrl}`}
+                      src={
+                        member.imageUrl?.startsWith('http')
+                          ? member.imageUrl
+                          : `${import.meta.env.VITE_API_URL}${member.imageUrl}`
+                      }
                       className="w-full h-full object-cover"
                       alt={member.name}
                     />
