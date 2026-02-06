@@ -1,0 +1,10 @@
+# Send email
+
+POST http://localhost:3000/contact
+content-type: application/json
+
+{
+  "name": "테스트맨",
+  "email": "my-real-email@naver.com",
+  "message": "진짜 메일이 가나요?"
+}

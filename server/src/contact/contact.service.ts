@@ -19,16 +19,7 @@ export class ContactService {
         from: process.env.EMAIL_USER, // 보내는 사람 (설정된 앱 계정)
         replyTo: email, // [중요] 답장하기 누르면 문의한 사람 이메일로 감
         subject: `[웹사이트 문의] ${name}님의 메시지`,
-        html: `
-          <div style="border: 1px solid #ddd; padding: 20px; font-family: Arial, sans-serif;">
-            <h2>새로운 문의가 도착했습니다.</h2>
-            <p><strong>보낸 사람:</strong> ${name}</p>
-            <p><strong>보낸 이메일:</strong> ${email}</p>
-            <hr />
-            <h3>문의 내용:</h3>
-            <p style="white-space: pre-wrap;">${message}</p>
-          </div>
-        `,
+        text: message,
       });
 
       console.log(
