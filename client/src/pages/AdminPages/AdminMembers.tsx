@@ -1,6 +1,7 @@
 // src/pages/AdminMembers.tsx
 import React, { useEffect, useState } from 'react';
 import { api } from '../../api/api';
+import { compressImage } from '../../utils/imageCompression';
 
 // 1. 공통 데이터 상수화 (중복 제거)
 const POSITIONS = [
@@ -74,20 +75,42 @@ export default function AdminMembers() {
       : members.filter((m) => m.generation === selectedGen);
 
   // --- 핸들러 ---
-  const handleFileChange = (
+  const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     isEdit: boolean
   ) => {
     const selected = e.target.files?.[0];
-    if (selected) {
-      const url = URL.createObjectURL(selected);
+    if (!selected) return;
+
+    try {
+      // 1. 압축 진행 (최대 1MB, 1200px 제한)
+      console.log(
+        '압축 시작 전:',
+        (selected.size / 1024 / 1024).toFixed(2),
+        'MB'
+      );
+      const compressed = await compressImage(selected);
+      console.log(
+        '압축 완료 후:',
+        (compressed.size / 1024 / 1024).toFixed(2),
+        'MB'
+      );
+
+      // 2. 프리뷰용 URL 생성 (압축된 파일 기준)
+      const url = URL.createObjectURL(compressed);
+
+      // 3. 상태 업데이트
       if (isEdit) {
-        setEditFile(selected);
+        setEditFile(compressed); // 압축된 파일을 저장
         setEditPreview(url);
       } else {
-        setFile(selected);
+        setFile(compressed); // 압축된 파일을 저장
         setPreview(url);
       }
+    } catch (error) {
+      console.error('이미지 처리 중 에러:', error);
+      // 에러 시 사용자에게 알림을 주거나 원본이라도 세팅하는 로직
+      alert('이미지 압축에 실패했습니다.');
     }
   };
 
