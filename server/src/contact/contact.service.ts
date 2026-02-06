@@ -8,6 +8,9 @@ export class ContactService {
   constructor(private readonly mailerService: MailerService) {}
 
   async sendEmail(contactDto: ContactDto): Promise<void> {
+    console.log('User:', process.env.EMAIL_USER);
+    console.log('Pass exists:', !!process.env.EMAIL_PASS); // true가 나와야 함
+
     const { name, email, message } = contactDto;
 
     try {

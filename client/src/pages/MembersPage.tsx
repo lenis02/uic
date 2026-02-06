@@ -154,9 +154,11 @@ const MembersPage = () => {
                       <img
                         src={
                           member.imageUrl
-                            ? `${import.meta.env.VITE_API_URL}${
-                                member.imageUrl
-                              }`
+                            ? member.imageUrl.startsWith('http')
+                              ? member.imageUrl
+                              : `${import.meta.env.VITE_API_URL}${
+                                  member.imageUrl
+                                }`
                             : assets.logo_uic
                         }
                         className={`object-cover transition-all duration-700 ${
