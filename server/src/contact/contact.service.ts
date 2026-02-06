@@ -16,10 +16,8 @@ export class ContactService {
     // 👇 await 없이 실행! (백그라운드 작업 시작)
     this.mailerService
       .sendMail({
-        // to: 'koreauic@gmail.com',
-        // from: process.env.EMAIL_USER,
-        to: '2655362@naver.com',
-        from: `${process.env.EMAIL_USER}@naver.com`,
+        to: 'koreauic@gmail.com',
+        from: process.env.EMAIL_USER,
         replyTo: email,
         subject: `[웹사이트 문의] ${name}님의 메시지`,
         html: `<p>보낸사람: ${name} (${email})</p><p>${message}</p>`,
