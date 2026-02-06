@@ -59,10 +59,10 @@ import logo_instagram from './logo_instagram.svg';
 import logo_naver_cafe from './logo_naver_cafe.png';
 import logo_kakao from './logo_kakao.png';
 
-import activity1 from './activity1.jpg';
-import activity2 from './activity2.jpg';
-import activity3 from './activity3.jpg';
-import activity4 from './activity4.jpg';
+import activity1 from './activity1.svg';
+import activity2 from './activity2.svg';
+import activity3 from './activity3.svg';
+import activity4 from './activity4.svg';
 
 export const assets = {
   bg_main,

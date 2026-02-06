@@ -104,13 +104,13 @@ const ActivityPage = () => {
             }`}
           >
             {/* 이미지 카드 */}
-            <div className="w-full bg-black max-w-[720px] md:flex-1 group relative">
+            <div className="w-full max-w-[720px] md:flex-1 group relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-              <div className="relative aspect-video md:aspect-[4/3] rounded-2xl overflow-hidden bg-black/40 border border-white/10 shadow-2xl">
+              <div className="relative aspect-video md:aspect-[4/3] rounded-2xl overflow-hidden bg-black/80 border border-white/10 shadow-2xl">
                 <img
                   src={act.image}
                   alt={act.title}
-                  className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                  className="w-full h-full object-cover opacity-60 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
                 />
               </div>
             </div>
