@@ -83,34 +83,48 @@ export default function AdminMembers() {
     if (!selected) return;
 
     try {
-      // 1. 압축 진행 (최대 1MB, 1200px 제한)
+      // 1. 압축 진행
       console.log(
         '압축 시작 전:',
         (selected.size / 1024 / 1024).toFixed(2),
         'MB'
       );
-      const compressed = await compressImage(selected);
+      const compressedBlob = await compressImage(selected); // 변수명 변경 (Blob일 수 있음)
       console.log(
         '압축 완료 후:',
-        (compressed.size / 1024 / 1024).toFixed(2),
+        (compressedBlob.size / 1024 / 1024).toFixed(2),
         'MB'
       );
 
-      // 2. 프리뷰용 URL 생성 (압축된 파일 기준)
-      const url = URL.createObjectURL(compressed);
+      // ⚠️ [중요 수정] 압축된 Blob을 '원본 파일 이름'을 가진 File 객체로 다시 만듦
+      // 이걸 안 하면 서버에서 파일명이 'blob'으로 찍힐 수 있음
+      const finalFile = new File([compressedBlob], selected.name, {
+        type: selected.type,
+        lastModified: Date.now(),
+      }); // 2. 프리뷰용 URL 생성 (압축된 파일 기준)
 
-      // 3. 상태 업데이트
+      const url = URL.createObjectURL(finalFile); // 3. 상태 업데이트
+
       if (isEdit) {
-        setEditFile(compressed); // 압축된 파일을 저장
+        setEditFile(finalFile); // File 객체 저장
         setEditPreview(url);
       } else {
-        setFile(compressed); // 압축된 파일을 저장
+        setFile(finalFile); // File 객체 저장
         setPreview(url);
       }
     } catch (error) {
       console.error('이미지 처리 중 에러:', error);
-      // 에러 시 사용자에게 알림을 주거나 원본이라도 세팅하는 로직
-      alert('이미지 압축에 실패했습니다.');
+      alert('이미지 압축에 실패했습니다. 원본을 사용합니다.');
+
+      // 실패 시 비상 대책: 원본 사용
+      const url = URL.createObjectURL(selected);
+      if (isEdit) {
+        setEditFile(selected);
+        setEditPreview(url);
+      } else {
+        setFile(selected);
+        setPreview(url);
+      }
     }
   };
 
