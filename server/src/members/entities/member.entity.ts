@@ -12,11 +12,11 @@ export class Member extends BaseEntity {
   @Column()
   position: string; // 직책 (회장, 기획팀장 등)
 
-  @Column({ nullable: true })
-  workplace: string;
+  @Column({ type: 'varchar', nullable: true })
+  workplace: string | null;
 
-  @Column({ nullable: true })
-  email: string;
+  @Column({ type: 'varchar', nullable: true })
+  email: string | null;
 
   @Column({
     type: 'varchar',

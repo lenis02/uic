@@ -27,11 +27,11 @@ export class MembersService {
     });
   }
 
-  // [수정] create 메서드도 파일 처리
+  // 🔹 생성 로직
   async create(dto: CreateMemberDto, file?: Express.Multer.File) {
-    let uploadedImageUrl = null; // 초기값은 null (이미지 없을 경우)
+    // 1️⃣ 타입 에러 해결: string | null 명시
+    let uploadedImageUrl: string | null = null;
 
-    // 파일이 있으면 Cloudinary에 업로드
     if (file) {
       const uploadResult = await this.cloudinaryService.uploadImage(file);
       uploadedImageUrl = uploadResult.secure_url;
@@ -39,11 +39,12 @@ export class MembersService {
 
     const member = this.memberRepository.create({
       ...dto,
-      imageUrl: uploadedImageUrl, // ✅ 수정됨: image -> imageUrl
+      imageUrl: uploadedImageUrl,
     });
     return await this.memberRepository.save(member);
   }
 
+  // 🔹 수정 로직
   async update(
     id: number,
     dto: Partial<CreateMemberDto>,
@@ -52,13 +53,15 @@ export class MembersService {
     const member = await this.memberRepository.findOne({ where: { id } });
     if (!member) throw new NotFoundException('멤버를 찾을 수 없습니다.');
 
-    // 새 파일이 올라오면 URL 교체
+    // 2️⃣ 순서 중요: 텍스트 정보를 먼저 덮어쓰고...
+    Object.assign(member, dto);
+
+    // 3️⃣ 파일이 새로 왔을 때만 이미지 교체! (덮어쓰기 방지)
     if (file) {
       const uploadResult = await this.cloudinaryService.uploadImage(file);
-      member.imageUrl = uploadResult.secure_url; // ✅ 수정됨: image -> imageUrl
+      member.imageUrl = uploadResult.secure_url;
     }
 
-    Object.assign(member, dto);
     return await this.memberRepository.save(member);
   }
 
@@ -87,12 +90,15 @@ export class MembersService {
       '인사',
     ];
 
+    // 4️⃣ 엔티티 타입을 string | null로 고쳤다면 여기 에러도 사라집니다.
     const newMembers = defaultPositions.map((pos) => {
       return this.memberRepository.create({
         generation: nextGen,
         name: '이름을 입력하세요',
         position: pos,
-        imageUrl: null, // 초기 생성 시 이미지 없음
+        workplace: null,
+        email: null,
+        imageUrl: null,
       });
     });
 
