@@ -1,33 +1,36 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer'; // [중요] 라이브러리 교체
-import { ContactDto } from './dto/contact.dto'; // DTO 파일 경로 확인
+// src/contact/contact.service.ts
+import { Injectable } from '@nestjs/common';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ContactDto } from './dto/contact.dto';
 
 @Injectable()
 export class ContactService {
-  // AppModule에서 설정한 MailerService를 가져옵니다.
   constructor(private readonly mailerService: MailerService) {}
 
+  // async는 있어도 되지만, 절대 await를 쓰면 안 됩니다.
   async sendEmail(contactDto: ContactDto): Promise<void> {
-    console.log('User:', process.env.EMAIL_USER);
-    console.log('Pass exists:', !!process.env.EMAIL_PASS); // true가 나와야 함
-
     const { name, email, message } = contactDto;
 
-    try {
-      await this.mailerService.sendMail({
-        to: 'koreauic@gmail.com', // 받는 사람 (관리자)
-        from: process.env.EMAIL_USER, // 보내는 사람 (설정된 앱 계정)
-        replyTo: email, // [중요] 답장하기 누르면 문의한 사람 이메일로 감
+    console.log(`🚀 [Background] Sending email for ${name}...`);
+
+    // 👇 await 없이 실행! (백그라운드 작업 시작)
+    this.mailerService
+      .sendMail({
+        to: 'koreauic@gmail.com',
+        from: process.env.EMAIL_USER,
+        replyTo: email,
         subject: `[웹사이트 문의] ${name}님의 메시지`,
-        text: message,
+        html: `<p>보낸사람: ${name} (${email})</p><p>${message}</p>`,
+      })
+      .then(() => {
+        // 성공하면 나중에 서버 로그에 뜸
+        console.log(`✅ [Success] Email sent to ${email}`);
+      })
+      .catch((e) => {
+        // 실패하면 나중에 서버 로그에 뜸
+        console.error(`❌ [Fail] Email error:`, e);
       });
 
-      console.log(
-        `Email sent successfully to koreauic@gmail.com from ${email}`,
-      );
-    } catch (error) {
-      console.error('Email sending failed:', error);
-      throw new InternalServerErrorException('메일 전송에 실패했습니다.');
-    }
+    // 함수는 여기서 즉시 끝납니다.
   }
 }
