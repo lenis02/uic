@@ -11,7 +11,7 @@ const activities = [
       '학술 교류 및 친목 도모',
       'UIC 소속 동아리 회원 전원 참여',
     ],
-    image: assets.logo_uic,
+    image: assets.activity1,
   },
   {
     id: 'joint-session',
@@ -21,7 +21,7 @@ const activities = [
       '3개 이상의 학교 혹은 동아리 간 진행',
       '주식, 증권, 금융 관련 자유 주제 발표 및 토론',
     ],
-    image: assets.logo_uic,
+    image: assets.activity2,
   },
   {
     id: 'investment-concert',
@@ -33,7 +33,7 @@ const activities = [
       '<span class="font-black">UIC 소속 동아리 회원만</span> 참여 가능한 전통적 대회 (13회차)',
       '투자 업계 명사 강연 및 CFA 현직자 심사 진행',
     ],
-    image: assets.logo_uic,
+    image: assets.activity3,
   },
   {
     id: 'job-concert',
@@ -43,7 +43,7 @@ const activities = [
       'IB, WM, 리서치 등 다양한 직무의 현직자 멘토링',
       '자유로운 분위기 속에서 현직자와의 직접 소통 가능',
     ],
-    image: assets.logo_uic,
+    image: assets.activity4,
   },
 ];
 
@@ -104,13 +104,13 @@ const ActivityPage = () => {
             }`}
           >
             {/* 이미지 카드 */}
-            <div className="w-full max-w-[720px] md:flex-1 group relative">
+            <div className="w-full bg-black max-w-[720px] md:flex-1 group relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
               <div className="relative aspect-video md:aspect-[4/3] rounded-2xl overflow-hidden bg-black/40 border border-white/10 shadow-2xl">
                 <img
                   src={act.image}
                   alt={act.title}
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                  className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
                 />
               </div>
             </div>
