@@ -23,11 +23,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
         transport: {
-          host: 'smtp.gmail.com',
-          // ✅ 465 대신 587 사용 (가장 안정적)
-          port: 465,
-          // ✅ 587 포트는 false여야 함 (STARTTLS 사용)
-          secure: true,
+          // 💡 [핵심] host, port, secure 다 필요 없습니다. 이거 한 줄이면 끝납니다.
+          service: 'gmail',
           auth: {
             user: config.get<string>('EMAIL_USER'),
             pass: config.get<string>('EMAIL_PASS'),
