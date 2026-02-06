@@ -24,7 +24,10 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       useFactory: async (config: ConfigService) => ({
         transport: {
           // 💡 [핵심] host, port, secure 다 필요 없습니다. 이거 한 줄이면 끝납니다.
-          service: 'gmail',
+          // service: 'gmail',
+          host: 'smtp.naver.com',
+          port: 587,
+          secure: false,
           auth: {
             user: config.get<string>('EMAIL_USER'),
             pass: config.get<string>('EMAIL_PASS'),
