@@ -38,11 +38,7 @@ export default function AdminGreeting() {
         content: res.data.content || '',
         quote: res.data.quote || '',
       });
-      setPreview(
-        res.data.imageUrl
-          ? `${import.meta.env.VITE_API_URL}${res.data.imageUrl}`
-          : ''
-      );
+      setPreview(res.data.imageUrl ? `${res.data.imageUrl}` : '');
     } catch (err) {
       console.error('데이터 로딩 실패:', err);
     }
