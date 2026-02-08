@@ -2,7 +2,7 @@ import imageCompression from 'browser-image-compression';
 
 export const compressImage = async (file: File) => {
   const options = {
-    maxSizeMB: 10, // 최대 용량 1MB로 제한
+    maxSizeMB: 1, // 최대 용량 1MB로 제한
     maxWidthOrHeight: 1200, // 가로 세로 최대 1200px (프로필 사진으로 충분)
     useWebWorker: true, // 별도 스레드에서 처리 (화면 멈춤 방지)
   };

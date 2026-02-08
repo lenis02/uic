@@ -93,7 +93,7 @@ export default function AdminGreeting() {
     'w-full bg-slate-950/50 border border-white/10  px-4 py-3 text-gray-200 placeholder-gray-300 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent outline-none transition-all';
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 animate-fade-in-up pb-10 custom-scrollbar scrollbar-hide lg:scrollbar-default">
+    <div className="w-full max-w-5xl mx-auto space-y-6 animate-fade-in-up pb-10 h-screen overflow-y-auto">
       {/* 헤더 섹션 */}
       <div className="flex flex-col gap-1 px-2">
         <h1 className="text-2xl font-extrabold tracking-tight text-white/90">
