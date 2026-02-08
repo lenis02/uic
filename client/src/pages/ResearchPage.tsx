@@ -16,9 +16,6 @@ interface Research {
   createdAt: string;
 }
 
-// ✅ 카테고리 목록
-const CATEGORIES = ['전체', '경제', '산업', '정책', '금융', '기술', '기타'];
-
 // ✅ 정렬 옵션
 const SORT_OPTIONS = [
   { label: '최신순', value: 'latest' },
@@ -28,8 +25,9 @@ const SORT_OPTIONS = [
 
 const ResearchPage = () => {
   const [reports, setReports] = useState<Research[]>([]);
-  const [activeCategory, setActiveCategory] = useState('전체'); // 탭 상태
-  const [sortBy, setSortBy] = useState('latest'); // 정렬 상태
+  // 🔄 변경 1: 카테고리 상태 대신 연도 상태 사용
+  const [activeYear, setActiveYear] = useState('전체'); 
+  const [sortBy, setSortBy] = useState('latest'); 
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -49,6 +47,21 @@ const ResearchPage = () => {
     fetchReports();
   }, []);
 
+  // ✨ 추가: 데이터에서 연도 목록 동적 추출 (내림차순 정렬)
+  const years = useMemo(() => {
+    if (reports.length === 0) return ['전체'];
+    
+    // createdAt에서 연도만 추출하여 중복 제거
+    const uniqueYears = Array.from(
+      new Set(reports.map((item) => new Date(item.createdAt).getFullYear()))
+    );
+    
+    // 내림차순 정렬 (2026, 2025...) 후 문자열 변환
+    const sortedYears = uniqueYears.sort((a, b) => b - a).map(String);
+    
+    return ['전체', ...sortedYears];
+  }, [reports]);
+
   // 2. ✨ 필터링 및 정렬 로직
   const processedReports = useMemo(() => {
     let result = [...reports];
@@ -60,9 +73,12 @@ const ResearchPage = () => {
       );
     }
 
-    // (2) 카테고리 필터
-    if (activeCategory !== '전체') {
-      result = result.filter((item) => item.category === activeCategory);
+    // 🔄 변경 2: 연도 필터링 로직 적용
+    if (activeYear !== '전체') {
+      result = result.filter((item) => {
+        const itemYear = new Date(item.createdAt).getFullYear().toString();
+        return itemYear === activeYear;
+      });
     }
 
     // (3) 정렬 로직
@@ -77,7 +93,7 @@ const ResearchPage = () => {
     });
 
     return result;
-  }, [reports, activeCategory, sortBy, searchTerm]);
+  }, [reports, activeYear, sortBy, searchTerm]); // 의존성 배열 activeYear로 변경
 
   // 날짜 포맷팅
   const formatDate = (dateString: string) => {
@@ -102,7 +118,7 @@ const ResearchPage = () => {
     const originalUrl = getImageUrl(item.pdfUrl);
     if (!originalUrl) return alert('PDF 파일이 없습니다.');
 
-    // 1. 조회수 집계 (결과 안 기다림)
+    // 1. 조회수 집계
     api.increaseResearchView(item.id).catch(err => 
       console.error('조회수 집계 실패:', err)
     );
@@ -114,18 +130,15 @@ const ResearchPage = () => {
       )
     );
 
-    // 3. ✨ [핵심] 파일명 커스터마이징
+    // 3. 파일명 커스터마이징
     let downloadUrl = originalUrl;
     
     if (originalUrl.includes('/upload/')) {
-      // (1) 제목 안전하게 다듬기 (특수문자 제거, 공백 -> 언더바)
-      // 예: "2026년 경제 전망!" -> "2026년_경제_전망"
       const safeTitle = item.title
-        .replace(/[^a-zA-Z0-9가-힣\s_-]/g, '') // 한글, 영어, 숫자, 공백, -, _ 만 허용
+        .replace(/[^a-zA-Z0-9가-힣\s_-]/g, '') 
         .trim()
-        .replace(/\s+/g, '_'); // 공백을 _로 변경
+        .replace(/\s+/g, '_'); 
 
-      // (2) URL에 파일명 심기 (확장자는 Cloudinary가 원본에 맞춰 자동 부착)
       downloadUrl = originalUrl.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`);
     }
 
@@ -190,25 +203,27 @@ const ResearchPage = () => {
             </div>
           </header>
 
-          {/* [중단 영역] Category 탭 (이전 Timeline 스타일 복원) */}
+          {/* [중단 영역] Year 탭 (스타일 유지, 로직 변경) */}
           <div className="mb-12 border-b border-white/5 flex flex-col lg:flex-row justify-between items-end gap-4 pb-4">
             <div className="w-full lg:w-auto overflow-hidden">
+              {/* 라벨 변경: Category -> Year */}
               <p className="text-[10px] font-black tracking-[0.3em] uppercase text-white/40 mb-4 ml-1">
-                Category
+                Year
               </p>
-              {/* 👇 여기가 이전 스타일 그대로 가져온 부분입니다 */}
+              
               <nav className="flex flex-row gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                {CATEGORIES.map((cat) => (
+                {/* 🔄 변경 3: years 배열을 map으로 순회 */}
+                {years.map((year) => (
                   <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
+                    key={year}
+                    onClick={() => setActiveYear(year)}
                     className={`px-6 py-2.5 cursor-pointer rounded-lg text-sm font-bold transition-all duration-300 whitespace-nowrap ${
-                      activeCategory === cat
+                      activeYear === year
                         ? 'bg-blue-600/10 text-blue-400 border border-blue-500/50 shadow-[0_4px_15px_rgba(37,99,235,0.2)]'
                         : 'text-white/40 hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    {cat}
+                    {year}
                   </button>
                 ))}
               </nav>
@@ -293,7 +308,7 @@ const ResearchPage = () => {
                         <span className="font-medium">{item.views}</span>
                       </div>
 
-                      {/* 카테고리 뱃지 (카드 위) */}
+                      {/* 카테고리 뱃지 (카드 위) - 여기는 그대로 유지 */}
                       <div className="absolute top-3 left-3">
                         <span className="px-3 py-1 bg-black/60 backdrop-blur border border-white/10 text-[10px] font-bold text-blue-400 rounded-full uppercase tracking-wider">
                           {item.category}
