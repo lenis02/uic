@@ -75,11 +75,12 @@ const UICNetwork = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
 
   return (
-    <section 
-      id='network'
-      className="relative h-screen w-full snap-start flex items-center justify-center overflow-hidden">
+    <section
+      id="network"
+      className="relative h-screen w-full snap-start flex items-center justify-center overflow-hidden"
+    >
       {/* 1. motion.div를 일반 div로 변경 및 scale 애니메이션 제거 */}
-      <div className="relative z-10 bg-white w-[90%] h-[65%] max-w-[1300px] max-h-[850px] rounded-[40px] shadow-xl flex flex-col items-center justify-between p-6 md:p-10">
+      <div className="relative z-10 mt-32 bg-white w-[90%] h-[65%] max-w-[1300px] max-h-[850px] rounded-[40px] shadow-xl flex flex-col items-center justify-between p-6 md:p-10">
         {/* 헤더 */}
         <div className="text-center mb-2">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
@@ -195,7 +196,7 @@ const UICNetwork = () => {
         </div>
 
         {/* 페이지 인디케이터 */}
-        <div className="flex gap-3 mb-4">
+        <div className="flex gap-3 mt-4 -mb-2">
           {Array.from({ length: totalPages }).map((_, idx) => (
             <div
               key={idx}

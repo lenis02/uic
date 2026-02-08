@@ -51,7 +51,7 @@ const Vision = () => {
           3. 기존 container 클래스 제거 (container는 반응형이라 너비가 계속 변해서 좌표 고정형 SVG에 불리함)
         */}
         <div className="relative z-10 text-center mb-16 select-none">
-          <h1 className="text-3xl md:text-6xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
+          <h1 className="text-3xl md:text-6xl mt-4 font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
             OUR VISION
           </h1>
         </div>

@@ -64,7 +64,7 @@ const ActivityPage = () => {
           <div className="group w-fit flex flex-col items-center">
             {/* text-center 추가: 텍스트 줄바꿈 시에도 중앙 정렬 유지 */}
             <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-white/80 mb-6 animate-fadeIn text-center">
-              UIC ACTIVITIES
+              UIC Activities
             </h1>
             {/* 하단 바 */}
             <div className="w-full -mt-2 h-[7px] rounded-full bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all duration-500 group-hover:scale-x-110" />

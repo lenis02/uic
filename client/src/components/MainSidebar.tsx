@@ -6,6 +6,7 @@ const sections = [
   { id: 'home', label: 'Home' },
   { id: 'vision', label: 'Vision' },
   { id: 'network', label: 'Network' },
+  { id: 'partner', label: 'Partner' },
 ];
 
 const Sidebar = () => {

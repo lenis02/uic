@@ -3,6 +3,7 @@ import MainSidebar from '../components/MainSidebar.tsx';
 import SectionsBase from '../components/SectionsBase.tsx';
 import Vision from './MainSections/Vision.tsx';
 import UICNetwork from './MainSections/UICNetwork.tsx';
+import UICPartner from './MainSections/UICPartner.tsx';
 
 const MainPage = () => {
   const [showArrow, setShowArrow] = useState(true);
@@ -46,6 +47,9 @@ const MainPage = () => {
 
       {/* [SECTION 3] UIC 연결 대학 */}
       <UICNetwork />
+
+      {/* [SECTION 4] UIC 협력사 */}
+      <UICPartner />
     </div>
   );
 };

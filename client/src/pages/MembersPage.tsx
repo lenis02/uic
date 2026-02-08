@@ -7,7 +7,7 @@ import { api } from '../api/api';
 interface Member {
   id: number;
   name: string;
-  position: string; 
+  position: string;
   generation: number;
   imageUrl?: string;
   workplace?: string;
@@ -118,7 +118,7 @@ const MembersPage = () => {
             <header className="mb-16">
               <div className="group w-fit">
                 <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-white/80">
-                  Alumni {activeGen}th.
+                  Alumni {activeGen}th
                 </h1>
                 <div className="w-full h-[3px] bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] mt-4 transition-all duration-500 group-hover:scale-x-110" />
               </div>

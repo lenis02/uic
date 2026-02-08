@@ -26,8 +26,8 @@ const SORT_OPTIONS = [
 const ResearchPage = () => {
   const [reports, setReports] = useState<Research[]>([]);
   // 🔄 변경 1: 카테고리 상태 대신 연도 상태 사용
-  const [activeYear, setActiveYear] = useState('전체'); 
-  const [sortBy, setSortBy] = useState('latest'); 
+  const [activeYear, setActiveYear] = useState('전체');
+  const [sortBy, setSortBy] = useState('latest');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -50,15 +50,15 @@ const ResearchPage = () => {
   // ✨ 추가: 데이터에서 연도 목록 동적 추출 (내림차순 정렬)
   const years = useMemo(() => {
     if (reports.length === 0) return ['전체'];
-    
+
     // createdAt에서 연도만 추출하여 중복 제거
     const uniqueYears = Array.from(
       new Set(reports.map((item) => new Date(item.createdAt).getFullYear()))
     );
-    
+
     // 내림차순 정렬 (2026, 2025...) 후 문자열 변환
     const sortedYears = uniqueYears.sort((a, b) => b - a).map(String);
-    
+
     return ['전체', ...sortedYears];
   }, [reports]);
 
@@ -119,35 +119,36 @@ const ResearchPage = () => {
     if (!originalUrl) return alert('PDF 파일이 없습니다.');
 
     // 1. 조회수 집계
-    api.increaseResearchView(item.id).catch(err => 
-      console.error('조회수 집계 실패:', err)
-    );
+    api
+      .increaseResearchView(item.id)
+      .catch((err) => console.error('조회수 집계 실패:', err));
 
     // 2. 화면 즉시 업데이트
     setReports((prev) =>
-      prev.map((r) =>
-        r.id === item.id ? { ...r, views: r.views + 1 } : r
-      )
+      prev.map((r) => (r.id === item.id ? { ...r, views: r.views + 1 } : r))
     );
 
     // 3. 파일명 커스터마이징
     let downloadUrl = originalUrl;
-    
+
     if (originalUrl.includes('/upload/')) {
       const safeTitle = item.title
-        .replace(/[^a-zA-Z0-9가-힣\s_-]/g, '') 
+        .replace(/[^a-zA-Z0-9가-힣\s_-]/g, '')
         .trim()
-        .replace(/\s+/g, '_'); 
+        .replace(/\s+/g, '_');
 
-      downloadUrl = originalUrl.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`);
+      downloadUrl = originalUrl.replace(
+        '/upload/',
+        `/upload/fl_attachment:${safeTitle}/`
+      );
     }
 
     // 4. 다운로드 실행
     try {
-        window.location.href = downloadUrl;
+      window.location.href = downloadUrl;
     } catch (error) {
-        console.error('다운로드 시작 실패s:', error);
-        window.open(originalUrl, '_blank');
+      console.error('다운로드 시작 실패s:', error);
+      window.open(originalUrl, '_blank');
     }
   };
 
@@ -174,7 +175,7 @@ const ResearchPage = () => {
           <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="w-fit">
               <h1 className="text-3xl font-bold tracking-tight text-white/80">
-                Investment Concert
+                투자 콘서트 수상작
               </h1>
               <div className="w-full h-1 bg-gradient-to-r from-blue-600 to-transparent mt-3" />
             </div>
@@ -210,7 +211,7 @@ const ResearchPage = () => {
               <p className="text-[10px] font-black tracking-[0.3em] uppercase text-white/40 mb-4 ml-1">
                 Year
               </p>
-              
+
               <nav className="flex flex-row gap-4 overflow-x-auto pb-2 scrollbar-hide">
                 {/* 🔄 변경 3: years 배열을 map으로 순회 */}
                 {years.map((year) => (

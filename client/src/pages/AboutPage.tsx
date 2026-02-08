@@ -1,5 +1,5 @@
 // src/pages/AboutPage.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { assets } from '../../assets/assets';
 import { api } from '../api/api';
 
@@ -29,16 +29,21 @@ interface Executive {
 
 // --- 컴포넌트들 ---
 const GreetingSection = ({ data }: { data: Executive }) => (
-  <div className="snap-start min-h-full flex flex-col justify-center pb-20">
-    <div className="mb-12 w-fit">
+  <div className="snap-start min-h-full flex flex-col justify-center px-4 md:px-0 relative">
+    {/* 타이틀 영역 (변경 없음) */}
+    <div className="absolute top-2 left-0 mb-8 md:mb-12 w-fit">
       <h1 className="text-4xl font-semibold tracking-tight text-white/80">
-        {data.role === '회장' ? 'President' : 'Vice President'} Greeting
+        {data.role} 인삿말
       </h1>
       <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
     </div>
 
-    <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 items-center">
-      <div className="xl:col-span-7 leading-relaxed text-justify text-lg space-y-6 break-keep lg:pr-8">
+    {/* [핵심 변경] Grid -> Flex 로 변경 */}
+    {/* 모바일: flex-col (위아래), PC(lg이상): flex-row (좌우) */}
+    <div className="flex flex-row items-center gap-10 lg:gap-20 w-full">
+      {/* 1. 텍스트 영역 (왼쪽) */}
+      {/* flex-1을 주어 남은 공간을 모두 차지하게 함 */}
+      <div className="flex-1 leading-relaxed text-justify text-lg space-y-6 break-keep w-full">
         <p className="font-semibold text-xl text-white">
           {data.greeting.split(data.name).map((part, i, arr) => (
             <span key={i}>
@@ -55,15 +60,19 @@ const GreetingSection = ({ data }: { data: Executive }) => (
         </p>
       </div>
 
-      <div className="xl:col-span-5 flex flex-col items-end xl:items-end justify-end">
-        <div className="relative h-[35vh] xl:h-[45vh] aspect-[3/4] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl group">
+      {/* 2. 이미지 및 이름 영역 (오른쪽) */}
+      {/* shrink-0을 주어 텍스트가 길어져도 사진이 찌그러지지 않게 함 */}
+      <div className="shrink-0 flex flex-col items-center justify-end h-full w-auto">
+        <div className="relative h-[20vh] lg:h-[35vh] aspect-[3/4] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl group">
           <img
             src={data.image}
-            className="w-full h-full object-cover p-0 opacity-90 transition-transform duration-500 group-hover:scale-105" // object-contain -> cover로 변경, opacity 조정
+            className="w-full h-full object-cover p-0 opacity-90 transition-transform duration-500 group-hover:scale-105"
             alt={data.name}
           />
         </div>
-        <div className="text-right pt-6 w-full xl:max-w-[400px]">
+
+        {/* 이름 텍스트 (사진 바로 아래) */}
+        <div className="text-right pt-6 w-full lg:max-w-[400px]">
           <span className="text-xl font-semibold tracking-widest text-white">
             {data.name}
           </span>
@@ -81,6 +90,8 @@ const AboutPage = () => {
   );
   const [activeDecade, setActiveDecade] = useState('ALL');
   const [historyData, setHistoryData] = useState<GroupedHistory[]>([]);
+
+  const scrollRef = useRef<HTMLElement>(null);
 
   // 1️⃣ [수정] 임원진 데이터 State 추가
   const [executives, setExecutives] = useState<Executive[]>([]);
@@ -145,6 +156,12 @@ const AboutPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }, [activeTab, activeDecade]);
+
   const filteredHistory = historyData.filter((item) => {
     if (activeDecade === 'ALL') return true;
     const year = parseInt(item.year);
@@ -192,6 +209,7 @@ const AboutPage = () => {
             </aside>
 
             <section
+              ref={scrollRef}
               className={`flex-1 h-full overflow-y-auto pr-4 custom-scrollbar z-20 scroll-smooth scrollbar-hide ${
                 activeTab === 'greeting' ? 'snap-y snap-mandatory' : ''
               }`}
@@ -210,8 +228,8 @@ const AboutPage = () => {
                 <div className="pb-32">
                   <header className="">
                     <div className="mb-4 w-fit">
-                      <h1 className="text-4xl font-semibold tracking-tight text-white/80">
-                        History of UIC
+                      <h1 className="text-4xl pt-2 font-semibold tracking-tight text-white/80">
+                        연혁
                       </h1>
                       <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
                     </div>
