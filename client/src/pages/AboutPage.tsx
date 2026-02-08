@@ -128,7 +128,7 @@ const AboutPage = () => {
           content: res.data.content || '',
           quote: res.data.quote || '',
           // 이미지가 없으면 기본 로고 사용
-          image: res.data.imageUrl ? `$${res.data.imageUrl}` : assets.logo_uic,
+          image: res.data.imageUrl ? res.data.imageUrl : assets.logo_uic,
         });
 
         setExecutives([
