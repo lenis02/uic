@@ -32,7 +32,7 @@ const GreetingSection = ({ data }: { data: Executive }) => (
   <div className="snap-start min-h-full flex flex-col justify-center pb-20">
     <div className="mb-12 w-fit">
       <h1 className="text-4xl font-semibold tracking-tight text-white/80">
-        {data.role} Greeting
+        {data.role === '회장' ? 'President' : 'Vice President'} Greeting
       </h1>
       <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
     </div>
@@ -115,10 +115,9 @@ const AboutPage = () => {
         setHistoryData(groupedArray);
 
         // (2) 인사말 데이터 가져오기 (Promise.all로 병렬 처리)
-        // 백엔드에서 역할 이름이 'President', 'Researcher'(부회장용) 라고 가정
         const [presRes, viceRes] = await Promise.all([
-          api.getGreetingByRole('President'),
-          api.getGreetingByRole('Vice President'),
+          api.getGreetingByRole('회장'),
+          api.getGreetingByRole('부회장'),
         ]);
 
         const formatExecutive = (res: any, role: string): Executive => ({
@@ -135,8 +134,8 @@ const AboutPage = () => {
         });
 
         setExecutives([
-          formatExecutive(presRes, 'President'),
-          formatExecutive(viceRes, 'Vice President'),
+          formatExecutive(presRes, '회장'),
+          formatExecutive(viceRes, '부회장'),
         ]);
       } catch (error) {
         console.error('데이터 로딩 실패:', error);

@@ -13,14 +13,12 @@ interface GreetingData {
 }
 
 export default function AdminGreeting() {
-  const [selectedRole, setSelectedRole] = useState<
-    'President' | 'Vice President'
-  >('President');
+  const [selectedRole, setSelectedRole] = useState<'회장' | '부회장'>('회장');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>('');
 
   const [form, setForm] = useState<GreetingData>({
-    role: 'President',
+    role: '회장',
     name: '',
     fullRole: '',
     greeting: '',
@@ -112,7 +110,7 @@ export default function AdminGreeting() {
 
       {/* 탭 메뉴 */}
       <div className="flex gap-2 p-1 bg-slate-800/50 rounded-xl w-fit border border-white/5 mx-2">
-        {(['President', 'Vice President'] as const).map((r) => (
+        {(['회장', '부회장'] as const).map((r) => (
           <button
             key={r}
             onClick={() => setSelectedRole(r)}
@@ -122,7 +120,7 @@ export default function AdminGreeting() {
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            {r === 'President' ? '회장' : '부회장'}
+            {r === '회장' ? '회장' : '부회장'}
           </button>
         ))}
       </div>

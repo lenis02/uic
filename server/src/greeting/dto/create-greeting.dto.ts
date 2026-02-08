@@ -2,7 +2,7 @@ import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class CreateGreetingDto {
   @IsString()
-  @IsNotEmpty({ message: '직책을 입력해주세요 (예: President)' })
+  @IsNotEmpty({ message: '직책을 입력해주세요' })
   role: string;
 
   @IsString()

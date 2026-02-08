@@ -7,35 +7,23 @@ import { api } from '../api/api';
 interface Member {
   id: number;
   name: string;
-  position: string; // DB: President, Member, etc.
+  position: string; 
   generation: number;
   imageUrl?: string;
   workplace?: string;
   email?: string;
 }
 
-// 직책 한글 매핑
-const roleMapping: { [key: string]: string } = {
-  President: '회장',
-  'Vice President': '부회장',
-  'Planning Head': '기획 팀장',
-  'External Relations Head': '대외협력 팀장',
-  'Marketing Head': '마케팅 팀장',
-  'Finance Head': '재무 팀장',
-  'HR Head': '인사 팀장',
-  Member: '부원',
-};
-
 // 직책 정렬 순서
 const rolePriority = [
-  'President',
-  'Vice President',
-  'Planning Head',
-  'External Relations Head',
-  'Marketing Head',
-  'Finance Head',
-  'HR Head',
-  'Member',
+  '회장',
+  '부회장',
+  '기획',
+  '대외협력',
+  '마케팅',
+  '재무',
+  '인사',
+  '부원',
 ];
 
 const MembersPage = () => {
@@ -178,7 +166,7 @@ const MembersPage = () => {
                       <div className="relative z-10 flex flex-col gap-2">
                         {/* 직책 */}
                         <span className="w-fit text-[10px] font-black text-cyan-400 tracking-[0.1em] bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-cyan-400/30">
-                          {roleMapping[member.position] || member.position}
+                          {member.position}
                         </span>
 
                         <div className="mt-1 flex flex-col gap-1 overflow-hidden">

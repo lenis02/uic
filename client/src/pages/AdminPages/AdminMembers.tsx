@@ -5,14 +5,14 @@ import { compressImage } from '../../utils/imageCompression';
 
 // 1. 공통 데이터 상수화 (중복 제거)
 const POSITIONS = [
-  { value: 'Member', label: '일반 회원' },
-  { value: 'President', label: '회장' },
-  { value: 'Vice President', label: '부회장' },
-  { value: 'Planning', label: '기획' },
-  { value: 'External Relations', label: '대외협력' },
-  { value: 'Marketing', label: '마케팅' },
-  { value: 'Finance', label: '재무' },
-  { value: 'HR', label: '인사' },
+  '회장',
+  '부회장',
+  '기획', // 백엔드 자동생성 값과 통일
+  '대외협력',
+  '마케팅',
+  '재무',
+  '인사',
+  '부원', // 일반 회원용 추가
 ];
 
 interface Member {
@@ -288,8 +288,8 @@ export default function AdminMembers() {
                   }
                 >
                   {POSITIONS.map((pos) => (
-                    <option key={pos.value} value={pos.value}>
-                      {pos.label}
+                    <option key={pos} value={pos}>
+                      {pos}
                     </option>
                   ))}
                 </select>
@@ -421,8 +421,8 @@ export default function AdminMembers() {
                   }
                 >
                   {POSITIONS.map((pos) => (
-                    <option key={pos.value} value={pos.value}>
-                      {pos.label}
+                    <option key={pos} value={pos}>
+                      {pos}
                     </option>
                   ))}
                 </select>
@@ -493,8 +493,7 @@ export default function AdminMembers() {
                     </span>
                   </div>
                   <div className="text-xs text-blue-400 font-medium mb-1">
-                    {POSITIONS.find((p) => p.value === member.position)
-                      ?.label || member.position}
+                    {member.position}
                   </div>
                   {member.workplace && (
                     <div className="text-[10px] text-gray-400 truncate flex items-center gap-1">
