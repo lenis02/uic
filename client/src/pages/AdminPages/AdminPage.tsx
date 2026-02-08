@@ -1,13 +1,14 @@
 // src/components/AdminLayout.tsx
 import { useEffect } from 'react';
 import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
+import { getToken, removeToken } from '../../api/auth';
 
 export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = getToken();
     if (!token) {
       alert('관리자 로그인이 필요합니다.');
       navigate('/login');
@@ -22,16 +23,15 @@ export default function AdminLayout() {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
+    removeToken();
     navigate('/login');
   };
 
   return (
     // [수정 포인트]
     // 1. mt-32 유지 (NavBar 공간 확보)
-    // 2. h-[calc(100vh-8rem)] : 전체 화면(100vh)에서 mt-32(8rem) 만큼 뺀 높이를 설정
     // 3. overflow-hidden : 부모 컨테이너는 스크롤바를 숨김
-    <div className="flex mt-32 h-[calc(100vh-8rem)] w-full bg-slate-950 overflow-hidden">
+    <div className="flex h-full w-full bg-slate-950 overflow-hidden">
       {/* 사이드바 */}
       <nav className="w-64 flex flex-col justify-between bg-black/20 backdrop-blur-xl border-r border-white/5 p-6 h-full flex-shrink-0 z-10">
         <div>

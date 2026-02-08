@@ -1,11 +1,11 @@
 // src/api/api.ts
 import { instance } from './axios';
-
+import { setToken } from './auth';
 export const api = {
   // --- 인증 (Auth) ---
   login: async (username: string, password: string) => {
     const response = await instance.post('/auth/login', { username, password });
-    localStorage.setItem('accessToken', response.data.access_token);
+    setToken(response.data.access_token);
     return response.data;
   },
 

@@ -1,10 +1,11 @@
 // src/components/auth/PrivateRoute.tsx
 import { Navigate, Outlet } from 'react-router-dom';
+import { getToken } from '../../api/auth';
 
 const PrivateRoute = () => {
-  // 1. 토큰이 있는지 확인 (localStorage 또는 sessionStorage)
+  // 1. 토큰이 있는지 확인
   // ⚠️ 주의: 백엔드와 약속된 키 이름이 'accessToken'인지 'token'인지 확인하세요.
-  const token = localStorage.getItem('accessToken');
+  const token = getToken();
 
   // 2. 토큰 유효성 검사 (심화: 여기서 jwt-decode로 만료 시간 체크도 가능)
   // 일단 토큰이 없으면 비로그인으로 간주

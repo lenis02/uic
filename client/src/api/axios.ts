@@ -3,6 +3,7 @@ import axios, {
   type AxiosInstance,
   type InternalAxiosRequestConfig,
 } from 'axios';
+import { getToken } from './auth';
 
 // 1. Axios 인스턴스 생성
 export const instance: AxiosInstance = axios.create({
@@ -15,7 +16,7 @@ export const instance: AxiosInstance = axios.create({
 // 2. 요청 인터셉터
 instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('accessToken');
+    const token = getToken();
     if (token && config.headers) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
