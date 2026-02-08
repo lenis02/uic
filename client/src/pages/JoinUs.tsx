@@ -43,18 +43,18 @@ const JoinUs = () => {
                   Membership
                 </span>
               </h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-8 break-keep">
+              <p className="text-gray-400 text-center text-sm leading-relaxed mb-8 break-keep">
                 동아리 가입을 위한 단체 지원 프로세스입니다.
               </p>
               {/* ... (설명 텍스트 동일) ... */}
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center -ml-4 gap-3">
                   <div className="w-1.5 h-1.5 bg-purple-500 shadow-[0_0_8px_#a855f7]" />
                   <p className="text-sm text-gray-400 font-medium">
                     PDF 형식 변환 제출 준수
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center -ml-4 gap-3">
                   <div className="w-1.5 h-1.5 bg-purple-500 shadow-[0_0_8px_#a855f7]" />
                   <p className="text-sm text-gray-400 font-medium">
                     활동 계획서 및 동아리 소개서 필수
@@ -85,19 +85,19 @@ const JoinUs = () => {
                   Membership
                 </span>
               </h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-8 break-keep">
+              <p className="text-gray-400 text-center text-sm leading-relaxed mb-8 break-keep">
                 신규 회원을 위한 개인 지원 프로세스입니다.
               </p>
               {/* ... (설명 텍스트 동일) ... */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
+              <div className="space-y-4 -ml-4">
+                <div className="flex w-full justify-center gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full mt-2 bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
                   <p className="text-sm text-gray-400 font-medium">
                     PDF 형식 변환 제출 준수
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
+                <div className="flex justify-center gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full mt-2 bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
                   <p className="text-sm text-gray-400 font-medium">
                     주 단위로 합격 여부 발표
                   </p>
