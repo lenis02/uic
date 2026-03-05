@@ -21,14 +21,20 @@ const Navbar = () => {
         {/* 1. 로고 */}
         <Link
           to="/"
-          className="block cursor-pointer shrink-0 z-[110]"
+          className="flex flex-col items-center block cursor-pointer shrink-0 z-[110]"
           onClick={() => setIsOpen(false)}
         >
           <img
             src={assets.logo_uic}
             alt="UIC Logo"
-            className="w-60 -mt-4 aspect-[5/3] transition-all select-none duration-300 hover:brightness-125"
+            className="w-40 ml-8 -mt-4 aspect-[5/3] transition-all select-none duration-300 hover:brightness-125"
           />
+          <p className="w-60 text-white text-[10px] font-pre font-thin text-center">
+            University student Investment Club
+          </p>
+          <p className="w-60 -mt-1 text-white text-[14px] font-pre font-thin text-center">
+            전국대학생투자동아리연합회
+          </p>
         </Link>
 
         {/* 2. 데스크탑 메뉴 (기존 유지) */}
