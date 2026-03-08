@@ -41,7 +41,7 @@ const MembersPage = () => {
 
         if (data.length > 0) {
           const uniqueGens = Array.from(
-            new Set(data.map((m: Member) => m.generation))
+            new Set(data.map((m: Member) => m.generation)),
           ) as number[];
           const latestGen = Math.max(...uniqueGens);
           setActiveGen(latestGen);
@@ -58,7 +58,7 @@ const MembersPage = () => {
 
   // 2. 기수 목록 추출
   const generations = Array.from(
-    new Set(members.map((m) => m.generation))
+    new Set(members.map((m) => m.generation)),
   ).sort((a, b) => b - a);
 
   // 3. 필터링 및 정렬
@@ -79,16 +79,18 @@ const MembersPage = () => {
   }
 
   return (
-    <main className="relative w-full h-screen overflow-hidden bg-[#050505] text-white pt-32 pb-10">
+    <main className="relative w-full h-screen overflow-hidden bg-[#050505] text-white pt-24 md:pt-32 pb-6 md:pb-10">
       {/* 배경 효과 */}
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-800/20 blur-[120px] rounded-full" />
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
 
-      <div className="relative mt-8 z-10 max-w-[1600px] mx-auto px-6 md:px-12 h-full">
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-6 md:p-12 overflow-hidden border border-white/5 shadow-2xl ">
+      {/* 기존 px-6를 sm:px-6로 두고 모바일은 px-4로 축소 */}
+      <div className="relative mt-4 md:mt-8 z-10 max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 h-full">
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-6 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-4 sm:p-6 md:p-12 overflow-hidden border border-white/5 shadow-2xl rounded-2xl md:rounded-none">
+          
           {/* [좌측] 기수 선택 사이드바 */}
-          <aside className="w-full lg:w-40 h-auto lg:h-full shrink-0 z-20 flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pb-4 lg:pb-0 lg:pr-6">
-            <h2 className="text-gray-500 text-xs font-black tracking-[0.3em] uppercase mb-4 lg:mb-8 select-none px-1">
+          <aside className="w-full lg:w-40 h-auto lg:h-full shrink-0 z-20 flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pb-2 md:pb-4 lg:pb-0 lg:pr-6">
+            <h2 className="text-gray-500 text-[10px] md:text-xs font-black tracking-[0.3em] uppercase mb-2 md:mb-4 lg:mb-8 select-none px-1">
               Generations
             </h2>
             <nav className="flex flex-row lg:flex-col gap-2 md:gap-3 overflow-x-auto lg:overflow-y-auto pb-2 lg:pb-0 pr-2 custom-scrollbar scrollbar-hide lg:scrollbar-default">
@@ -99,14 +101,14 @@ const MembersPage = () => {
                   <button
                     key={gen}
                     onClick={() => setActiveGen(gen)}
-                    className={`px-4 py-3 rounded-xl text-left font-bold transition-all duration-300 whitespace-nowrap lg:whitespace-normal cursor-pointer ${
+                    className={`px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl text-xs md:text-base text-left font-bold transition-all duration-300 whitespace-nowrap lg:whitespace-normal cursor-pointer ${
                       activeGen === gen
                         ? 'text-blue-400 bg-blue-400/10 border-b-4 lg:border-b-0 lg:border-r-4 border-blue-400 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
                         : 'text-gray-600 hover:text-gray-400 hover:bg-white/5'
                     }`}
                   >
                     {gen}th{' '}
-                    <span className="text-[10px] opacity-40 ml-1">Gen</span>
+                    <span className="text-[8px] md:text-[10px] opacity-40 ml-1">Gen</span>
                   </button>
                 ))
               )}
@@ -114,23 +116,25 @@ const MembersPage = () => {
           </aside>
 
           {/* [우측] 멤버 리스트 영역 */}
-          <section className="flex-1 h-full overflow-y-auto pr-4 z-20 scrollbar-hide">
-            <header className="mb-16">
+          <section className="flex-1 h-full overflow-y-auto pr-2 md:pr-4 z-20 scrollbar-hide">
+            <header className="mb-8 md:mb-16">
               <div className="group w-fit">
-                <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-white/80">
-                  Alumni {activeGen}th
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter text-white/80">
+                  {activeGen === 19
+                    ? `Alumni ${activeGen}th`
+                    : `${activeGen}th`}
                 </h1>
-                <div className="w-full h-[3px] bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] mt-4 transition-all duration-500 group-hover:scale-x-110" />
+                <div className="w-full h-[2px] md:h-[3px] bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] mt-2 md:mt-4 transition-all duration-500 group-hover:scale-x-110" />
               </div>
-              <p className="mt-6 text-white font-medium tracking-widest text-sm uppercase">
+              <p className="mt-4 md:mt-6 text-white font-medium tracking-widest text-xs md:text-sm uppercase">
                 UIC의 역사를 함께 만든{' '}
-                <span className="font-bold text-lg">{activeGen}대 멤버</span>
-                들을 소개합니다.
+                <span className="font-bold text-base md:text-lg">{activeGen}기 회장단</span>
+                을 소개합니다.
               </p>
             </header>
 
-            {/* 멤버 카드 그리드 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-5 lg:gap-6 pb-20 justify-items-center lg:justify-items-start">
+            {/* 멤버 카드 그리드: 모바일에서 무조건 2열(grid-cols-2)로 보이게 수정 */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-5 lg:gap-6 pb-10 md:pb-20 justify-items-center lg:justify-items-start">
               {currentMembers.length > 0 ? (
                 currentMembers.map((member) => (
                   <div
@@ -144,9 +148,7 @@ const MembersPage = () => {
                           member.imageUrl
                             ? member.imageUrl.startsWith('http')
                               ? member.imageUrl
-                              : `${import.meta.env.VITE_API_URL}${
-                                  member.imageUrl
-                                }`
+                              : `${import.meta.env.VITE_API_URL}${member.imageUrl}`
                             : assets.logo_uic
                         }
                         className={`object-cover transition-all duration-700 ${
@@ -159,34 +161,34 @@ const MembersPage = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
                     </div>
 
-                    {/* 2. 텍스트 정보 영역 */}
-                    <div className="p-5 relative">
+                    {/* 2. 텍스트 정보 영역 (모바일 패딩 축소 p-3 md:p-5) */}
+                    <div className="p-3 md:p-5 relative">
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                      <div className="relative z-10 flex flex-col gap-2">
+                      <div className="relative z-10 flex flex-col gap-1 md:gap-2">
                         {/* 직책 */}
-                        <span className="w-fit text-[10px] font-black text-cyan-400 tracking-[0.1em] bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-cyan-400/30">
+                        <span className="w-fit text-[8px] md:text-[10px] font-black text-cyan-400 tracking-[0.1em] bg-black/60 backdrop-blur-md px-1.5 md:px-2 py-0.5 md:py-1 rounded border border-cyan-400/30">
                           {member.position}
                         </span>
 
-                        <div className="mt-1 flex flex-col gap-1 overflow-hidden">
+                        <div className="mt-1 flex flex-col gap-0.5 md:gap-1 overflow-hidden">
                           {/* 이름 */}
-                          <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">
+                          <h3 className="text-base md:text-xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">
                             {member.name}
                           </h3>
 
-                          {/* 🏢 직장/소속 (있을 경우만) */}
+                          {/* 🏢 직장/소속 */}
                           {member.workplace && (
-                            <p className="text-xs text-gray-300 font-medium truncate flex items-center gap-1.5">
+                            <p className="text-[10px] md:text-xs text-gray-300 font-medium truncate flex items-center gap-1.5">
                               {member.workplace}
                             </p>
                           )}
 
-                          {/* 📧 이메일 (있을 경우만 - 텍스트로 표시) */}
+                          {/* 📧 이메일 */}
                           {member.email && (
                             <a
                               href={`mailto:${member.email}`}
-                              className="text-xs text-gray-300 hover:text-white font-medium truncate flex items-center gap-1.5 transition-colors"
+                              className="text-[10px] md:text-xs text-gray-300 hover:text-white font-medium truncate flex items-center gap-1.5 transition-colors"
                             >
                               {member.email}
                             </a>

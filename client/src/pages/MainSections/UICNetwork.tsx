@@ -79,48 +79,47 @@ const UICNetwork = () => {
       id="network"
       className="relative h-screen w-full snap-start flex items-center justify-center overflow-hidden"
     >
-      {/* 1. motion.div를 일반 div로 변경 및 scale 애니메이션 제거 */}
-      <div className="relative z-10 mt-32 bg-white w-[90%] h-[65%] max-w-[1300px] max-h-[850px] rounded-[40px] shadow-xl flex flex-col items-center justify-between p-6 md:p-10">
+      {/* 1. 모바일에서는 높이를 h-[80%]로 늘리고, 데스크탑은 기존 h-[65%] 유지 */}
+      <div className="relative z-10 mt-20 md:mt-32 bg-white w-[85%] md:w-[85%] h-[80%] md:h-[65%] max-w-[1200px] max-h-[850px] rounded-[24px] md:rounded-[40px] shadow-xl flex flex-col items-center justify-between p-4 md:p-6 lg:p-10">
+        
         {/* 헤더 */}
-        <div className="text-center mb-2">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+        <div className="text-center mb-2 shrink-0">
+          <h2 className="text-2xl md:text-4xl lg:text-4xl font-bold text-gray-900">
             NETWORK
           </h2>
-          <p className="text-sm mt-2 text-gray-500">
+          <p className="text-xs md:text-sm mt-1 text-gray-500">
             전국 53개 대학 투자동아리와 함께하는 UIC
           </p>
         </div>
 
-        {/* 메인 영역 */}
-        <div className="flex-1 w-full flex items-center justify-between gap-2 md:gap-6">
+        {/* 메인 영역 (min-h-0: 모바일에서 내부 스크롤이 터지지 않게 방지) */}
+        <div className="flex-1 w-full flex items-center justify-between min-h-0">
+          
           {/* 왼쪽 화살표 */}
           <button
             onClick={prevPage}
             disabled={currentPage === 0}
-            className={`p-2 transition-opacity ${
+            className={`p-1 md:p-2 shrink-0 transition-opacity ${
               currentPage === 0
                 ? 'opacity-20 select-none'
                 : 'opacity-100 cursor-pointer'
             }`}
           >
             <svg
-              className="w-10 h-10 text-gray-400"
+              className="w-6 h-6 md:w-10 md:h-10 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
-          {/* 2. AnimatePresence와 motion.div 제거: 즉각적인 데이터 교체로 변경 */}
-          <div className="flex-1 h-full flex items-center justify-center">
-            <div className="grid grid-cols-7 grid-rows-3 gap-x-2 md:gap-x-6 gap-y-4 md:gap-y-10 w-full h-full content-center items-center justify-items-center">
+          {/* 2. 그리드 감싸는 영역: 모바일은 세로 스크롤, 데스크탑은 스크롤 숨김 */}
+          <div className="flex-1 h-full w-full flex items-center justify-center overflow-y-auto md:overflow-hidden scrollbar-hide py-2 md:py-0">
+            
+            {/* 3. 핵심! 데스크탑(md)은 무조건 grid-cols-7, grid-rows-3 강제 고정 */}
+            <div className="grid grid-cols-3 md:grid-cols-7 md:grid-rows-3 w-full h-max md:h-full content-start md:content-center items-center justify-items-center m-auto">
               {currentData.map((uni) => {
                 const isDarkBg = [
                   '가톨릭대학교',
@@ -136,14 +135,13 @@ const UICNetwork = () => {
                 return (
                   <div
                     key={uni.name}
-                    className="flex flex-col items-center gap-3 w-full"
+                    className="flex flex-col items-center gap-2 md:gap-3 w-full"
                   >
                     <div
                       className={`
-                        w-16 h-16 md:w-20 md:h-20 
+                        w-12 h-12 md:w-20 md:h-20 lg:w-20 lg:h-20 
                         rounded-full flex items-center justify-center shadow-sm
                         ${isDarkBg ? 'bg-gray-900' : 'bg-gray-100'}
-                        /* transform-gpu를 사용하여 렌더링 성능 향상 */
                         transform-gpu
                       `}
                     >
@@ -152,15 +150,15 @@ const UICNetwork = () => {
                           src={logoSrc}
                           alt={uni.name}
                           loading="lazy"
-                          className="w-full h-full object-contain p-3"
+                          className="w-full h-full object-contain p-2 md:p-3"
                         />
                       ) : (
-                        <span className="text-[10px] font-bold leading-tight text-center break-keep text-gray-600">
+                        <span className="text-[7px] md:text-[10px] font-bold leading-tight text-center break-keep text-gray-600 px-1">
                           {uni.name}
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] md:text-xs text-gray-700 font-semibold truncate max-w-[90px] text-center">
+                    <span className="text-[9px] md:text-[10px] lg:text-xs text-gray-700 font-semibold truncate w-full max-w-[55px] md:max-w-[70px] lg:max-w-[90px] text-center">
                       {uni.name}
                     </span>
                   </div>
@@ -173,34 +171,29 @@ const UICNetwork = () => {
           <button
             onClick={nextPage}
             disabled={currentPage === totalPages - 1}
-            className={`p-2 transition-opacity ${
+            className={`p-1 md:p-2 shrink-0 transition-opacity ${
               currentPage === totalPages - 1
                 ? 'opacity-20 select-none'
                 : 'opacity-100 cursor-pointer'
             }`}
           >
             <svg
-              className="w-10 h-10 text-gray-400"
+              className="w-6 h-6 md:w-10 md:h-10 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
         {/* 페이지 인디케이터 */}
-        <div className="flex gap-3 mt-4 -mb-2">
+        <div className="flex gap-2 md:gap-3 mt-4 -mb-2 shrink-0">
           {Array.from({ length: totalPages }).map((_, idx) => (
             <div
               key={idx}
-              className={`w-2.5 h-2.5 rounded-full ${
+              className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full ${
                 idx === currentPage ? 'bg-purple-600' : 'bg-gray-200'
               }`}
             />

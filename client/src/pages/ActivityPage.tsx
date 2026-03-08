@@ -49,8 +49,8 @@ const activities = [
 
 const ActivityPage = () => {
   return (
-    // h-screen과 snap-y snap-mandatory를 추가하여 섹션별 스크롤 고정
-    <main className="relative w-full h-screen overflow-y-auto snap-y snap-mandatory bg-[#050505] text-white scrollbar-hide">
+    // h-[100dvh]를 사용하여 모바일 브라우저의 상하단 바 이슈 방지
+    <main className="relative w-full h-[100dvh] overflow-y-auto snap-y snap-mandatory bg-[#050505] text-white scrollbar-hide">
       {/* 고정 배경 */}
       <img
         src={assets.bg_activity}
@@ -59,24 +59,26 @@ const ActivityPage = () => {
       />
 
       {/* [첫 번째 섹션] 헤더 섹션 */}
-      <section className="relative w-full h-screen flex flex-col justify-center items-center snap-start z-10 px-6">
-        <div className="flex flex-col items-center max-w-[1000px] justify-center mx-auto text-center">
+      <section className="relative w-full h-[100dvh] flex flex-col justify-center items-center snap-start z-10 px-4 md:px-6">
+        <div className="flex flex-col items-center max-w-[1000px] justify-center mx-auto text-center mt-10 md:mt-0">
           <div className="group w-fit flex flex-col items-center">
-            {/* text-center 추가: 텍스트 줄바꿈 시에도 중앙 정렬 유지 */}
-            <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-white/80 mb-6 animate-fadeIn text-center">
+            {/* 모바일 폰트 사이즈 살짝 축소 (text-4xl), 데스크탑 유지 (md:text-5xl lg:text-6xl) */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-white/80 mb-4 md:mb-6 animate-fadeIn text-center">
               UIC Activities
             </h1>
             {/* 하단 바 */}
-            <div className="w-full -mt-2 h-[7px] rounded-full bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all duration-500 group-hover:scale-x-110" />
+            <div className="w-full -mt-1 md:-mt-2 h-[4px] md:h-[7px] rounded-full bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all duration-500 group-hover:scale-x-110" />
           </div>
 
-          <p className="mt-8 text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-2xl">
-            대한민국 최대 대학생 투자 연합 UIC와 함께하며 <br /> 금융에 대한
-            깊은 통찰과 진정한 성장을 경험해 보세요.
+          {/* 폰트 축소 및 여백 조정 */}
+          <p className="mt-6 md:mt-8 text-sm md:text-lg lg:text-xl text-gray-400 font-medium leading-relaxed max-w-2xl px-2 md:px-0 break-keep">
+            대한민국 최대 대학생 투자 연합 UIC와 함께하며{' '}
+            <br className="hidden md:block" /> 금융에 대한 깊은 통찰과 진정한
+            성장을 경험해 보세요.
           </p>
-          <div className="mt-20 animate-bounce text-blue-500 opacity-50">
+          <div className="mt-12 md:mt-20 animate-bounce text-blue-500 opacity-50">
             <svg
-              className="w-8 h-8 mx-auto"
+              className="w-6 h-6 md:w-8 md:h-8 mx-auto"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -96,17 +98,20 @@ const ActivityPage = () => {
       {activities.map((act, index) => (
         <section
           key={act.id}
-          className="relative w-full h-screen flex items-center justify-center snap-start z-10 px-6 md:px-20"
+          // 모바일 패딩 조정 px-4
+          className="relative w-full h-[100dvh] flex items-center justify-center snap-start z-10 px-4 md:px-20"
         >
           <div
-            className={`mt-12 flex flex-col gap-12 items-center max-w-[1400px] w-full ${
+            // 모바일에서는 mt-0 및 gap-6으로 좁혀서 화면 밖으로 나가지 않게 조절
+            className={`mt-0 md:mt-12 flex flex-col gap-6 md:gap-12 items-center justify-center max-w-[1400px] w-full h-full ${
               index % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'
             }`}
           >
-            {/* 이미지 카드 */}
-            <div className="w-full max-w-[720px] md:flex-1 group relative">
+            {/* 이미지 카드 (모바일에서는 화면 위쪽에 적당한 비율로 배치) */}
+            <div className="w-full max-w-[720px] md:flex-1 group relative shrink-0">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-              <div className="relative aspect-video md:aspect-[4/3] rounded-2xl overflow-hidden bg-black/80 border border-white/10 shadow-2xl">
+              {/* 모바일 aspect-video 유지 */}
+              <div className="relative aspect-video md:aspect-[4/3] rounded-xl md:rounded-2xl overflow-hidden bg-black/80 border border-white/10 shadow-2xl">
                 <img
                   src={act.image}
                   alt={act.title}
@@ -116,20 +121,26 @@ const ActivityPage = () => {
             </div>
 
             {/* 텍스트 설명 */}
-            <div className="w-full md:w-[500px] space-y-8">
+            <div className="w-full md:w-[500px] space-y-4 md:space-y-8 px-2 md:px-0">
               <div>
-                <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white/95">
+                {/* 모바일 폰트 축소 (text-3xl) 및 타이틀 중앙 정렬 추가 */}
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white/95 text-center md:text-left">
                   {act.title}
                 </h2>
               </div>
 
-              <ul className="space-y-5">
+              {/* 리스트 여백 축소 (space-y-3) */}
+              <ul className="space-y-3 md:space-y-5">
                 {act.description.map((desc, i) => (
-                  <li key={i} className="flex items-start gap-4 group/item">
-                    <div className="mt-2.5 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] group-hover/item:scale-125 transition-all" />
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 md:gap-4 group/item"
+                  >
+                    {/* 모바일 도트 위치 미세 조정 */}
+                    <div className="mt-1.5 md:mt-2.5 w-1.5 h-1.5 md:w-2 md:h-2 shrink-0 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] group-hover/item:scale-125 transition-all" />
                     <p
-                      className="text-gray-300 text-lg group-hover/item:text-white transition-colors leading-relaxed break-keep"
-                      // 이 부분이 핵심입니다.
+                      // 모바일 텍스트 축소 (text-sm), 긴 글자 안 깨지게 break-keep 적용
+                      className="text-gray-300 text-sm md:text-lg lg:text-lg group-hover/item:text-white transition-colors leading-relaxed break-keep"
                       dangerouslySetInnerHTML={{ __html: desc }}
                     />
                   </li>
@@ -141,7 +152,7 @@ const ActivityPage = () => {
       ))}
 
       {/* [마지막 섹션] 푸터 */}
-      <section className="relative w-full h-fit snap-end z-10">
+      <section className="relative w-full h-fit snap-end z-10 bg-black/50">
         <FooterBar />
       </section>
     </main>

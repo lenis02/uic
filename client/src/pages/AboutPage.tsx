@@ -29,22 +29,22 @@ interface Executive {
 
 // --- 컴포넌트들 ---
 const GreetingSection = ({ data }: { data: Executive }) => (
-  <div className="snap-start min-h-full flex flex-col justify-center px-4 md:px-0 relative">
-    {/* 타이틀 영역 (변경 없음) */}
-    <div className="absolute top-2 left-0 mb-8 md:mb-12 w-fit">
-      <h1 className="text-4xl font-semibold tracking-tight text-white/80">
+  // 모바일에서 텍스트와 타이틀이 겹치지 않게 py-12 추가
+  <div className="snap-start min-h-full flex flex-col justify-center px-0 relative py-12 lg:py-0">
+    {/* 타이틀 영역 */}
+    <div className="absolute top-0 lg:top-2 left-0 mb-6 lg:mb-12 w-fit">
+      <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-white/80">
         {data.role} 인삿말
       </h1>
-      <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
+      <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-2 md:mt-4 rounded-full" />
     </div>
 
-    {/* [핵심 변경] Grid -> Flex 로 변경 */}
-    {/* 모바일: flex-col (위아래), PC(lg이상): flex-row (좌우) */}
-    <div className="flex flex-row items-center gap-10 lg:gap-20 w-full">
-      {/* 1. 텍스트 영역 (왼쪽) */}
-      {/* flex-1을 주어 남은 공간을 모두 차지하게 함 */}
-      <div className="flex-1 leading-relaxed text-justify text-lg space-y-6 break-keep w-full">
-        <p className="font-semibold text-xl text-white">
+    {/* [핵심] 모바일: flex-col, PC(lg이상): flex-row */}
+    <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-20 w-full mt-10 lg:mt-0">
+      
+      {/* 1. 텍스트 영역 (왼쪽/위) */}
+      <div className="flex-1 leading-relaxed text-justify text-sm md:text-lg space-y-4 md:space-y-6 break-keep w-full">
+        <p className="font-semibold text-lg md:text-xl text-white">
           {data.greeting.split(data.name).map((part, i, arr) => (
             <span key={i}>
               {part}
@@ -54,16 +54,16 @@ const GreetingSection = ({ data }: { data: Executive }) => (
             </span>
           ))}
         </p>
-        <p className="font-light whitespace-pre-line">{data.content}</p>
-        <p className="font-light italic border-l-2 border-white pl-4">
+        {/* 모바일 텍스트 폰트 크기 최적화 */}
+        <p className="font-light whitespace-pre-line text-xs md:text-base">{data.content}</p>
+        <p className="font-light italic border-l-2 border-white pl-4 text-xs md:text-base">
           {data.quote}
         </p>
       </div>
 
-      {/* 2. 이미지 및 이름 영역 (오른쪽) */}
-      {/* shrink-0을 주어 텍스트가 길어져도 사진이 찌그러지지 않게 함 */}
-      <div className="shrink-0 flex flex-col items-center justify-end h-full w-auto">
-        <div className="relative h-[20vh] lg:h-[35vh] aspect-[3/4] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl group">
+      {/* 2. 이미지 및 이름 영역 (오른쪽/아래) */}
+      <div className="shrink-0 flex flex-col items-center lg:items-end justify-end w-full lg:w-auto mt-4 lg:mt-0">
+        <div className="relative h-[25vh] lg:h-[35vh] aspect-[3/4] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl group self-center lg:self-auto">
           <img
             src={data.image}
             className="w-full h-full object-cover p-0 opacity-90 transition-transform duration-500 group-hover:scale-105"
@@ -71,12 +71,12 @@ const GreetingSection = ({ data }: { data: Executive }) => (
           />
         </div>
 
-        {/* 이름 텍스트 (사진 바로 아래) */}
-        <div className="text-right pt-6 w-full lg:max-w-[400px]">
-          <span className="text-xl font-semibold tracking-widest text-white">
+        {/* 이름 텍스트 */}
+        <div className="text-center lg:text-right pt-4 lg:pt-6 w-full lg:max-w-[400px]">
+          <span className="text-lg md:text-xl font-semibold tracking-widest text-white">
             {data.name}
           </span>
-          <p className="text-gray-500 text-sm">{data.fullRole}</p>
+          <p className="text-gray-500 text-xs md:text-sm">{data.fullRole}</p>
         </div>
       </div>
     </div>
@@ -181,22 +181,27 @@ const AboutPage = () => {
 
   return (
     <>
-      <main className="relative w-full h-screen overflow-hidden text-white pt-32 pb-10">
+      {/* 모바일에서 상하단 패딩 축소 */}
+      <main className="relative w-full h-screen overflow-hidden text-white pt-20 md:pt-32 pb-6 md:pb-10">
         <img
           src={assets.bg_about}
           alt="배경"
           className="fixed inset-0 z-0 w-full h-full object-cover opacity-20 pointer-events-none"
         />
 
-        <div className="relative z-10 max-w-[1600px] mx-auto px-6 md:px-12 h-full">
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-2xl p-8 md:p-12 overflow-hidden mt-8 border border-white/5 shadow-2xl">
+        {/* 모바일 좌우 패딩 축소 px-4 */}
+        <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-12 h-full">
+          {/* 모바일 패딩 축소(p-4), 모서리 둥글게(rounded-2xl) 적용 */}
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-2xl p-4 md:p-8 lg:p-12 overflow-hidden mt-8 border border-white/5 shadow-2xl md:rounded-none">
+            
+            {/* 좌측 탭 네비게이션 (모바일에서 가로 스크롤 허용) */}
             <aside className="lg:w-40 shrink-0 z-20">
-              <nav className="flex flex-row lg:flex-col gap-3">
+              <nav className="flex flex-row lg:flex-col gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-2 lg:pb-0">
                 {(['greeting', 'history'] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-6 py-2.5 cursor-pointer rounded-lg text-sm font-bold transition-all duration-300 whitespace-nowrap ${
+                    className={`px-4 md:px-6 py-2 md:py-2.5 cursor-pointer text-xs md:text-sm font-bold transition-all duration-300 whitespace-nowrap ${
                       activeTab === tab
                         ? 'bg-blue-600/10 text-blue-400 border border-blue-500/50 shadow-[0_4px_15px_rgba(37,99,235,0.2)]'
                         : 'text-white/40 hover:text-white hover:bg-white/5'
@@ -208,39 +213,40 @@ const AboutPage = () => {
               </nav>
             </aside>
 
+            {/* 본문 섹션 */}
             <section
               ref={scrollRef}
-              className={`flex-1 h-full overflow-y-auto pr-4 custom-scrollbar z-20 scroll-smooth scrollbar-hide ${
+              className={`flex-1 h-full overflow-y-auto pr-2 md:pr-4 custom-scrollbar z-20 scroll-smooth scrollbar-hide ${
                 activeTab === 'greeting' ? 'snap-y snap-mandatory' : ''
               }`}
             >
               {activeTab === 'greeting' ? (
                 <div className="h-full">
-                  {/* [수정] 백엔드에서 받아온 executives 배열 매핑 */}
                   {executives.map((exec) => (
                     <GreetingSection key={exec.role} data={exec} />
                   ))}
-                  <div className="mt-10 animate-bounce text-center text-gray-500 text-sm">
+                  <div className="mt-10 animate-bounce text-center text-gray-500 text-xs md:text-sm">
                     ↓ scroll
                   </div>
                 </div>
               ) : (
-                <div className="pb-32">
+                <div className="pb-20 md:pb-32">
                   <header className="">
                     <div className="mb-4 w-fit">
-                      <h1 className="text-4xl pt-2 font-semibold tracking-tight text-white/80">
+                      <h1 className="text-2xl md:text-4xl pt-2 font-semibold tracking-tight text-white/80">
                         연혁
                       </h1>
-                      <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-4 rounded-full" />
+                      <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-2 md:mt-4 rounded-full" />
                     </div>
                   </header>
 
-                  <div className="flex px-6 flex-wrap gap-4 mb-12 sticky top-0 z-30 py-6 border-b border-white/10 rounded-xl bg-black/40 backdrop-blur-xl">
+                  {/* 연대별 필터 버튼 (모바일 가로 스크롤 추가) */}
+                  <div className="flex px-2 md:px-6 flex-row overflow-x-auto lg:flex-wrap gap-2 md:gap-4 mb-8 md:mb-12 sticky top-0 z-30 py-3 md:py-6 border-b border-white/10 rounded-xl bg-black/40 backdrop-blur-xl scrollbar-hide">
                     {decadeButtons.map((decade) => (
                       <button
                         key={decade}
                         onClick={() => setActiveDecade(decade)}
-                        className={`px-6 py-2.5 cursor-pointer rounded-lg text-sm font-bold whitespace-nowrap ${
+                        className={`px-4 md:px-6 py-1.5 md:py-2.5 cursor-pointer rounded-lg text-xs md:text-sm font-bold whitespace-nowrap ${
                           activeDecade === decade
                             ? 'bg-blue-600/10 text-blue-400 border border-blue-500/50 shadow-[0_4px_15px_rgba(37,99,235,0.2)]'
                             : 'text-white/40 hover:text-white hover:bg-white/5'
@@ -251,24 +257,26 @@ const AboutPage = () => {
                     ))}
                   </div>
 
-                  <div className="space-y-16 border-l border-white/10 ml-4 pl-10 relative">
+                  {/* 타임라인 영역 (모바일에서 여백 축소 및 도트 위치 재계산) */}
+                  {/* 데스크탑: ml-4 pl-10 (도트 -45.5px) / 모바일: ml-2 pl-6 (도트 -29px) */}
+                  <div className="space-y-10 md:space-y-16 border-l border-white/10 ml-2 md:ml-4 pl-6 md:pl-10 relative">
                     {filteredHistory.length > 0 ? (
                       filteredHistory.map((item) => (
                         <div
                           key={item.year}
                           className="relative group animate-fadeIn"
                         >
-                          <div className="absolute -left-[45.5px] top-2 w-2.5 h-2.5 bg-blue-500 rounded-full shadow-[0_0_10px_#a855f7]" />
-                          <h3 className="text-3xl font-bold text-white mb-6 tracking-tight">
+                          <div className="absolute -left-[29px] md:-left-[45.5px] top-1.5 md:top-2 w-2 md:w-2.5 h-2 md:h-2.5 bg-blue-500 rounded-full shadow-[0_0_10px_#a855f7]" />
+                          <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-6 tracking-tight">
                             {item.year}
                           </h3>
-                          <ul className="space-y-6">
+                          <ul className="space-y-4 md:space-y-6">
                             {item.events.map((event, i) => (
                               <li key={i} className="flex flex-col group/item">
-                                <span className="font-bold text-lg">
+                                <span className="font-bold text-base md:text-lg">
                                   {event.date}
                                 </span>
-                                <span className="text-gray-300 font-medium mt-1 break-keep leading-relaxed whitespace-pre-wrap group-hover/item:text-white transition-colors italic">
+                                <span className="text-sm md:text-base text-gray-300 font-medium mt-1 break-keep leading-relaxed whitespace-pre-wrap group-hover/item:text-white transition-colors italic">
                                   {event.title}
                                 </span>
                               </li>
@@ -277,7 +285,7 @@ const AboutPage = () => {
                         </div>
                       ))
                     ) : (
-                      <div className="text-white/50 text-lg">
+                      <div className="text-white/50 text-base md:text-lg">
                         등록된 연혁이 없습니다.
                       </div>
                     )}

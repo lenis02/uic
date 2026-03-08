@@ -27,12 +27,12 @@ const Navbar = () => {
           <img
             src={assets.logo_uic}
             alt="UIC Logo"
-            className="w-40 ml-8 -mt-4 aspect-[5/3] transition-all select-none duration-300 hover:brightness-125"
+            className="w-24 md:w-40 w-24 ml-4 md:ml-8 md:-mt-4 aspect-[5/3] transition-all select-none duration-300 hover:brightness-125"
           />
-          <p className="w-60 text-white text-[10px] font-pre font-thin text-center">
+          <p className="w-40 md:w-60 text-white text-[8px] md:text-[10px] font-pre font-thin text-center">
             University student Investment Club
           </p>
-          <p className="w-60 -mt-1 text-white text-[14px] font-pre font-thin text-center">
+          <p className="w-40 md:w-60 md:-mt-1 text-white text-[11px] md:text-[14px] font-pre font-thin text-center">
             전국대학생투자동아리연합회
           </p>
         </Link>

@@ -41,57 +41,51 @@ const UICPartner = () => {
       id="partner"
       className="relative h-screen w-full snap-start flex items-center justify-center overflow-hidden"
     >
-      {/* 배경 장식 (선택 사항: Network와 구분하기 위해 미세한 배경 추가 가능) */}
+      {/* 배경 장식 */}
       <div className="absolute inset-0 bg-gray-50/10 z-0 pointer-events-none" />
 
-      {/* 메인 컨테이너 */}
-      <div className="relative z-10 mt-20 md:mt-32 bg-white w-[90%] h-[60%] md:h-[65%] max-w-[1300px] max-h-[850px] rounded-[40px] shadow-2xl flex flex-col items-center justify-between p-6 md:p-12 border border-gray-100">
-        {/* 헤더: NETWORK와 폰트 스타일은 같지만 내용은 다르게 */}
-        <div className="text-center mb-4 md:mb-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
+      {/* 메인 컨테이너 (모바일에서 답답하지 않게 h-[80%]로 확장, 데스크탑은 h-[65%] 유지) */}
+      <div className="relative z-10 mt-20 md:mt-32 bg-white w-[85%] md:w-[85%] h-[60%] md:h-[65%] max-w-[1300px] max-h-[850px] rounded-[30px] md:rounded-[40px] shadow-2xl flex flex-col items-center justify-between p-5 md:p-12 border border-gray-100">
+        
+        {/* 헤더 */}
+        <div className="text-center mb-4 md:mb-6 shrink-0">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 tracking-tight">
             PARTNERS
           </h2>
-          <p className="text-sm md:text-base mt-3 text-gray-500 font-medium">
+          <p className="text-xs md:text-base mt-2 md:mt-3 text-gray-500 font-medium">
             UIC와 함께 금융의 미래를 만들어가는 든든한 파트너
           </p>
         </div>
 
-        {/* 메인 영역 (좌우 화살표 + 그리드) */}
-        <div className="flex-1 w-full flex items-center justify-between gap-2 md:gap-8">
-          {/* 왼쪽 화살표 */}
+        {/* 메인 영역 (min-h-0: 모바일 플렉스 박스 넘침 방지) */}
+        <div className="flex-1 w-full flex items-center justify-between gap-1 md:gap-8 min-h-0">
+          
+          {/* 왼쪽 화살표 (shrink-0 추가로 찌그러짐 방지) */}
           <button
             onClick={prevPage}
             disabled={currentPage === 0}
-            className={`p-2 rounded-full hover:bg-gray-100 transition-all ${
+            className={`p-1 md:p-2 shrink-0 rounded-full hover:bg-gray-100 transition-all z-10 ${
               currentPage === 0
                 ? 'opacity-0 cursor-default'
                 : 'opacity-100 cursor-pointer text-gray-600'
             }`}
           >
             <svg
-              className="w-8 h-8 md:w-10 md:h-10"
+              className="w-6 h-6 md:w-10 md:h-10"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M15 19l-7-7 7-7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
-          {/* 파트너 그리드 영역 */}
-          <div className="flex-1 h-full w-full flex items-center justify-center">
-            {/* Grid 변경점:
-               - grid-cols-2 (모바일), grid-cols-4 (PC) : 대학(7열)보다 훨씬 큼
-               - gap-4 : 간격을 넓게 시원하게 배치
-            */}
-            <div className="grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-4 md:gap-8 w-full max-w-5xl h-full content-center">
+          {/* 파트너 그리드 감싸는 영역 (모바일: 세로 스크롤, 데스크탑: 스크롤 숨김) */}
+          <div className="flex-1 h-full w-full flex items-center justify-center overflow-y-auto md:overflow-hidden scrollbar-hide py-2 md:py-0">
+            
+            {/* Grid: 데스크탑(md)은 4열 2행 강제 고정! 모바일은 2열(높이 자동) */}
+            <div className="grid grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-3 md:gap-8 w-full max-w-5xl h-max md:h-full content-start md:content-center m-auto">
               {currentData.map((partner) => {
-                // 로고 이미지 매핑
                 const logoSrc = partner.logo
                   ? assets[partner.logo as keyof typeof assets]
                   : null;
@@ -99,23 +93,23 @@ const UICPartner = () => {
                 return (
                   <div
                     key={partner.name}
+                    // 모바일에서는 카드가 너무 크지 않게 h-20으로 줄임
                     className="
-                      group relative w-full h-24 md:h-32 
-                      bg-white border border-gray-200 rounded-2xl 
-                      flex items-center justify-center p-4 
+                      group relative w-full h-20 md:h-32 
+                      bg-white border border-gray-200 rounded-xl md:rounded-2xl 
+                      flex items-center justify-center p-3 md:p-4 
                       transition-all duration-300 
-                      hover:shadow-lg hover:border-purple-200 hover:-translate-y-1
+                      hover:shadow-lg 
                     "
                   >
                     {logoSrc ? (
                       <img
                         src={logoSrc}
                         alt={partner.name}
-                        className="w-full h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300 opacity-80 group-hover:opacity-100"
+                        className="w-full h-full object-contain filter group-hover:grayscale-0 transition-all duration-300 opacity-80 group-hover:opacity-100"
                       />
                     ) : (
-                      // 로고 없을 시 텍스트 표시
-                      <span className="text-gray-400 font-bold text-sm md:text-lg group-hover:text-purple-700 transition-colors">
+                      <span className="text-gray-400 font-bold text-xs md:text-lg group-hover:text-purple-700 transition-colors">
                         {partner.name}
                       </span>
                     )}
@@ -123,7 +117,7 @@ const UICPartner = () => {
                 );
               })}
 
-              {/* 빈 공간 채우기 (페이지 마지막에 아이템이 부족할 경우 레이아웃 유지) */}
+              {/* 빈 공간 채우기 (데스크탑에서만 표시되도록 제한) */}
               {Array.from({ length: ITEMS_PER_PAGE - currentData.length }).map(
                 (_, i) => (
                   <div
@@ -139,36 +133,31 @@ const UICPartner = () => {
           <button
             onClick={nextPage}
             disabled={currentPage === totalPages - 1}
-            className={`p-2 rounded-full hover:bg-gray-100 transition-all ${
+            className={`p-1 md:p-2 shrink-0 rounded-full hover:bg-gray-100 transition-all z-10 ${
               currentPage === totalPages - 1
                 ? 'opacity-0 cursor-default'
                 : 'opacity-100 cursor-pointer text-gray-600'
             }`}
           >
             <svg
-              className="w-8 h-8 md:w-10 md:h-10"
+              className="w-6 h-6 md:w-10 md:h-10"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M9 5l7 7-7 7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
-        {/* 페이지 인디케이터 (Bar 스타일로 변경하여 차별화) */}
-        <div className="flex gap-2 mt-6 md:mt-8">
+        {/* 페이지 인디케이터 (Bar 스타일) */}
+        <div className="flex gap-2 mt-4 md:mt-8 shrink-0">
           {Array.from({ length: totalPages }).map((_, idx) => (
             <div
               key={idx}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 idx === currentPage
-                  ? 'w-8 bg-purple-600' // 활성화되면 길어짐
+                  ? 'w-6 md:w-8 bg-purple-600' // 모바일 활성화 길이 살짝 조절
                   : 'w-2 bg-gray-300'
               }`}
             />
