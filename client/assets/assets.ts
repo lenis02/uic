@@ -59,6 +59,21 @@ import logo_instagram from './logo_instagram.svg';
 import logo_naver_cafe from './logo_naver_cafe.png';
 import logo_kakao from './logo_kakao.png';
 
+import logo_coop0 from './logo_coop0.svg'
+import logo_coop1 from './logo_coop1.png'
+import logo_coop2 from './logo_coop2.png'
+import logo_coop3 from './logo_coop3.svg'
+import logo_coop4 from './logo_coop4.png'
+import logo_coop5 from './logo_coop5.svg'
+import logo_coop6 from './logo_coop6.svg'
+import logo_coop7 from './logo_coop7.png'
+import logo_coop8 from './logo_coop8.svg'
+import logo_coop9 from './logo_coop9.jpeg'
+import logo_coop10 from './logo_coop10.png'
+import logo_coop11 from './logo_coop11.png'
+import logo_coop12 from './logo_coop12.png'
+import logo_coop13 from './logo_coop13.png'
+
 import activity1 from './activity1.svg';
 import activity2 from './activity2.svg';
 import activity3 from './activity3.svg';
@@ -74,6 +89,21 @@ export const assets = {
 
   logo_uic,
   logo_uic_color,
+
+  logo_coop0,
+  logo_coop1,
+  logo_coop2,
+  logo_coop3,
+  logo_coop4,
+  logo_coop5,
+  logo_coop6,
+  logo_coop7,
+  logo_coop8,
+  logo_coop9,
+  logo_coop10,
+  logo_coop11,
+  logo_coop12,
+  logo_coop13,
 
   logo_gachon,
   logo_catholic,
