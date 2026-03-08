@@ -87,7 +87,6 @@ const MembersPage = () => {
       {/* 기존 px-6를 sm:px-6로 두고 모바일은 px-4로 축소 */}
       <div className="relative mt-4 md:mt-8 z-10 max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 h-full">
         <div className="flex flex-col lg:flex-row gap-4 md:gap-6 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-4 sm:p-6 md:p-12 overflow-hidden border border-white/5 shadow-2xl rounded-2xl md:rounded-none">
-          
           {/* [좌측] 기수 선택 사이드바 */}
           <aside className="w-full lg:w-40 h-auto lg:h-full shrink-0 z-20 flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pb-2 md:pb-4 lg:pb-0 lg:pr-6">
             <h2 className="text-gray-500 text-[10px] md:text-xs font-black tracking-[0.3em] uppercase mb-2 md:mb-4 lg:mb-8 select-none px-1">
@@ -108,7 +107,9 @@ const MembersPage = () => {
                     }`}
                   >
                     {gen}th{' '}
-                    <span className="text-[8px] md:text-[10px] opacity-40 ml-1">Gen</span>
+                    <span className="text-[8px] md:text-[10px] opacity-40 ml-1">
+                      Gen
+                    </span>
                   </button>
                 ))
               )}
@@ -120,7 +121,7 @@ const MembersPage = () => {
             <header className="mb-8 md:mb-16">
               <div className="group w-fit">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter text-white/80">
-                  {activeGen === 19
+                  {activeGen !== 19
                     ? `Alumni ${activeGen}th`
                     : `${activeGen}th`}
                 </h1>
@@ -128,7 +129,9 @@ const MembersPage = () => {
               </div>
               <p className="mt-4 md:mt-6 text-white font-medium tracking-widest text-xs md:text-sm uppercase">
                 UIC의 역사를 함께 만든{' '}
-                <span className="font-bold text-base md:text-lg">{activeGen}기 회장단</span>
+                <span className="font-bold text-base md:text-lg">
+                  {activeGen}기 회장단
+                </span>
                 을 소개합니다.
               </p>
             </header>
