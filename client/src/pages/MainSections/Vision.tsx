@@ -46,6 +46,7 @@ const Vision = () => {
       desc: '기업 및 기관들과의 제휴를 통해\n지속가능한 발전의 기회 제공',
       top: '13.33%', // 80 / 600
       left: '53.33%', // 480 / 900
+      descMargin: '25px',
     },
     {
       title: 'Platform',
@@ -53,6 +54,7 @@ const Vision = () => {
       desc: '취업/진로에 도움될\n다양한 분야의 경험 제공',
       top: '50%', // 300 / 600
       left: '70%', // 630 / 900
+      descMargin: '-15px',
     },
     {
       title: 'Synergy',
@@ -192,7 +194,7 @@ const Vision = () => {
           {visionData.map((item) => (
             <motion.div
               key={item.title}
-              className="absolute text-white w-[33%] -translate-y-1/2"
+              className="absolute text-white w-[38%] -translate-y-1/2"
               style={{ left: item.left, top: item.top }}
               variants={{
                 hidden: { opacity: 0, x: 20 },
@@ -208,13 +210,15 @@ const Vision = () => {
             >
               <div>
                 <h3
-                  className={`text-[clamp(1.2rem,2.5vw,3rem)] font-bold text-center ${item.color}`}
+                  className={`text-4xl lg:text-5xl font-bold text-center ${item.color}`}
                 >
                   {item.title}
                 </h3>
-                <p className="text-gray-300 text-center mt-2 font-light text-[clamp(0.7rem,1vw,1rem)] whitespace-pre-line">
-                  {item.desc}
-                </p>
+                <div style={{ marginLeft: item.descMargin }}>
+                  <p className="text-gray-300 text-center mt-2 font-light text-[clamp(0.7rem,1vw,1rem)] whitespace-pre-line">
+                    {item.desc}
+                  </p>
+                </div>
               </div>
             </motion.div>
           ))}
