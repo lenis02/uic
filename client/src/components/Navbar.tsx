@@ -17,24 +17,19 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 w-full z-[100] bg-transparent px-6 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between h-full min-h-[80px]">
+      <div className="max-w-[1800px] mx-auto flex items-center justify-between h-full min-h-[80px] pt-4">
         {/* 1. 로고 */}
         <Link
           to="/"
-          className="flex flex-col items-center block cursor-pointer shrink-0 z-[110]"
+          className="flex flex-col items-center block cursor-pointer shrink-0 z-[110] mt-4"
           onClick={() => setIsOpen(false)}
         >
           <img
             src={assets.logo_uic}
             alt="UIC Logo"
-            className="w-24 md:w-40 w-24 ml-4 md:ml-8 md:-mt-4 aspect-[5/3] transition-all select-none duration-300 hover:brightness-125"
+            className="w-24 ml-4 md:ml-8 md:w-40 w-24 aspect-[5/3] transition-all select-none duration-300 hover:brightness-125"
           />
-          <p className="w-40 md:w-60 text-white text-[8px] md:text-[10px] font-pre font-thin text-center">
-            University student Investment Club
-          </p>
-          <p className="w-40 md:w-60 md:-mt-1 text-white text-[11px] md:text-[14px] font-pre font-thin text-center">
-            전국대학생투자동아리연합회
-          </p>
+
         </Link>
 
         {/* 2. 데스크탑 메뉴 (기존 유지) */}

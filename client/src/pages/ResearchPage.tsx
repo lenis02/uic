@@ -169,9 +169,9 @@ const ResearchPage = () => {
       />
 
       {/* 모바일 양옆 패딩 좁힘 (px-4) */}
-      <div className="relative mt-4 md:mt-0 z-10 max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col mb-3">
+      <div className="relative mt-4 md:mt-0 z-10 max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col">
         {/* 전체 컨테이너 모바일 패딩 조정 (p-4) */}
-        <div className="flex flex-col w-full h-full bg-black/40 backdrop-blur-xl p-4 md:p-8 lg:p-12 overflow-hidden border border-white/5 shadow-2xl rounded-lg md:rounded-sm mt-4">
+        <div className="flex flex-col w-full h-full bg-black/40 backdrop-blur-xl p-4 md:p-8 lg:p-12 overflow-hidden border border-white/5 shadow-2xl rounded-lg md:rounded-sm mt-8">
           {/* [상단 영역] 타이틀 & 검색바 */}
           <header className="mb-6 md:mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
             <div className="w-fit shrink-0">
