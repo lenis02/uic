@@ -260,12 +260,12 @@ const ResearchPage = () => {
                     key={item.id}
                     className="group bg-[#0a0a0a] border border-white/5 overflow-hidden hover:border-blue-500/30 transition-all duration-500 flex flex-col h-full shadow-lg rounded-xl md:rounded-sm"
                   >
-                    <div className="relative w-full h-36 md:h-44 shrink-0 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
+                    <div className="relative w-full max-h-[120px] h-full md:h-44 shrink-0 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
                       {item.thumbnailUrl ? (
                         <img
                           src={getImageUrl(item.thumbnailUrl) || ''}
                           alt={item.title}
-                          className="w-full max-h-[120px] h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                          className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center gap-2">
