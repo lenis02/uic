@@ -128,9 +128,11 @@ const MembersPage = () => {
                 <div className="w-full h-[2px] md:h-[3px] bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 shadow-[0_0_15px_rgba(34,211,238,0.4)] mt-2 md:mt-4 transition-all duration-500 group-hover:scale-x-110" />
               </div>
               <p className="mt-4 md:mt-6 text-white font-medium tracking-widest text-xs md:text-sm uppercase">
-                UIC의 역사를 함께 만든{' '}
+                {activeGen !== 19
+                  ? `UIC의 역사를 함께 만든 `
+                  : `UIC의 새로운 역사를 함께할 `}
                 <span className="font-bold text-base md:text-lg">
-                  {activeGen}기 회장단
+                  {activeGen}대 회장단
                 </span>
                 을 소개합니다.
               </p>

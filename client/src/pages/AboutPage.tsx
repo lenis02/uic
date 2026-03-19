@@ -34,7 +34,7 @@ const GreetingSection = ({ data }: { data: Executive }) => (
     {/* 타이틀 영역 */}
     <div className="absolute top-0 lg:top-2 left-0 mb-6 lg:mb-12 w-fit">
       <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-white/80">
-        {data.role} 인삿말
+        {data.role} 인사말
       </h1>
       <div className="w-full h-1 bg-gradient-to-br from-cyan-700 via-blue-800 to-gray-900 mt-2 md:mt-4 rounded-full" />
     </div>
