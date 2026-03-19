@@ -1,8 +1,8 @@
 import FooterBar from '../components/FooterBar';
 
 // 파일 경로 설정 (public 폴더 기준)
-const CLUB_FILE_URL = '/files/UIC 동아리 가입 등록원 (2024).hwp';
-const INDIVIDUAL_FILE_URL = '/files/UIC개인회원가입서.docx';
+const CLUB_FILE_URL = '/files/UIC 동아리 및 학회 가입 등록원 (2026).pptx';
+const INDIVIDUAL_FILE_URL = '/files/UIC 개인회원 가입 등록원 (2026).pptx';
 
 const JoinUs = () => {
   return (
