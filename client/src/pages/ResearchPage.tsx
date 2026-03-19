@@ -132,17 +132,7 @@ const ResearchPage = () => {
     let downloadUrl = originalUrl;
 
     if (originalUrl.includes('/upload/')) {
-      const safeTitle = item.title
-        .replace(/[^a-zA-Z0-9가-힣\s_-]/g, '')
-        .trim()
-        .replace(/\s+/g, '_');
-
-      const encodedTitle = encodeURIComponent(safeTitle);
-
-      downloadUrl = originalUrl.replace(
-        '/upload/',
-        `/upload/fl_attachment:${encodedTitle}/`,
-      );
+      downloadUrl = originalUrl.replace('/upload/', `/upload/fl_attachment/`);
     }
 
     // 4. 다운로드 실행
@@ -275,7 +265,7 @@ const ResearchPage = () => {
                         <img
                           src={getImageUrl(item.thumbnailUrl) || ''}
                           alt={item.title}
-                          className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                          className="w-full max-h-[120px] h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center gap-2">

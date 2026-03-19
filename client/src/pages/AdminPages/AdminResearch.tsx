@@ -71,8 +71,19 @@ export default function AdminResearch() {
     formData.append('year', form.year);
     formData.append('description', form.description);
 
-    if (pdfFile) formData.append('pdf', pdfFile);
-    if (thumbnailFile) formData.append('thumbnail', thumbnailFile);
+    const makeSafeFile = (file: File, prefix: string) => {
+      const extension = file.name.split('.').pop();
+      // 예: report_1700000000000.pdf 형식으로 완벽하게 영어/숫자화
+      const safeName = `${prefix}_${Date.now()}.${extension}`;
+      return new File([file], safeName, { type: file.type });
+    };
+
+    if (pdfFile) {
+      formData.append('pdf', makeSafeFile(pdfFile, 'report'));
+    }
+    if (thumbnailFile) {
+      formData.append('thumbnail', makeSafeFile(thumbnailFile, 'thumb'));
+    }
 
     try {
       if (editingId) {
