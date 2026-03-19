@@ -10,7 +10,7 @@ export class Research extends BaseEntity {
   category: string;
 
   @Column()
-  author: string;
+  year: string;
 
   @Column()
   pdfUrl: string;
@@ -19,7 +19,7 @@ export class Research extends BaseEntity {
   thumbnailUrl: string | null;
 
   @Column({ default: 0 })
-  views: number;
+  downloads: number;
 
   @Column({ type: 'text', nullable: true })
   description: string | null;

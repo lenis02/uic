@@ -11,10 +11,10 @@ export class CreateResearchDto {
   @IsNotEmpty()
   category: string;
 
-  // 작성자 (필수)
+  // 연도 (필수)
   @IsString()
   @IsNotEmpty()
-  author: string;
+  year: string;
 
   // 간략한 설명
   @IsString()

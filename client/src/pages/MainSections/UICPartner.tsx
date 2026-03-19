@@ -1,8 +1,8 @@
+'use client';
 import { useState } from 'react';
 import { assets } from '../../../assets/assets';
 
 const partners = [
-  // ... 파트너 데이터 동일 ...
   { name: '삼성증권', logo: 'logo_coop0' },
   { name: '한국투자증권', logo: 'logo_coop1' },
   { name: '미래에셋증권', logo: 'logo_coop2' },
@@ -39,12 +39,11 @@ const UICPartner = () => {
   return (
     <section
       id="partner"
-      // 💡 수정: 모바일 스냅 해제 (md:snap-start)
       className="relative h-screen w-full md:snap-start flex items-center justify-center overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gray-50/10 z-0 pointer-events-none" />
+      <div className="absolute inset-0 md:bg-gray-50/10 z-0 pointer-events-none" />
 
-      <div className="relative z-10 mt-20 md:mt-32 bg-white w-[85%] md:w-[85%] h-[60%] md:h-[65%] max-w-[1300px] max-h-[850px] rounded-[30px] md:rounded-[40px] shadow-2xl flex flex-col items-center justify-between p-5 md:p-12 border border-gray-100">
+      <div className="relative z-10 mt-20 md:mt-32 bg-white w-[70%] md:w-[85%] h-[60%] md:h-[65%] max-w-[1300px] max-h-[850px] rounded-[30px] md:rounded-[40px] shadow-2xl flex flex-col items-center justify-between p-5 md:p-12 border border-gray-100">
         <div className="text-center mb-4 md:mb-6 shrink-0">
           <h2 className="text-2xl md:text-4xl font-bold text-gray-900 tracking-tight">
             PARTNERS
@@ -55,32 +54,34 @@ const UICPartner = () => {
         </div>
 
         {/* =========================================
-            [1] 모바일 레이아웃 (가로 스크롤 스와이프)
+            [1] 모바일 레이아웃 (카드 제거 -> 깔끔한 3열 그리드 로고 월)
             ========================================= */}
-        <div className="flex md:hidden w-full flex-1 overflow-x-auto snap-x snap-mandatory scrollbar-hide items-center gap-4 px-2 py-4">
-          {partners.map((partner) => {
-            const logoSrc = partner.logo
-              ? assets[partner.logo as keyof typeof assets]
-              : null;
-            return (
-              <div
-                key={partner.name}
-                className="snap-center shrink-0 w-[60%] aspect-[2/1] bg-white border border-gray-200 rounded-xl flex items-center justify-center p-4 shadow-sm"
-              >
-                {logoSrc ? (
-                  <img
-                    src={logoSrc}
-                    alt={partner.name}
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <span className="text-gray-400 font-bold text-sm text-center break-keep">
-                    {partner.name}
-                  </span>
-                )}
-              </div>
-            );
-          })}
+        <div className="flex md:hidden w-full flex-1 overflow-y-auto scrollbar-hide px-2 py-4">
+          <div className="grid grid-cols-2 gap-y-8 gap-x-4 w-full place-items-center content-start">
+            {partners.map((partner) => {
+              const logoSrc = partner.logo
+                ? assets[partner.logo as keyof typeof assets]
+                : null;
+              return (
+                <div
+                  key={partner.name}
+                  className="w-full flex items-center justify-center p-2"
+                >
+                  {logoSrc ? (
+                    <img
+                      src={logoSrc}
+                      alt={partner.name}
+                      className="w-full h-10 object-contain"
+                    />
+                  ) : (
+                    <span className="text-gray-400 font-bold text-xs text-center break-keep">
+                      {partner.name}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* =========================================

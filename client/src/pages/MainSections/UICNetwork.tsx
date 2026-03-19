@@ -77,12 +77,11 @@ const UICNetwork = () => {
   return (
     <section
       id="network"
-      // 💡 수정: 모바일 스냅 해제 (md:snap-start)
       className="relative h-screen w-full md:snap-start flex items-center justify-center overflow-hidden"
     >
-      <div className="relative z-10 mt-20 md:mt-32 bg-white w-[85%] md:w-[85%] h-[80%] md:h-[65%] max-w-[1200px] max-h-[850px] rounded-[24px] md:rounded-[40px] shadow-xl flex flex-col items-center justify-between p-4 md:p-6 lg:p-10">
+      <div className="relative z-10 mt-20 md:mt-32 bg-white w-[70%] md:w-[85%] h-[60%] md:h-[65%] max-w-[1200px] max-h-[850px] rounded-[24px] md:rounded-[40px] shadow-xl flex flex-col items-center justify-between p-4 md:p-6 lg:p-10">
         {/* 헤더 */}
-        <div className="text-center mb-2 shrink-0">
+        <div className="text-center mb-4 shrink-0">
           <h2 className="text-2xl md:text-4xl lg:text-4xl font-bold text-gray-900">
             NETWORK
           </h2>
@@ -92,17 +91,11 @@ const UICNetwork = () => {
         </div>
 
         {/* =========================================
-            [1] 모바일 레이아웃 (가로 스크롤 - 3줄 배치)
+            [1] 모바일 레이아웃 (카드 제거 -> 4열 심플 그리드 세로 스크롤)
             ========================================= */}
-        <div className="flex md:hidden flex-1 w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide py-4 items-center">
-          <div className="grid grid-rows-3 grid-flow-col gap-x-6 gap-y-4 px-2">
+        <div className="flex md:hidden flex-1 w-full overflow-y-auto scrollbar-hide py-2 px-1">
+          <div className="grid grid-cols-3 gap-y-8 gap-x-2 w-full content-start">
             {universities.map((uni) => {
-              const isDarkBg = [
-                '가톨릭대학교',
-                '경기대학교',
-                '한성대학교',
-                '홍익대학교',
-              ].includes(uni.name);
               const logoSrc = uni.logo
                 ? assets[uni.logo as keyof typeof assets]
                 : null;
@@ -110,25 +103,23 @@ const UICNetwork = () => {
               return (
                 <div
                   key={uni.name}
-                  className="snap-center shrink-0 flex flex-col items-center gap-2 w-[70px]"
+                  className="flex flex-col items-center gap-1.5 w-full"
                 >
-                  <div
-                    className={`w-14 h-14 rounded-full flex items-center justify-center shadow-sm ${isDarkBg ? 'bg-gray-900' : 'bg-gray-100'}`}
-                  >
+                  <div className="w-10 h-10 flex items-center justify-center">
                     {logoSrc ? (
                       <img
                         src={logoSrc}
                         alt={uni.name}
                         loading="lazy"
-                        className="w-full h-full object-contain p-2"
+                        className="w-full h-full object-contain"
                       />
                     ) : (
-                      <span className="text-[8px] font-bold text-center text-gray-600 px-1 break-keep">
+                      <span className="text-[8px] font-bold text-center text-gray-500 px-1 break-keep">
                         {uni.name}
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] text-gray-700 font-semibold truncate w-full text-center">
+                  <span className="text-[9px] text-gray-600 font-medium w-full text-center truncate">
                     {uni.name}
                   </span>
                 </div>

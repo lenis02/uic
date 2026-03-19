@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../api/api';
 
 // ✅ 선택 가능한 카테고리 ('전체' 제외)
-const CATEGORIES = ['대상', '최우수상', '우수상', '장려상', '기타'];
+const CATEGORIES = ['대상', '최우수상', '우수상', '장려상', '수상작', '기타'];
 
 export default function AdminResearch() {
   const [researchList, setResearchList] = useState<any[]>([]);

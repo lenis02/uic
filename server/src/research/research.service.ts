@@ -92,8 +92,8 @@ export class ResearchService {
   }
 
   async increaseViewCount(id: number) {
-    // id에 해당하는 row의 'views' 컬럼을 1 증가시킵니다.
-    await this.researchRepository.increment({ id }, 'views', 1);
+    // id에 해당하는 row의 'downloads' 컬럼을 1 증가시킵니다.
+    await this.researchRepository.increment({ id }, 'downloads', 1);
     return { success: true };
   }
 }
