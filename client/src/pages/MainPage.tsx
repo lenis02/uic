@@ -10,27 +10,25 @@ const MainPage = () => {
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
-    // 마지막 섹션 근처인지 확인 (바닥에서 50px 여유)
     const isAtBottom =
       target.scrollTop + target.clientHeight >= target.scrollHeight - 50;
     setShowArrow(!isAtBottom);
   };
 
   return (
-    /* 최상위 컨테이너: 배경색을 설정하고 스냅 적용 */
     <div
       id="main-container"
-      onScroll={handleScroll} // 스크롤 이벤트 연결
-      className="relative font-pre h-screen w-full overflow-y-auto snap-y snap-mandatory bg-uic-dark scroll-smooth scrollbar-hide"
+      onScroll={handleScroll}
+      // 💡 수정: 모바일에서는 스냅 해제, md(태블릿) 이상에서만 snap 활성화
+      className="relative font-pre h-screen w-full overflow-y-auto md:snap-y md:snap-mandatory bg-uic-dark scroll-smooth custom-scrollbar scrollbar-hide"
     >
       <MainSidebar />
-
       <SectionsBase showArrow={showArrow} />
 
-      {/* [SECTION 1] 메인 타이틀 */}
       <section
         id="home"
-        className="relative h-screen w-full snap-start flex items-center justify-center z-10"
+        // 💡 수정: md 이상에서만 snap-start 적용
+        className="relative h-screen w-full md:snap-start flex items-center justify-center z-10"
       >
         <div className="text-center px-4 select-none">
           <h1 className="text-[28px] md:text-[40px] font-bold text-white leading-none m-0">
@@ -42,13 +40,8 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* [SECTION 2] UIC 비전 */}
       <Vision />
-
-      {/* [SECTION 3] UIC 연결 대학 */}
       <UICNetwork />
-
-      {/* [SECTION 4] UIC 협력사 */}
       <UICPartner />
     </div>
   );

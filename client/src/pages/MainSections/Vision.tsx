@@ -67,7 +67,7 @@ const Vision = () => {
     <section
       id="vision"
       // 💡 [수정됨] justify-center를 제거하여 무조건 위에서부터 요소가 쌓이도록 변경
-      className="min-h-screen w-full pt-28 md:pt-32 bg-black/40 flex flex-col items-center snap-start relative overflow-hidden px-6"
+      className="min-h-screen w-full pt-28 md:pt-32 bg-black/40 flex flex-col items-center md:snap-start relative overflow-hidden px-6"
     >
       {/* === 제목 영역: 무조건 최상단(NavBar 바로 아래 pt 여백 다음)에 고정됨 === */}
       <div className="relative z-10 text-center shrink-0 mt-4 md:mt-0">
@@ -189,7 +189,7 @@ const Vision = () => {
           </svg>
 
           {/* === 텍스트 영역 === */}
-          {visionData.map((item, index) => (
+          {visionData.map((item) => (
             <motion.div
               key={item.title}
               className="absolute text-white w-[33%] -translate-y-1/2"
