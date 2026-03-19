@@ -85,7 +85,7 @@ const MembersPage = () => {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
 
       {/* 기존 px-6를 sm:px-6로 두고 모바일은 px-4로 축소 */}
-      <div className="relative mt-4 md:mt-8 z-10 max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 h-full">
+      <div className="relative mt-12 z-10 max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 h-full">
         <div className="flex flex-col lg:flex-row gap-4 md:gap-6 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-md p-4 sm:p-6 md:p-12 overflow-hidden border border-white/5 shadow-2xl rounded-2xl md:rounded-none">
           {/* [좌측] 기수 선택 사이드바 */}
           <aside className="w-full lg:w-40 h-auto lg:h-full shrink-0 z-20 flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pb-2 md:pb-4 lg:pb-0 lg:pr-6">

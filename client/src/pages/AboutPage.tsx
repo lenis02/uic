@@ -192,7 +192,7 @@ const AboutPage = () => {
         {/* 모바일 좌우 패딩 축소 px-4 */}
         <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-12 h-full">
           {/* 모바일 패딩 축소(p-4), 모서리 둥글게(rounded-2xl) 적용 */}
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-2xl p-4 md:p-8 lg:p-12 overflow-hidden mt-8 border border-white/5 shadow-2xl md:rounded-none">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-2xl p-4 md:p-8 lg:p-12 overflow-hidden mt-12 border border-white/5 shadow-2xl md:rounded-none">
             
             {/* 좌측 탭 네비게이션 (모바일에서 가로 스크롤 허용) */}
             <aside className="lg:w-40 shrink-0 z-20">

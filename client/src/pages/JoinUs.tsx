@@ -72,10 +72,10 @@ const JoinUs = () => {
             {/* Club 다운로드 버튼: 여백 및 높이 축소 */}
             <a
               href={CLUB_FILE_URL}
-              download="UIC_Club_Application.hwp"
+              download="UIC_Club_Application.pptx"
               className="absolute bottom-4 md:bottom-8 left-4 md:left-8 right-4 md:right-8 h-[44px] md:h-[56px] text-sm md:text-base bg-white text-black font-bold rounded-xl md:rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg overflow-hidden group/btn cursor-pointer flex items-center justify-center z-10"
             >
-              <span className="relative z-10">지원서 양식 다운로드 (.hwp)</span>
+              <span className="relative z-10">지원서 양식 다운로드 (.pptx)</span>
               <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-white opacity-0 group-hover/btn:opacity-100 transition-opacity" />
             </a>
 
@@ -114,11 +114,11 @@ const JoinUs = () => {
             {/* Individual 다운로드 버튼 */}
             <a
               href={INDIVIDUAL_FILE_URL}
-              download="UIC_Individual_Application.docx"
+              download="UIC_Individual_Application.pptx"
               className="absolute bottom-4 md:bottom-8 left-4 md:left-8 right-4 md:right-8 h-[44px] md:h-[56px] text-sm md:text-base bg-white text-black font-bold rounded-xl md:rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg overflow-hidden group/btn cursor-pointer flex items-center justify-center z-10"
             >
               <span className="relative z-10">
-                지원서 양식 다운로드 (.docx)
+                지원서 양식 다운로드 (.pptx)
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-100 to-white opacity-0 group-hover/btn:opacity-100 transition-opacity" />
             </a>

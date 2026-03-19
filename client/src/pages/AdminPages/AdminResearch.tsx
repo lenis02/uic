@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../api/api';
 
 // ✅ 선택 가능한 카테고리 ('전체' 제외)
-const CATEGORIES = ['경제', '산업', '정책', '금융', '기술', '기타'];
+const CATEGORIES = ['대상', '최우수상', '우수상', '장려상', '기타'];
 
 export default function AdminResearch() {
   const [researchList, setResearchList] = useState<any[]>([]);
@@ -10,11 +10,11 @@ export default function AdminResearch() {
   // 수정 모드인지 확인하기 위한 상태 (null이면 생성 모드, ID가 있으면 수정 모드)
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  // 🔹 [변경] category 상태 추가 (기본값: 경제)
+  // 🔹 [변경] category 상태 추가 (기본값: 기타)
   const [form, setForm] = useState({
     title: '',
-    category: '경제',
-    author: '',
+    category: '기타',
+    year: '',
     description: '',
   });
 
@@ -41,8 +41,8 @@ export default function AdminResearch() {
     setEditingId(item.id);
     setForm({
       title: item.title,
-      category: item.category || '경제', // 기존 데이터에 카테고리 없으면 기본값
-      author: item.author,
+      category: item.category || '기타', // 기존 데이터에 카테고리 없으면 기본값
+      year: item.year,
       description: item.description || '',
     });
     setPdfFile(null);
@@ -53,7 +53,7 @@ export default function AdminResearch() {
   // [취소 함수]
   const handleCancelEdit = () => {
     setEditingId(null);
-    setForm({ title: '', category: '경제', author: '', description: '' });
+    setForm({ title: '', category: '기타', year: '', description: '' });
     setPdfFile(null);
     setThumbnailFile(null);
   };
@@ -68,7 +68,7 @@ export default function AdminResearch() {
     const formData = new FormData();
     formData.append('title', form.title);
     formData.append('category', form.category); // 👈 카테고리 전송
-    formData.append('author', form.author);
+    formData.append('year', form.year);
     formData.append('description', form.description);
 
     if (pdfFile) formData.append('pdf', pdfFile);
@@ -133,7 +133,7 @@ export default function AdminResearch() {
             {/* 제목 */}
             <div className="md:col-span-2">
               <label className="text-xs text-gray-400 ml-1 mb-1 block">
-                제목
+                제목(필수)
               </label>
               <input
                 placeholder="리서치 제목"
@@ -168,20 +168,20 @@ export default function AdminResearch() {
             {/* 작성자 */}
             <div className="md:col-span-1">
               <label className="text-xs text-gray-400 ml-1 mb-1 block">
-                작성자
+                작성 연도(필수)
               </label>
               <input
-                placeholder="작성자"
+                placeholder="예 : 2026"
                 className={inputStyle}
-                value={form.author}
-                onChange={(e) => setForm({ ...form, author: e.target.value })}
+                value={form.year}
+                onChange={(e) => setForm({ ...form, year: e.target.value })}
               />
             </div>
           </div>
 
           <div className="w-full">
             <label className="text-xs text-gray-400 ml-1 mb-1 block">
-              설명
+              설명(선택)
             </label>
             <textarea
               placeholder="간략한 설명"
@@ -274,7 +274,7 @@ export default function AdminResearch() {
 
               <div className="p-4 flex flex-col flex-1">
                 <h3 className="font-bold text-gray-100 mb-1">{r.title}</h3>
-                <p className="text-xs text-gray-400 mb-2">{r.author}</p>
+                <p className="text-xs text-gray-400 mb-2">{r.year}</p>
                 <p className="text-xs text-gray-500 mb-4 flex-1 line-clamp-2">
                   {r.description || '설명 없음'}
                 </p>

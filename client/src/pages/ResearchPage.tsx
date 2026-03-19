@@ -8,24 +8,23 @@ interface Research {
   id: number;
   title: string;
   category: string;
-  author: string;
+  year: string; // 💡 수상 연도 (기준이 될 필드)
   description: string;
   pdfUrl: string;
   thumbnailUrl: string;
-  views: number;
+  downloads: number;
   createdAt: string;
 }
 
 // ✅ 정렬 옵션
 const SORT_OPTIONS = [
   { label: '최신순', value: 'latest' },
-  { label: '조회순', value: 'views' },
+  { label: '다운로드순', value: 'downloads' },
   { label: '등록순', value: 'oldest' },
 ];
 
 const ResearchPage = () => {
   const [reports, setReports] = useState<Research[]>([]);
-  // 🔄 변경 1: 카테고리 상태 대신 연도 상태 사용
   const [activeYear, setActiveYear] = useState('전체');
   const [sortBy, setSortBy] = useState('latest');
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,17 +46,17 @@ const ResearchPage = () => {
     fetchReports();
   }, []);
 
-  // ✨ 추가: 데이터에서 연도 목록 동적 추출 (내림차순 정렬)
+  // 💡 수정 1: 연도 목록 추출 로직을 'createdAt'에서 'year'로 변경
   const years = useMemo(() => {
     if (reports.length === 0) return ['전체'];
 
-    // createdAt에서 연도만 추출하여 중복 제거
+    // 데이터의 year 필드에서 직접 추출하여 중복 제거
     const uniqueYears = Array.from(
-      new Set(reports.map((item) => new Date(item.createdAt).getFullYear())),
+      new Set(reports.map((item) => item.year).filter(Boolean)) // null이나 undefined 제거
     );
 
-    // 내림차순 정렬 (2026, 2025...) 후 문자열 변환
-    const sortedYears = uniqueYears.sort((a, b) => b - a).map(String);
+    // 내림차순 정렬 (숫자로 변환해서 비교 후 다시 문자열로)
+    const sortedYears = uniqueYears.sort((a, b) => Number(b) - Number(a));
 
     return ['전체', ...sortedYears];
   }, [reports]);
@@ -73,27 +72,26 @@ const ResearchPage = () => {
       );
     }
 
-    // 🔄 변경 2: 연도 필터링 로직 적용
+    // 💡 수정 2: 연도 필터링 로직을 'createdAt' 기반에서 'year' 기반으로 변경
     if (activeYear !== '전체') {
-      result = result.filter((item) => {
-        const itemYear = new Date(item.createdAt).getFullYear().toString();
-        return itemYear === activeYear;
-      });
+      result = result.filter((item) => item.year === activeYear);
     }
 
     // (3) 정렬 로직
     result.sort((a, b) => {
+      // 최신/등록순 정렬은 여전히 데이터베이스의 등록일(createdAt) 기준을 유지합니다.
+      // (만약 이것도 수상연도 기준 정렬을 원하시면 말씀해주세요!)
       const dateA = new Date(a.createdAt).getTime();
       const dateB = new Date(b.createdAt).getTime();
 
       if (sortBy === 'latest') return dateB - dateA;
       if (sortBy === 'oldest') return dateA - dateB;
-      if (sortBy === 'views') return b.views - a.views;
+      if (sortBy === 'downloads') return b.downloads - a.downloads;
       return 0;
     });
 
     return result;
-  }, [reports, activeYear, sortBy, searchTerm]); // 의존성 배열 activeYear로 변경
+  }, [reports, activeYear, sortBy, searchTerm]);
 
   // 날짜 포맷팅
   const formatDate = (dateString: string) => {
@@ -125,7 +123,9 @@ const ResearchPage = () => {
 
     // 2. 화면 즉시 업데이트
     setReports((prev) =>
-      prev.map((r) => (r.id === item.id ? { ...r, views: r.views + 1 } : r)),
+      prev.map((r) =>
+        r.id === item.id ? { ...r, downloads: r.downloads + 1 } : r,
+      ),
     );
 
     // 3. 파일명 커스터마이징
@@ -147,7 +147,7 @@ const ResearchPage = () => {
     try {
       window.location.href = downloadUrl;
     } catch (error) {
-      console.error('다운로드 시작 실패s:', error);
+      console.error('다운로드 시작 실패:', error);
       window.open(originalUrl, '_blank');
     }
   };
@@ -168,9 +168,7 @@ const ResearchPage = () => {
         className="fixed inset-0 z-0 w-full h-full object-cover opacity-20 pointer-events-none"
       />
 
-      {/* 모바일 양옆 패딩 좁힘 (px-4) */}
-      <div className="relative mt-4 md:mt-0 z-10 max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col">
-        {/* 전체 컨테이너 모바일 패딩 조정 (p-4) */}
+      <div className="relative mt-8 z-10 max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col">
         <div className="flex flex-col w-full h-full bg-black/40 backdrop-blur-xl p-4 md:p-8 lg:p-12 overflow-hidden border border-white/5 shadow-2xl rounded-lg md:rounded-sm mt-8">
           {/* [상단 영역] 타이틀 & 검색바 */}
           <header className="mb-6 md:mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
@@ -206,7 +204,6 @@ const ResearchPage = () => {
           </header>
 
           {/* [중단 영역] Year 탭 및 정렬 */}
-          {/* 모바일에서 정렬(select) 박스가 너무 크지 않게 적절히 배치 */}
           <div className="mb-6 md:mb-12 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-end gap-3 md:gap-4 pb-3 md:pb-4 shrink-0">
             <div className="w-full md:w-auto overflow-hidden">
               <p className="text-[10px] font-black tracking-[0.3em] uppercase text-white/40 mb-2 md:mb-4 ml-1">
@@ -269,10 +266,9 @@ const ResearchPage = () => {
                 {processedReports.map((item) => (
                   <article
                     key={item.id}
-                    className="group relative bg-[#0a0a0a] border border-white/5 overflow-hidden hover:border-blue-500/30 transition-all duration-500 flex flex-col h-full min-h-[300px] md:min-h-[340px] pb-20 shadow-lg rounded-xl md:rounded-sm"
+                    className="group bg-[#0a0a0a] border border-white/5 overflow-hidden hover:border-blue-500/30 transition-all duration-500 flex flex-col h-full shadow-lg rounded-xl md:rounded-sm"
                   >
-                    {/* 썸네일 (모바일은 높이를 살짝 축소 h-36) */}
-                    <div className="relative w-full h-36 md:h-44 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
+                    <div className="relative w-full h-36 md:h-44 shrink-0 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
                       {item.thumbnailUrl ? (
                         <img
                           src={getImageUrl(item.thumbnailUrl) || ''}
@@ -292,7 +288,6 @@ const ResearchPage = () => {
                         </div>
                       )}
 
-                      {/* 조회수 뱃지 */}
                       <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-black/70 backdrop-blur px-1.5 md:px-2 py-1 rounded text-[9px] md:text-[10px] text-white/60 flex items-center gap-1">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -307,10 +302,9 @@ const ResearchPage = () => {
                           <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
                           <circle cx="12" cy="12" r="3" />
                         </svg>
-                        <span className="font-medium">{item.views}</span>
+                        <span className="font-medium">{item.downloads}</span>
                       </div>
 
-                      {/* 카테고리 뱃지 */}
                       <div className="absolute top-2 md:top-3 left-2 md:left-3">
                         <span className="px-2 md:px-3 py-1 bg-black/60 backdrop-blur border border-white/10 text-[8px] md:text-[10px] font-bold text-blue-400 rounded-full uppercase tracking-wider">
                           {item.category}
@@ -318,8 +312,7 @@ const ResearchPage = () => {
                       </div>
                     </div>
 
-                    {/* 텍스트 내용 */}
-                    <div className="p-4 md:p-6">
+                    <div className="p-4 md:p-6 flex flex-col flex-1">
                       <div className="flex justify-between items-center mb-3 md:mb-4 text-[11px] md:text-[13px] font-medium text-white/40">
                         <span className="flex items-center gap-1.5">
                           <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-blue-500 rounded-full" />{' '}
@@ -327,7 +320,7 @@ const ResearchPage = () => {
                         </span>
 
                         <span className="text-white/70 text-[10px] md:text-xs border border-white/10 px-1.5 md:px-2 py-0.5 rounded">
-                          {item.author}
+                          {item.year}
                         </span>
                       </div>
 
@@ -337,35 +330,34 @@ const ResearchPage = () => {
                       <p className="text-xs md:text-sm text-gray-400 line-clamp-2 font-light">
                         {item.description}
                       </p>
-                    </div>
 
-                    {/* 다운로드 버튼 */}
-                    <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 h-10 md:h-12">
-                      <a
-                        href={getImageUrl(item.pdfUrl) || '#'}
-                        onClick={(e) => handleDownload(e, item)}
-                        className="flex items-center justify-center w-full h-full gap-2 md:gap-3 text-xs md:text-[13px] font-black tracking-widest uppercase
-                                   text-white/60 bg-transparent border border-white/10 rounded-sm
-                                   hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] 
-                                   hover:border-blue-500/50 hover:text-white
-                                   hover:shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(30,58,138,0.4)]
-                                   active:scale-[0.97] transition-all duration-500 group/btn cursor-pointer"
-                      >
-                        Download PDF
-                        <svg
-                          className="w-3 h-3 md:w-4 md:h-4 group-hover/btn:translate-y-1 transition-transform duration-300"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
+                      <div className="mt-auto pt-5 md:pt-6">
+                        <a
+                          href={getImageUrl(item.pdfUrl) || '#'}
+                          onClick={(e) => handleDownload(e, item)}
+                          className="flex items-center justify-center w-full h-10 md:h-12 gap-2 md:gap-3 text-xs md:text-[13px] font-black tracking-widest uppercase
+                                     text-white/60 bg-transparent border border-white/10 rounded-sm
+                                     hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] 
+                                     hover:border-blue-500/50 hover:text-white
+                                     hover:shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(30,58,138,0.4)]
+                                     active:scale-[0.97] transition-all duration-500 group/btn cursor-pointer"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                          />
-                        </svg>
-                      </a>
+                          Download PDF
+                          <svg
+                            className="w-3 h-3 md:w-4 md:h-4 group-hover/btn:translate-y-1 transition-transform duration-300"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                            />
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                   </article>
                 ))}
