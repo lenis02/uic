@@ -52,7 +52,7 @@ const ResearchPage = () => {
 
     // 데이터의 year 필드에서 직접 추출하여 중복 제거
     const uniqueYears = Array.from(
-      new Set(reports.map((item) => item.year).filter(Boolean)) // null이나 undefined 제거
+      new Set(reports.map((item) => item.year).filter(Boolean)), // null이나 undefined 제거
     );
 
     // 내림차순 정렬 (숫자로 변환해서 비교 후 다시 문자열로)
@@ -137,9 +137,11 @@ const ResearchPage = () => {
         .trim()
         .replace(/\s+/g, '_');
 
+      const encodedTitle = encodeURIComponent(safeTitle);
+
       downloadUrl = originalUrl.replace(
         '/upload/',
-        `/upload/fl_attachment:${safeTitle}/`,
+        `/upload/fl_attachment:${encodedTitle}/`,
       );
     }
 
