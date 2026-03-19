@@ -1,9 +1,8 @@
-import bg_main from './bg_main.svg';
-import bg_about from './bg_about.svg';
-import bg_research from './bg_research.svg';
-import bg_activity from './bg_activity.svg';
-import bg_joinus from './bg_joinus.jpg';
-import bg_contact from './bg_contact.svg';
+import bg_main from './bg_main.webp';
+import bg_about from './bg_about.webp';
+import bg_research from './bg_research.webp';
+import bg_activity from './bg_activity.webp';
+import bg_contact from './bg_contact.webp';
 
 import icon_uic from './icon_uic.png';
 import logo_uic from './logo_uic.png';
@@ -28,7 +27,7 @@ import logo_donga from './logo_donga.svg';
 import logo_myongji from './logo_myongji.svg';
 import logo_pusan from './logo_pusan.jpg'; // JPG 유지
 import logo_sahmyook from './logo_sahmyook.svg';
-import logo_sangmyung from './logo_sangmyung.jpg'; // JPG 유지
+import logo_sangmyung from './logo_sangmyung.webp'; // JPG 유지
 import logo_sogang from './logo_sogang.svg';
 import logo_uos from './logo_uos.svg';
 import logo_sungshin from './logo_sungshin.svg';
@@ -75,17 +74,16 @@ import logo_coop11 from './logo_coop11.png';
 import logo_coop12 from './logo_coop12.png';
 import logo_coop13 from './logo_coop13.png';
 
-import activity1 from './activity1.svg';
-import activity2 from './activity2.svg';
-import activity3 from './activity3.svg';
-import activity4 from './activity4.svg';
+import activity1 from './activity1.webp';
+import activity2 from './activity2.webp';
+import activity3 from './activity3.webp';
+import activity4 from './activity4.webp';
 
 export const assets = {
   bg_main,
   bg_about,
   bg_research,
   bg_activity,
-  bg_joinus,
   bg_contact,
 
   icon_uic,
