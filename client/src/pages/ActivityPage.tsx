@@ -50,7 +50,7 @@ const activities = [
 const ActivityPage = () => {
   return (
     // h-[100dvh]를 사용하여 모바일 브라우저의 상하단 바 이슈 방지
-    <main className="relative w-full h-[100dvh] overflow-y-auto snap-y snap-mandatory bg-[#050505] text-white scrollbar-hide">
+    <main className="relative w-full h-[100dvh] overflow-y-auto md:snap-y md:snap-mandatory bg-[#050505] text-white scrollbar-hide">
       {/* 고정 배경 */}
       <img
         src={assets.bg_activity}
@@ -59,7 +59,7 @@ const ActivityPage = () => {
       />
 
       {/* [첫 번째 섹션] 헤더 섹션 */}
-      <section className="relative w-full h-[100dvh] flex flex-col justify-center items-center snap-start z-10 px-4 md:px-6">
+      <section className="relative w-full h-[100dvh] flex flex-col justify-center items-center md:snap-start z-10 px-4 md:px-6">
         <div className="flex flex-col items-center max-w-[1000px] justify-center mx-auto text-center mt-10 md:mt-0">
           <div className="group w-fit flex flex-col items-center">
             {/* 모바일 폰트 사이즈 살짝 축소 (text-4xl), 데스크탑 유지 (md:text-5xl lg:text-6xl) */}
@@ -99,38 +99,40 @@ const ActivityPage = () => {
         <section
           key={act.id}
           // 모바일 패딩 조정 px-4
-          className="relative w-full h-[100dvh] flex items-center justify-center snap-start z-10 px-4 md:px-20"
+          className="relative w-full h-[100dvh] flex items-center justify-center md:snap-start z-10 px-8 md:px-20"
         >
           <div
-            // 모바일에서는 mt-0 및 gap-6으로 좁혀서 화면 밖으로 나가지 않게 조절
+            // 변경점 1: 가로 배치 전환 시점을 md에서 xl로 변경
             className={`mt-0 md:mt-12 flex flex-col gap-6 md:gap-12 items-center justify-center max-w-[1400px] w-full h-full ${
-              index % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'
+              index % 2 === 1 ? 'xl:flex-row-reverse' : 'xl:flex-row'
             }`}
           >
-            {/* 이미지 카드 (모바일에서는 화면 위쪽에 적당한 비율로 배치) */}
-            <div className="w-full max-w-[720px] md:flex-1 group relative shrink-0">
+            {/* 이미지 카드 (모바일, md에서는 위쪽 배치) */}
+            {/* 변경점 2: flex-1 적용 시점을 xl로 변경 */}
+            <div className="w-full max-w-[600px] xl:flex-1 group relative shrink-0">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
               {/* 모바일 aspect-video 유지 */}
-              <div className="relative aspect-video md:aspect-[4/3] rounded-xl md:rounded-2xl overflow-hidden bg-black/80 border border-white/10 shadow-2xl">
+              <div className="relative aspect-video md:aspect-[3/2] rounded-xl md:rounded-2xl overflow-hidden bg-black/80 border border-white/10 shadow-2xl">
                 <img
                   src={act.image}
                   alt={act.title}
-                  className="w-full h-full object-cover opacity-60 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
+                  className="w-full h-full  object-cover opacity-60 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
                 />
               </div>
             </div>
 
             {/* 텍스트 설명 */}
-            <div className="w-full md:w-[500px] space-y-4 md:space-y-8 px-2 md:px-0">
+            {/* 변경점 3: 텍스트 고정 너비 적용 시점을 xl로 변경 (위아래 배치일 땐 넓게 쓰도록) */}
+            <div className="w-full xl:w-[500px] space-y-4 md:space-y-8 px-2 md:mx-auto">
               <div>
-                {/* 모바일 폰트 축소 (text-3xl) 및 타이틀 중앙 정렬 추가 */}
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white/95 text-center md:text-left">
+                {/* 변경점 4: 좌측 정렬 시점을 xl로 변경하여 md에서도 중앙 정렬 유지 */}
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white/95 text-center xl:text-left">
                   {act.title}
                 </h2>
               </div>
 
               {/* 리스트 여백 축소 (space-y-3) */}
-              <ul className="space-y-3 md:space-y-5">
+              <ul className="space-y-3 md:space-y-5 xl:translate-x-[0%] md:translate-x-[12%]">
                 {act.description.map((desc, i) => (
                   <li
                     key={i}
@@ -152,7 +154,7 @@ const ActivityPage = () => {
       ))}
 
       {/* [마지막 섹션] 푸터 */}
-      <section className="relative w-full h-fit snap-end z-10 bg-black/50">
+      <section className="relative w-full h-fit md:snap-end z-10 bg-black/50">
         <FooterBar />
       </section>
     </main>
