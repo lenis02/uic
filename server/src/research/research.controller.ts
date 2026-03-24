@@ -16,6 +16,7 @@ import { ResearchService } from './research.service';
 import { CreateResearchDto } from './dto/create-research.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { researchUploadOptions } from '../common/utils/multer.options';
 
 @Controller('research')
 export class ResearchController {
@@ -34,7 +35,7 @@ export class ResearchController {
     FileFieldsInterceptor([
       { name: 'pdf', maxCount: 1 },
       { name: 'thumbnail', maxCount: 1 },
-    ]),
+    ], researchUploadOptions),
   )
   async create(
     @Body() createResearchDto: CreateResearchDto,
@@ -54,7 +55,7 @@ export class ResearchController {
     FileFieldsInterceptor([
       { name: 'pdf', maxCount: 1 },
       { name: 'thumbnail', maxCount: 1 },
-    ]),
+    ], researchUploadOptions),
   )
   async update(
     @Param('id', ParseIntPipe) id: number,

@@ -6,14 +6,31 @@ import { Admin } from './entities/admin.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     TypeOrmModule.forFeature([Admin]),
     PassportModule,
-    JwtModule.register({
-      secret: 'YOUR_SECRET_KEY', // 실제로는 .env 파일에 보관하세요
-      signOptions: { expiresIn: '1d' }, // 토큰 유효기간 1일
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const env = configService.get<string>('NODE_ENV');
+        const jwtSecret = configService.get<string>('JWT_SECRET');
+
+        if (!jwtSecret && env === 'production') {
+          throw new Error(
+            'JWT_SECRET must be set in production environment.',
+          );
+        }
+
+        return {
+          secret: jwtSecret ?? 'dev-only-jwt-secret',
+          signOptions: { expiresIn: '1d' },
+        };
+      },
     }),
   ],
   controllers: [AuthController],

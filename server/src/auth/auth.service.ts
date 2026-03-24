@@ -60,13 +60,23 @@ export class AuthService {
   async onModuleInit() {
     const adminCount = await this.adminRepository.count();
     if (adminCount === 0) {
+      const defaultUsername = process.env.DEFAULT_ADMIN_USERNAME;
+      const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD;
+
+      if (!defaultUsername || !defaultPassword) {
+        console.warn(
+          'No admin account exists and default admin credentials are not configured.',
+        );
+        return;
+      }
+
       const salt = await bcrypt.genSalt();
-      const hashedPassword = await bcrypt.hash('uic1234@', salt); // 초기 비밀번호
+      const hashedPassword = await bcrypt.hash(defaultPassword, salt);
       await this.adminRepository.save({
-        username: 'master',
+        username: defaultUsername,
         password: hashedPassword,
       });
-      console.log('초기 관리자 계정이 생성되었습니다: admin / admin1234');
+      console.log('Initial admin account created from environment variables.');
     }
   }
 }

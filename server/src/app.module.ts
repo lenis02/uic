@@ -41,10 +41,14 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
       synchronize: false,
-      logging: true,
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      logging: process.env.NODE_ENV !== 'production',
+      ssl:
+        process.env.DB_SSL === 'true'
+          ? {
+              rejectUnauthorized:
+                process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
+            }
+          : false,
     }),
 
     AuthModule,

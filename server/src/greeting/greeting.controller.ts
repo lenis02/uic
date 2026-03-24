@@ -13,6 +13,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { GreetingService } from './greeting.service';
 import { CreateGreetingDto } from './dto/create-greeting.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
+import { imageUploadOptions } from '../common/utils/multer.options';
 
 @Controller('greeting')
 export class GreetingController {
@@ -31,7 +32,7 @@ export class GreetingController {
   // 초기 생성용
   @Post()
   @UseGuards(AdminGuard)
-  @UseInterceptors(FileInterceptor('image')) // 로컬 저장 옵션 제거
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   async create(
     @Body() dto: CreateGreetingDto,
     @UploadedFile() file?: Express.Multer.File,
@@ -43,7 +44,7 @@ export class GreetingController {
   // 수정용
   @Patch(':role')
   @UseGuards(AdminGuard)
-  @UseInterceptors(FileInterceptor('image')) // 로컬 저장 옵션 제거
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   async update(
     @Param('role') role: string,
     @Body() dto: CreateGreetingDto,

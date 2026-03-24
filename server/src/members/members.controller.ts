@@ -16,6 +16,7 @@ import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { imageUploadOptions } from '../common/utils/multer.options';
 
 @Controller('members')
 export class MembersController {
@@ -29,7 +30,7 @@ export class MembersController {
 
   @Post()
   @UseGuards(AdminGuard)
-  @UseInterceptors(FileInterceptor('image')) // 로컬 multerOptions 제거
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   create(
     @Body() dto: CreateMemberDto,
     @UploadedFile() file?: Express.Multer.File,
@@ -39,7 +40,7 @@ export class MembersController {
 
   @Patch(':id')
   @UseGuards(AdminGuard)
-  @UseInterceptors(FileInterceptor('image')) // 로컬 multerOptions 제거
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: Partial<CreateMemberDto>,
