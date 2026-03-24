@@ -23,6 +23,20 @@ const SORT_OPTIONS = [
   { label: '등록순', value: 'oldest' },
 ];
 
+const CATEGORY_FILENAME_MAP: Record<string, string> = {
+  대상: 'grand_prize',
+  최우수상: 'best_prize',
+  우수상: 'excellence_prize',
+  수상작: 'award_winner',
+  기타: 'etc',
+};
+
+const sanitizeFilePart = (value: string) =>
+  value
+    .replace(/[<>:"/\\|?*\x00-\x1F]/g, '')
+    .trim()
+    .replace(/\s+/g, '_');
+
 const ResearchPage = () => {
   const [reports, setReports] = useState<Research[]>([]);
   const [activeYear, setActiveYear] = useState('전체');
@@ -128,16 +142,26 @@ const ResearchPage = () => {
       ),
     );
 
-    // 3. 파일명 커스터마이징
+    // 3. {year}_{category}_report 형식 파일명 생성
+    const safeYear = sanitizeFilePart(item.year || '') || 'unknown';
+    const mappedCategory = CATEGORY_FILENAME_MAP[(item.category || '').trim()];
+    const safeCategory = sanitizeFilePart(mappedCategory || 'etc');
+    const attachmentName = `${safeYear}_${safeCategory}_report`;
+
+    // 4. 파일명 커스터마이징
     let downloadUrl = originalUrl;
 
     if (originalUrl.includes('/upload/')) {
-      downloadUrl = originalUrl.replace('/upload/', `/upload/fl_attachment/`);
+      const encodedAttachmentName = encodeURIComponent(attachmentName);
+      downloadUrl = originalUrl.replace(
+        '/upload/',
+        `/upload/fl_attachment:${encodedAttachmentName}/`,
+      );
     }
 
-    // 4. 다운로드 실행
+    // 5. 다운로드 실행
     try {
-      window.location.href = downloadUrl;
+      window.location.assign(downloadUrl);
     } catch (error) {
       console.error('다운로드 시작 실패:', error);
       window.open(originalUrl, '_blank');
@@ -260,7 +284,7 @@ const ResearchPage = () => {
                     key={item.id}
                     className="group bg-[#0a0a0a] border border-white/5 overflow-hidden hover:border-blue-500/30 transition-all duration-500 flex flex-col h-full shadow-lg rounded-xl md:rounded-sm"
                   >
-                    <div className="relative w-full aspect-[16/9] shrink-0 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
+                    <div className="relative w-full aspect-[8/3] shrink-0 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
                       {item.thumbnailUrl ? (
                         <img
                           src={getImageUrl(item.thumbnailUrl) || ''}
