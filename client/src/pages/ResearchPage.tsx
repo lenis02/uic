@@ -260,7 +260,7 @@ const ResearchPage = () => {
                     key={item.id}
                     className="group bg-[#0a0a0a] border border-white/5 overflow-hidden hover:border-blue-500/30 transition-all duration-500 flex flex-col h-full shadow-lg rounded-xl md:rounded-sm"
                   >
-                    <div className="relative w-full max-h-[120px] h-full md:h-44 shrink-0 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
+                    <div className="relative w-full aspect-[16/9] shrink-0 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
                       {item.thumbnailUrl ? (
                         <img
                           src={getImageUrl(item.thumbnailUrl) || ''}
@@ -280,7 +280,7 @@ const ResearchPage = () => {
                         </div>
                       )}
 
-                      <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-black/70 backdrop-blur px-1.5 md:px-2 py-1 rounded text-[9px] md:text-[10px] text-white/60 flex items-center gap-1">
+                      <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-black/70 backdrop-blur px-1.5 md:px-2 py-1 rounded text-[9px] md:text-[12px] text-white/60 flex items-center gap-1">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -298,13 +298,39 @@ const ResearchPage = () => {
                       </div>
 
                       <div className="absolute top-2 md:top-3 left-2 md:left-3">
-                        <span className="px-2 md:px-3 py-1 bg-black/60 backdrop-blur border border-white/10 text-[8px] md:text-[10px] font-bold text-blue-400 rounded-full uppercase tracking-wider">
+                        <span className="px-2 md:px-3 py-1 bg-black/60 backdrop-blur border border-2 border-white/20 text-[8px] md:text-[10px] font-bold text-blue-400 uppercase tracking-wider">
                           {item.category}
                         </span>
                       </div>
+
+                      <a
+                        href={getImageUrl(item.pdfUrl) || '#'}
+                        onClick={(e) => handleDownload(e, item)}
+                        className="absolute bottom-2 md:bottom-3 right-2 md:right-3 z-20 inline-flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-semibold text-white bg-blue-600/85 backdrop-blur shadow-lg transition-all
+                          hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] 
+                                     hover:border-blue-500/50 hover:text-white
+                                     font-black uppercase
+                                     text-white/60 bg-transparent border border-2 border-white/20
+                        "
+                      >
+                        <svg
+                          className="w-3 h-3 md:w-3.5 md:h-3.5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                          />
+                        </svg>
+                        PDF
+                      </a>
                     </div>
 
-                    <div className="p-4 md:p-6 flex flex-col flex-1">
+                    <div className="p-4 md:p-6 grid grid-rows-[auto_1fr_auto] flex-1 gap-3 md:gap-4">
                       <div className="flex justify-between items-center mb-3 md:mb-4 text-[11px] md:text-[13px] font-medium text-white/40">
                         <span className="flex items-center gap-1.5">
                           <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-blue-500 rounded-full" />{' '}
@@ -316,39 +342,13 @@ const ResearchPage = () => {
                         </span>
                       </div>
 
-                      <h3 className="text-base md:text-lg font-bold leading-[1.4] text-white/90 group-hover:text-white transition-colors line-clamp-2 mb-2">
-                        {item.title}
-                      </h3>
-                      <p className="text-xs md:text-sm text-gray-400 line-clamp-2 font-light">
-                        {item.description}
-                      </p>
-
-                      <div className="mt-auto pt-5 md:pt-6">
-                        <a
-                          href={getImageUrl(item.pdfUrl) || '#'}
-                          onClick={(e) => handleDownload(e, item)}
-                          className="flex items-center justify-center w-full h-10 md:h-12 gap-2 md:gap-3 text-xs md:text-[13px] font-black tracking-widest uppercase
-                                     text-white/60 bg-transparent border border-white/10 rounded-sm
-                                     hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] 
-                                     hover:border-blue-500/50 hover:text-white
-                                     hover:shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(30,58,138,0.4)]
-                                     active:scale-[0.97] transition-all duration-500 group/btn cursor-pointer"
-                        >
-                          Download PDF
-                          <svg
-                            className="w-3 h-3 md:w-4 md:h-4 group-hover/btn:translate-y-1 transition-transform duration-300"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                            />
-                          </svg>
-                        </a>
+                      <div className="min-h-0">
+                        <h3 className="text-base md:text-lg font-bold leading-[1.4] text-white/90 group-hover:text-white transition-colors line-clamp-2 mb-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-xs md:text-sm text-gray-400 line-clamp-2 font-light">
+                          {item.description}
+                        </p>
                       </div>
                     </div>
                   </article>
