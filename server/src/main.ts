@@ -13,8 +13,7 @@ async function bootstrap() {
   const nodeEnv = configService.get<string>('NODE_ENV') ?? 'development';
   const isProduction = nodeEnv === 'production';
   const corsOrigins = (
-    configService.get<string>('CORS_ORIGINS') ??
-      'http://localhost:5173,http://127.0.0.1:5173'
+    configService.get<string>('CORS_ORIGINS') ?? 'http://localhost:5173'
   )
     .split(',')
     .map((origin) => origin.trim())
@@ -57,7 +56,7 @@ async function bootstrap() {
   }
 
   const port = Number(configService.get<string>('PORT') ?? 3000);
-  await app.listen(port, '0.0.0.0');
+  await app.listen(port);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
