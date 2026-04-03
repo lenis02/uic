@@ -8,10 +8,8 @@ interface Research {
   id: number;
   title: string;
   category: string;
-  year: string; // 💡 수상 연도 (기준이 될 필드)
-  description: string;
+  year: string;
   pdfUrl: string;
-  thumbnailUrl: string;
   downloads: number;
   createdAt: string;
 }
@@ -20,8 +18,24 @@ interface Research {
 const SORT_OPTIONS = [
   { label: '최신순', value: 'latest' },
   { label: '다운로드순', value: 'downloads' },
-  { label: '등록순', value: 'oldest' },
+  { label: '등록순 (오래된 순)', value: 'oldest' },
+  { label: '수상 등급순', value: 'awardTier' },
 ];
+
+/** 대상 → 최우수상 → 우수상 → 수상작 → 기타 (알 수 없는 카테고리는 맨 뒤) */
+const AWARD_TIER_ORDER = [
+  '대상',
+  '최우수상',
+  '우수상',
+  '수상작',
+  '기타',
+] as const;
+
+const awardTierRank = (category: string) => {
+  const c = (category || '').trim();
+  const idx = AWARD_TIER_ORDER.findIndex((tier) => tier === c);
+  return idx === -1 ? AWARD_TIER_ORDER.length : idx;
+};
 
 const CATEGORY_FILENAME_MAP: Record<string, string> = {
   대상: 'grand_prize',
@@ -39,7 +53,7 @@ const sanitizeFilePart = (value: string) =>
 
 const ResearchPage = () => {
   const [reports, setReports] = useState<Research[]>([]);
-  const [activeYear, setActiveYear] = useState('전체');
+  const [activeYear, setActiveYear] = useState('');
   const [sortBy, setSortBy] = useState('latest');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -62,18 +76,21 @@ const ResearchPage = () => {
 
   // 💡 수정 1: 연도 목록 추출 로직을 'createdAt'에서 'year'로 변경
   const years = useMemo(() => {
-    if (reports.length === 0) return ['전체'];
+    if (reports.length === 0) return [];
 
-    // 데이터의 year 필드에서 직접 추출하여 중복 제거
     const uniqueYears = Array.from(
-      new Set(reports.map((item) => item.year).filter(Boolean)), // null이나 undefined 제거
+      new Set(reports.map((item) => item.year).filter(Boolean)),
     );
 
-    // 내림차순 정렬 (숫자로 변환해서 비교 후 다시 문자열로)
-    const sortedYears = uniqueYears.sort((a, b) => Number(b) - Number(a));
-
-    return ['전체', ...sortedYears];
+    return uniqueYears.sort((a, b) => Number(b) - Number(a));
   }, [reports]);
+
+  /** 전체 탭 제거: 선택 없으면 가장 최근 연도를 기본으로 사용 */
+  const selectedYear = useMemo(() => {
+    if (!years.length) return '';
+    if (activeYear && years.includes(activeYear)) return activeYear;
+    return years[0];
+  }, [years, activeYear]);
 
   // 2. ✨ 필터링 및 정렬 로직
   const processedReports = useMemo(() => {
@@ -86,26 +103,27 @@ const ResearchPage = () => {
       );
     }
 
-    // 💡 수정 2: 연도 필터링 로직을 'createdAt' 기반에서 'year' 기반으로 변경
-    if (activeYear !== '전체') {
-      result = result.filter((item) => item.year === activeYear);
+    if (selectedYear) {
+      result = result.filter((item) => item.year === selectedYear);
     }
 
-    // (3) 정렬 로직
     result.sort((a, b) => {
-      // 최신/등록순 정렬은 여전히 데이터베이스의 등록일(createdAt) 기준을 유지합니다.
-      // (만약 이것도 수상연도 기준 정렬을 원하시면 말씀해주세요!)
       const dateA = new Date(a.createdAt).getTime();
       const dateB = new Date(b.createdAt).getTime();
 
       if (sortBy === 'latest') return dateB - dateA;
       if (sortBy === 'oldest') return dateA - dateB;
       if (sortBy === 'downloads') return b.downloads - a.downloads;
+      if (sortBy === 'awardTier') {
+        const tierDiff = awardTierRank(a.category) - awardTierRank(b.category);
+        if (tierDiff !== 0) return tierDiff;
+        return dateB - dateA;
+      }
       return 0;
     });
 
     return result;
-  }, [reports, activeYear, sortBy, searchTerm]);
+  }, [reports, selectedYear, sortBy, searchTerm]);
 
   // 날짜 포맷팅
   const formatDate = (dateString: string) => {
@@ -233,7 +251,7 @@ const ResearchPage = () => {
                     key={year}
                     onClick={() => setActiveYear(year)}
                     className={`px-4 md:px-6 py-2 md:py-2.5 cursor-pointer rounded-lg text-xs md:text-sm font-bold transition-all duration-300 whitespace-nowrap ${
-                      activeYear === year
+                      selectedYear === year
                         ? 'bg-blue-600/10 text-blue-400 border border-blue-500/50 shadow-[0_4px_15px_rgba(37,99,235,0.2)]'
                         : 'text-white/40 hover:text-white hover:bg-white/5'
                     }`}
@@ -278,101 +296,73 @@ const ResearchPage = () => {
           {/* [하단 영역] 리포트 카드 그리드 */}
           <section className="flex-1 overflow-y-auto pr-1 md:pr-2 custom-scrollbar scrollbar-hide">
             {processedReports.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 pb-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 pb-10 w-full">
                 {processedReports.map((item) => (
                   <article
                     key={item.id}
-                    className="group bg-[#0a0a0a] border border-white/5 overflow-hidden hover:border-blue-500/30 transition-all duration-500 flex flex-col h-full shadow-lg rounded-xl md:rounded-sm"
+                    className="group relative flex h-full flex-col rounded-xl border border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm pl-4 md:pl-5 pr-4 md:pr-5 py-5 md:py-6 hover:border-blue-500/35 hover:bg-[#0c0c0c] transition-all duration-300 shadow-md"
                   >
-                    <div className="relative w-full aspect-[8/3] shrink-0 overflow-hidden bg-[#111] flex items-center justify-center border-b border-white/5">
-                      {item.thumbnailUrl ? (
-                        <img
-                          src={getImageUrl(item.thumbnailUrl) || ''}
-                          alt={item.title}
-                          className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center gap-2">
-                          <img
-                            src={assets.logo_uic}
-                            className="w-12 md:w-16 opacity-20"
-                            alt="logo"
-                          />
-                          <span className="text-[10px] md:text-xs text-white/20">
-                            No Thumbnail
+                    <div
+                      className="absolute left-0 top-4 bottom-4 w-1 rounded-full bg-gradient-to-b from-blue-500/80 to-blue-600/30 opacity-80 group-hover:opacity-100"
+                      aria-hidden
+                    />
+
+                    <div className="flex min-h-0 flex-1 flex-col gap-4 pl-2">
+                      <div className="min-w-0 flex-1 space-y-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="px-2.5 py-1 rounded-md text-[10px] md:text-xs font-bold text-blue-300 bg-blue-500/15 border border-blue-500/30">
+                            {item.category}
+                          </span>
+                          <span className="text-[10px] md:text-xs text-white/50 border border-white/10 px-2 py-1 rounded-md">
+                            {item.year}
+                          </span>
+                          <span className="flex items-center gap-1 text-[10px] md:text-xs text-white/45">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="w-3.5 h-3.5"
+                            >
+                              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                              <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            {item.downloads}
+                          </span>
+                          <span className="flex items-center gap-1.5 text-[10px] md:text-xs text-white/40">
+                            <span className="w-1 h-1 rounded-full bg-blue-500" />
+                            {formatDate(item.createdAt)}
                           </span>
                         </div>
-                      )}
 
-                      <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-black/70 backdrop-blur px-1.5 md:px-2 py-1 rounded text-[9px] md:text-[12px] text-white/60 flex items-center gap-1">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="w-3 h-3 md:w-3.5 md:h-3.5 text-white"
-                        >
-                          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
-                        <span className="font-medium">{item.downloads}</span>
-                      </div>
-
-                      <div className="absolute top-2 md:top-3 left-2 md:left-3">
-                        <span className="px-2 md:px-3 py-1 bg-black/60 backdrop-blur border border-2 border-white/20 text-[8px] md:text-[10px] font-bold text-blue-400 uppercase tracking-wider">
-                          {item.category}
-                        </span>
-                      </div>
-
-                      <a
-                        href={getImageUrl(item.pdfUrl) || '#'}
-                        onClick={(e) => handleDownload(e, item)}
-                        className="absolute bottom-2 md:bottom-3 right-2 md:right-3 z-20 inline-flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-semibold text-white bg-blue-600/85 backdrop-blur shadow-lg transition-all
-                          hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] 
-                                     hover:border-blue-500/50 hover:text-white
-                                     font-black uppercase
-                                     text-white/60 bg-transparent border border-2 border-white/20
-                        "
-                      >
-                        <svg
-                          className="w-3 h-3 md:w-3.5 md:h-3.5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                          />
-                        </svg>
-                        PDF
-                      </a>
-                    </div>
-
-                    <div className="p-4 md:p-6 grid grid-rows-[auto_1fr_auto] flex-1 gap-3 md:gap-4">
-                      <div className="flex justify-between items-center mb-3 md:mb-4 text-[11px] md:text-[13px] font-medium text-white/40">
-                        <span className="flex items-center gap-1.5">
-                          <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-blue-500 rounded-full" />{' '}
-                          {formatDate(item.createdAt)}
-                        </span>
-
-                        <span className="text-white/70 text-[10px] md:text-xs border border-white/10 px-1.5 md:px-2 py-0.5 rounded">
-                          {item.year}
-                        </span>
-                      </div>
-
-                      <div className="min-h-0">
-                        <h3 className="text-base md:text-lg font-bold leading-[1.4] text-white/90 group-hover:text-white transition-colors line-clamp-2 mb-2">
-                          {item.title}
-                        </h3>
-                        <p className="text-xs md:text-sm text-gray-400 line-clamp-2 font-light">
-                          {item.description}
-                        </p>
+                        <div className="flex items-start justify-between gap-3 min-w-0">
+                          <h3 className="text-base md:text-lg font-bold leading-snug text-white/95 group-hover:text-white transition-colors min-w-0 flex-1">
+                            {item.title}
+                          </h3>
+                          <a
+                            href={getImageUrl(item.pdfUrl) || '#'}
+                            onClick={(e) => handleDownload(e, item)}
+                            className="shrink-0 inline-flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-semibold text-white bg-blue-600/85 backdrop-blur shadow-lg transition-all hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] hover:border-blue-500/50 hover:text-white font-black uppercase text-white/60 bg-transparent border border-2 border-white/20"
+                          >
+                            <svg
+                              className="w-3 h-3 md:w-3.5 md:h-3.5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                              />
+                            </svg>
+                            PDF
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </article>

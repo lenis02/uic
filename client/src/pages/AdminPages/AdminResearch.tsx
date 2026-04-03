@@ -15,11 +15,9 @@ export default function AdminResearch() {
     title: '',
     category: '기타',
     year: '',
-    description: '',
   });
 
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   const fetchResearch = async () => {
     try {
@@ -41,21 +39,18 @@ export default function AdminResearch() {
     setEditingId(item.id);
     setForm({
       title: item.title,
-      category: item.category || '기타', // 기존 데이터에 카테고리 없으면 기본값
+      category: item.category || '기타',
       year: item.year,
-      description: item.description || '',
     });
     setPdfFile(null);
-    setThumbnailFile(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // [취소 함수]
   const handleCancelEdit = () => {
     setEditingId(null);
-    setForm({ title: '', category: '기타', year: '', description: '' });
+    setForm({ title: '', category: '기타', year: '' });
     setPdfFile(null);
-    setThumbnailFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,7 +64,6 @@ export default function AdminResearch() {
     formData.append('title', form.title);
     formData.append('category', form.category); // 👈 카테고리 전송
     formData.append('year', form.year);
-    formData.append('description', form.description);
 
     const makeSafeFile = (file: File, prefix: string) => {
       const extension = file.name.split('.').pop();
@@ -80,9 +74,6 @@ export default function AdminResearch() {
 
     if (pdfFile) {
       formData.append('pdf', makeSafeFile(pdfFile, 'report'));
-    }
-    if (thumbnailFile) {
-      formData.append('thumbnail', makeSafeFile(thumbnailFile, 'thumb'));
     }
 
     try {
@@ -190,22 +181,7 @@ export default function AdminResearch() {
             </div>
           </div>
 
-          <div className="w-full">
-            <label className="text-xs text-gray-400 ml-1 mb-1 block">
-              설명(선택)
-            </label>
-            <textarea
-              placeholder="간략한 설명"
-              rows={3}
-              className={`${inputStyle} resize-none`}
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-slate-900/60 rounded-xl border border-dashed border-white/10">
+          <div className="p-5 bg-slate-900/60 rounded-xl border border-dashed border-white/10">
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-bold text-blue-400">
                 <span className="bg-blue-500/10 p-1 rounded">📄</span>
@@ -215,19 +191,6 @@ export default function AdminResearch() {
                 type="file"
                 accept=".pdf"
                 onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
-                className={fileInputStyle}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-bold text-purple-400">
-                <span className="bg-purple-500/10 p-1 rounded">🖼️</span>
-                썸네일 이미지 (선택)
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setThumbnailFile(e.target.files?.[0] || null)}
                 className={fileInputStyle}
               />
             </div>
@@ -258,39 +221,19 @@ export default function AdminResearch() {
           {researchList.map((r) => (
             <div
               key={r.id}
-              className="group bg-slate-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/30 hover:shadow-lg transition-all flex flex-col"
+              className="group bg-slate-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/30 hover:shadow-lg transition-all flex flex-col p-4"
             >
-              <div className="relative aspect-video bg-slate-950 overflow-hidden border-b border-white/5">
-                {r.thumbnailUrl ? (
-                  <img
-                    // 여기도 Cloudinary URL 처리 (관리자 페이지용)
-                    src={
-                      r.thumbnailUrl.startsWith('http')
-                        ? r.thumbnailUrl
-                        : `${import.meta.env.VITE_API_URL}${r.thumbnailUrl}`
-                    }
-                    alt="thumb"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-600">
-                    No Image
-                  </div>
-                )}
-                {/* 카드 위에 카테고리 표시 */}
-                <div className="absolute top-2 left-2 bg-black/60 px-2 py-0.5 rounded text-[10px] text-blue-300 border border-blue-500/30">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="bg-black/60 px-2 py-0.5 rounded text-[10px] text-blue-300 border border-blue-500/30">
                   {r.category || '미분류'}
-                </div>
+                </span>
+                <span className="text-xs text-gray-500">{r.year}</span>
               </div>
+              <h3 className="font-bold text-gray-100 mb-4 flex-1 leading-snug">
+                {r.title}
+              </h3>
 
-              <div className="p-4 flex flex-col flex-1">
-                <h3 className="font-bold text-gray-100 mb-1">{r.title}</h3>
-                <p className="text-xs text-gray-400 mb-2">{r.year}</p>
-                <p className="text-xs text-gray-500 mb-4 flex-1 line-clamp-2">
-                  {r.description || '설명 없음'}
-                </p>
-
-                <div className="mt-auto pt-3 border-t border-white/5 flex justify-end gap-2">
+              <div className="mt-auto pt-3 border-t border-white/5 flex justify-end gap-2">
                   <button
                     onClick={() => handleEditClick(r)}
                     className="cursor-pointer flex items-center gap-1 text-xs text-gray-400 hover:text-blue-400 px-2 py-1 rounded hover:bg-blue-500/10 transition-colors"
@@ -309,7 +252,6 @@ export default function AdminResearch() {
                   >
                     🗑️ 삭제
                   </button>
-                </div>
               </div>
             </div>
           ))}

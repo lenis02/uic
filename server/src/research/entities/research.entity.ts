@@ -15,12 +15,6 @@ export class Research extends BaseEntity {
   @Column()
   pdfUrl: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  thumbnailUrl: string | null;
-
   @Column({ default: 0 })
   downloads: number;
-
-  @Column({ type: 'text', nullable: true })
-  description: string | null;
 }

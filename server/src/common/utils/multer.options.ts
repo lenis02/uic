@@ -56,23 +56,6 @@ export const researchUploadOptions: Options = {
       return;
     }
 
-    if (file.fieldname === 'thumbnail') {
-      if (!IMAGE_MIME_WHITELIST.has(file.mimetype)) {
-        return rejectFile(
-          callback,
-          'The thumbnail field only accepts JPG, PNG, WEBP files.',
-        );
-      }
-      if (!hasAllowedExtension(file.originalname, IMAGE_EXT_WHITELIST)) {
-        return rejectFile(
-          callback,
-          'The thumbnail field has an invalid extension.',
-        );
-      }
-      callback(null, true);
-      return;
-    }
-
     rejectFile(callback, `Unexpected file field: ${file.fieldname}`);
   },
 };
