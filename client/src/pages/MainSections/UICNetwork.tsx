@@ -119,7 +119,7 @@ const UICNetwork = () => {
                       </span>
                     )}
                   </div>
-                  <span className="text-[9px] text-gray-600 font-medium w-full text-center truncate">
+                  <span className="text-[9px] text-gray-600 font-medium w-full max-w-[4.5rem] mx-auto text-center leading-tight line-clamp-2 break-words">
                     {uni.name}
                   </span>
                 </div>
@@ -190,7 +190,7 @@ const UICNetwork = () => {
                         </span>
                       )}
                     </div>
-                    <span className="text-xs text-gray-700 font-semibold truncate w-full max-w-[90px] text-center">
+                    <span className="text-xs text-gray-700 font-semibold w-full max-w-[5.75rem] text-center leading-snug line-clamp-2 break-words">
                       {uni.name}
                     </span>
                   </div>
