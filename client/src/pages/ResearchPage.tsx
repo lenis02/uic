@@ -54,7 +54,7 @@ const sanitizeFilePart = (value: string) =>
 const ResearchPage = () => {
   const [reports, setReports] = useState<Research[]>([]);
   const [activeYear, setActiveYear] = useState('');
-  const [sortBy, setSortBy] = useState('latest');
+  const [sortBy, setSortBy] = useState('awardTier');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 

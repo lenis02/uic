@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Research } from './entities/research.entity';
@@ -7,6 +7,8 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class ResearchService {
+  private readonly logger = new Logger(ResearchService.name);
+
   constructor(
     @InjectRepository(Research)
     private researchRepository: Repository<Research>,
@@ -14,9 +16,17 @@ export class ResearchService {
   ) {}
 
   async findAll() {
-    return await this.researchRepository.find({
-      order: { createdAt: 'DESC' },
-    });
+    try {
+      return await this.researchRepository.find({
+        order: { createdAt: 'DESC' },
+      });
+    } catch (err) {
+      this.logger.error(
+        'research.findAll failed (check DB columns vs Research entity / Render logs)',
+        err instanceof Error ? err.stack : String(err),
+      );
+      throw err;
+    }
   }
 
   async create(
