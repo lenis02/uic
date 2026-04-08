@@ -80,7 +80,11 @@ const GreetingSection = ({ data }: { data: Executive }) => (
         </div>
       </div>
     </div>
+    <div className="mt-10 animate-bounce text-center text-gray-500 text-xs md:text-sm">
+                    ↓ scroll
+                  </div>
   </div>
+  
 );
 
 // --- 메인 페이지 컴포넌트 ---
@@ -223,9 +227,7 @@ const AboutPage = () => {
                   {executives.map((exec) => (
                     <GreetingSection key={exec.role} data={exec} />
                   ))}
-                  <div className="mt-10 animate-bounce text-center text-gray-500 text-xs md:text-sm">
-                    ↓ scroll
-                  </div>
+                  
                 </div>
               ) : (
                 <div className="pb-20 md:pb-32">
