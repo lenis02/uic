@@ -31,10 +31,10 @@ const MainPage = () => {
         className="relative h-screen w-full md:snap-start flex items-center justify-center z-10"
       >
         <div className="text-center px-4 select-none">
-          <h1 className="text-[28px] md:text-[40px] font-bold text-white leading-none m-0">
+          <h1 className="text-[clamp(28px,4vw+10px,40px)] font-bold text-white leading-none m-0">
             대한민국 금융의 미래
           </h1>
-          <p className="text-[16px] md:text-[20px] mt-6 text-white font-light leading-none">
+          <p className="text-[clamp(16px,2vw+10px,20px)] mt-6 text-white font-light leading-none">
             전국 대학생 투자동아리 연합회 - UIC
           </p>
         </div>
