@@ -30,7 +30,7 @@ interface Executive {
 // --- 컴포넌트들 ---
 const GreetingSection = ({ data }: { data: Executive }) => (
   // 모바일에서 텍스트와 타이틀이 겹치지 않게 py-12 추가
-  <div className="snap-none md:snap-start min-h-full flex flex-col justify-center px-0 relative py-12 lg:py-8">
+  <div className="flex flex-col justify-center px-0 relative py-12 lg:py-8">
     {/* 타이틀 영역 */}
     <div className="shrink-0 mb-6 lg:mb-8 w-fit">
       <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-white/80">
@@ -216,9 +216,7 @@ const AboutPage = () => {
             {/* 본문 섹션 */}
             <section
               ref={scrollRef}
-              className={`flex-1 h-full overflow-y-auto pr-2 md:pr-4 custom-scrollbar z-20 scroll-smooth scrollbar-hide ${
-                activeTab === 'greeting' ? 'snap-y snap-mandatory' : ''
-              }`}
+              className={`flex-1 h-full overflow-y-auto pr-2 md:pr-4 custom-scrollbar z-20 scroll-smooth scrollbar-hide`}
             >
               {activeTab === 'greeting' ? (
                 <div className="h-full">
