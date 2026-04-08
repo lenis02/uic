@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { assets } from '../../assets/assets';
 import FooterBar from '../components/FooterBar';
 import { api } from '../api/api';
@@ -57,6 +57,8 @@ const ResearchPage = () => {
   const [sortBy, setSortBy] = useState('awardTier');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const scrollRef = useRef<HTMLElement>(null);
 
   // 1. 데이터 불러오기
   useEffect(() => {
@@ -124,6 +126,12 @@ const ResearchPage = () => {
 
     return result;
   }, [reports, selectedYear, sortBy, searchTerm]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top:0, behavior: 'auto'})
+    }
+  })
 
   // 날짜 포맷팅
   const formatDate = (dateString: string) => {
@@ -294,7 +302,9 @@ const ResearchPage = () => {
           </div>
 
           {/* [하단 영역] 리포트 카드 그리드 */}
-          <section className="flex-1 overflow-y-auto pr-1 md:pr-2 custom-scrollbar scrollbar-hide">
+          <section 
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto pr-1 md:pr-2 custom-scrollbar scrollbar-hide">
             {processedReports.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 pb-10 w-full">
                 {processedReports.map((item) => (
