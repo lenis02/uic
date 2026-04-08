@@ -30,9 +30,9 @@ interface Executive {
 // --- 컴포넌트들 ---
 const GreetingSection = ({ data }: { data: Executive }) => (
   // 모바일에서 텍스트와 타이틀이 겹치지 않게 py-12 추가
-  <div className="snap-none md:snap-start min-h-full flex flex-col justify-center px-0 relative py-12 lg:py-0">
+  <div className="snap-none md:snap-start min-h-full flex flex-col justify-center px-0 relative py-12 lg:py-8">
     {/* 타이틀 영역 */}
-    <div className="absolute top-0 lg:top-2 left-0 mb-6 lg:mb-12 w-fit">
+    <div className="shrink-0 mb-6 lg:mb-8 w-fit">
       <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-white/80">
         {data.role} 인사말
       </h1>
@@ -40,7 +40,7 @@ const GreetingSection = ({ data }: { data: Executive }) => (
     </div>
 
     {/* [핵심] 모바일: flex-col, PC(lg이상): flex-row */}
-    <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-20 w-full mt-10 lg:mt-0">
+    <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-10 w-full xl:gap-20 lg:items-stretch">
       
       {/* 1. 텍스트 영역 (왼쪽/위) */}
       <div className="flex-1 leading-relaxed text-justify text-sm md:text-lg space-y-4 md:space-y-6 break-keep w-full">
@@ -195,7 +195,7 @@ const AboutPage = () => {
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-20 w-full h-full bg-black/20 backdrop-blur-2xl p-4 md:p-8 lg:p-12 overflow-hidden mt-12 border border-white/5 shadow-2xl md:rounded-none">
             
             {/* 좌측 탭 네비게이션 (모바일에서 가로 스크롤 허용) */}
-            <aside className="lg:w-40 shrink-0 z-20">
+            <aside className="lg:w-32 shrink-0 z-20">
               <nav className="flex flex-row lg:flex-col gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-2 lg:pb-0">
                 {(['greeting', 'history'] as const).map((tab) => (
                   <button
