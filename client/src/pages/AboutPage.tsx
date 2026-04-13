@@ -43,7 +43,7 @@ const GreetingSection = ({ data }: { data: Executive }) => (
     <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-10 w-full xl:gap-20 lg:items-stretch">
       
       {/* 1. 텍스트 영역 (왼쪽/위) */}
-      <div className="flex-1 leading-relaxed text-justify text-sm md:text-lg space-y-4 md:space-y-6 break-keep w-full">
+      <div className="flex-1 leading-relaxed text-left text-sm md:text-lg space-y-4 md:space-y-6 break-keep w-full">
         <p className="font-semibold text-lg md:text-xl text-white">
           {data.greeting.split(data.name).map((part, i, arr) => (
             <span key={i}>

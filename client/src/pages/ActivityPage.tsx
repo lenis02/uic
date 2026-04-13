@@ -72,7 +72,7 @@ const ActivityPage = () => {
 
           {/* 폰트 축소 및 여백 조정 */}
           <p className="mt-6 md:mt-8 text-sm md:text-lg lg:text-xl text-gray-400 font-medium leading-relaxed max-w-2xl px-2 md:px-0 break-keep">
-            대한민국 최대 대학생 투자 연합 UIC와 함께하며{' '}
+            전국 대학생 투자동아리 연합회 UIC와 함께하며{' '}
             <br className="hidden md:block" /> 금융에 대한 깊은 통찰과 진정한
             성장을 경험해 보세요.
           </p>
