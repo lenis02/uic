@@ -27,6 +27,7 @@ const AWARD_TIER_ORDER = [
   '대상',
   '최우수상',
   '우수상',
+  '장려상',
   '수상작',
   '기타',
 ] as const;
@@ -41,6 +42,7 @@ const CATEGORY_FILENAME_MAP: Record<string, string> = {
   대상: 'grand_prize',
   최우수상: 'best_prize',
   우수상: 'excellence_prize',
+  장려상: 'encouragement_prize',
   수상작: 'award_winner',
   기타: 'etc',
 };
