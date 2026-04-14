@@ -117,7 +117,7 @@ const UICNetwork = () => {
                         src={logoSrc}
                         alt={uni.name}
                         loading="lazy"
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-contain p-2"
                       />
                     ) : (
                       <span className="text-[8px] font-bold text-center text-gray-500 px-1 break-keep">
