@@ -23,8 +23,9 @@ export default function AdminResearch() {
     try {
       const res = await api.getResearch();
       // 최신순 정렬
-      const sorted = res.data.sort((a: any, b: any) => b.id - a.id);
-      setResearchList(sorted);
+      // const sorted = res.data.sort((a: any, b: any) => b.id - a.id);
+      // setResearchList(sorted);
+      setResearchList(res.data);
     } catch (err) {
       console.error('리스트 로딩 실패', err);
     }

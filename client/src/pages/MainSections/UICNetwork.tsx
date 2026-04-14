@@ -96,6 +96,12 @@ const UICNetwork = () => {
         <div className="flex md:hidden flex-1 w-full overflow-y-auto scrollbar-hide py-2 px-1">
           <div className="grid grid-cols-3 gap-y-8 gap-x-2 w-full content-start">
             {universities.map((uni) => {
+              const isDarkBg = [
+                  '가톨릭대학교',
+                  '경기대학교',
+                  '한성대학교',
+                  '홍익대학교',
+                ].includes(uni.name);
               const logoSrc = uni.logo
                 ? assets[uni.logo as keyof typeof assets]
                 : null;
@@ -105,7 +111,7 @@ const UICNetwork = () => {
                   key={uni.name}
                   className="flex flex-col items-center gap-1.5 w-full"
                 >
-                  <div className="w-10 h-10 flex items-center justify-center">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkBg ? 'bg-gray-900' : 'bg-gray-100'}`}>
                     {logoSrc ? (
                       <img
                         src={logoSrc}
