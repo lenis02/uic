@@ -93,12 +93,12 @@ function PeriodPicker({
   const TimeInput = pickerInput('시간 선택');
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div className="space-y-1">
         <label className="text-xs text-gray-400 pl-1 block">시작 날짜</label>
         <DatePicker
           selected={toDate(startDate, startTime)}
-          onChange={(d) => onStartDateChange(d ? d.toLocaleDateString('sv-SE') : '')}
+          onChange={(d: Date | null) => onStartDateChange(d ? d.toLocaleDateString('sv-SE') : '')}
           dateFormat="yyyy.MM.dd"
           customInput={<DateInput />}
           popperPlacement="bottom-start"
@@ -108,7 +108,7 @@ function PeriodPicker({
         <label className="text-xs text-gray-400 pl-1 block">종료 날짜</label>
         <DatePicker
           selected={toDate(endDate, endTime)}
-          onChange={(d) => onEndDateChange(d ? d.toLocaleDateString('sv-SE') : '')}
+          onChange={(d: Date | null) => onEndDateChange(d ? d.toLocaleDateString('sv-SE') : '')}
           dateFormat="yyyy.MM.dd"
           customInput={<DateInput />}
           popperPlacement="bottom-start"
@@ -118,7 +118,7 @@ function PeriodPicker({
         <label className="text-xs text-gray-400 pl-1 block">시작 시간</label>
         <DatePicker
           selected={toDate(startDate, startTime)}
-          onChange={(d) => onStartTimeChange(d ? d.toTimeString().slice(0, 5) : '00:00')}
+          onChange={(d: Date | null) => onStartTimeChange(d ? d.toTimeString().slice(0, 5) : '00:00')}
           showTimeSelect
           showTimeSelectOnly
           timeIntervals={30}
@@ -132,7 +132,7 @@ function PeriodPicker({
         <label className="text-xs text-gray-400 pl-1 block">종료 시간</label>
         <DatePicker
           selected={toDate(endDate, endTime)}
-          onChange={(d) => onEndTimeChange(d ? d.toTimeString().slice(0, 5) : '23:59')}
+          onChange={(d: Date | null) => onEndTimeChange(d ? d.toTimeString().slice(0, 5) : '23:59')}
           showTimeSelect
           showTimeSelectOnly
           timeIntervals={30}
@@ -283,7 +283,7 @@ export default function AdminPopup() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-8 animate-fade-in-up pb-10 h-screen overflow-y-auto">
+    <div className="w-full max-w-5xl mx-auto space-y-8 animate-fade-in-up pb-10">
       <div className="flex flex-col gap-1 px-2">
         <h1 className="text-2xl font-extrabold tracking-tight text-white/90">팝업 관리</h1>
         <p className="text-sm text-gray-300">메인 화면에 표시될 팝업 이미지를 기간별로 관리합니다.</p>

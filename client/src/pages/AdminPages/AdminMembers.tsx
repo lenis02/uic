@@ -262,7 +262,7 @@ export default function AdminMembers() {
     'w-full bg-slate-950/80 border border-white/20 rounded-lg px-2 py-1.5 text-xs text-gray-200 focus:ring-1 focus:ring-blue-500 outline-none';
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 animate-fade-in-up p-4 pb-10 h-screen overflow-y-auto">
+    <div className="w-full max-w-7xl mx-auto space-y-8 animate-fade-in-up pb-10">
       {/* ... 헤더 생략 ... */}
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-extrabold text-white">멤버 관리</h1>
@@ -306,7 +306,7 @@ export default function AdminMembers() {
 
           {/* ... 나머지 등록 폼 입력 필드들 (기존 코드 유지) ... */}
           <div className="flex-1 flex flex-col justify-between gap-5">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <div className="space-y-1">
                 <label className="text-xs text-gray-400 ml-1">
                   이름 <span className="text-red-400">*</span>
@@ -349,7 +349,7 @@ export default function AdminMembers() {
                 </select>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-1">
                 <label className="text-xs text-gray-400 ml-1">
                   직장 / 소속
@@ -409,7 +409,7 @@ export default function AdminMembers() {
       </div>
 
       {/* 🟡 3. 리스트 (카드) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {filteredMembers.map((member) => (
           <div
             key={member.id}

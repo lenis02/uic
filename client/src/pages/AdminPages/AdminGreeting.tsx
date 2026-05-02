@@ -8,7 +8,6 @@ interface GreetingData {
   fullRole: string;
   greeting: string;
   content: string;
-  quote: string;
   imageUrl?: string;
 }
 
@@ -23,7 +22,6 @@ export default function AdminGreeting() {
     fullRole: '',
     greeting: '',
     content: '',
-    quote: '',
   });
 
   // 1. 데이터 불러오기
@@ -36,7 +34,6 @@ export default function AdminGreeting() {
         fullRole: res.data.fullRole || '',
         greeting: res.data.greeting || '',
         content: res.data.content || '',
-        quote: res.data.quote || '',
       });
       setPreview(res.data.imageUrl ? `${res.data.imageUrl}` : '');
     } catch (err) {
@@ -67,7 +64,6 @@ export default function AdminGreeting() {
     formData.append('fullRole', form.fullRole);
     formData.append('greeting', form.greeting);
     formData.append('content', form.content);
-    formData.append('quote', form.quote);
 
     if (file) {
       formData.append('image', file);
@@ -93,7 +89,7 @@ export default function AdminGreeting() {
     'w-full bg-slate-950/50 border border-white/10  px-4 py-3 text-gray-200 placeholder-gray-300 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent outline-none transition-all';
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 animate-fade-in-up pb-10 h-screen overflow-y-auto">
+    <div className="w-full max-w-5xl mx-auto space-y-6 animate-fade-in-up pb-10">
       {/* 헤더 섹션 */}
       <div className="flex flex-col gap-1 px-2">
         <h1 className="text-2xl font-extrabold tracking-tight text-white/90">
@@ -208,16 +204,6 @@ export default function AdminGreeting() {
                 onChange={(e) => setForm({ ...form, greeting: e.target.value })}
                 className={inputStyle}
                 placeholder="예: 안녕하세요, UIC입니다."
-              />
-            </div>
-
-            <div>
-              <label className={labelStyle}>멋있는 말 (Quote)</label>
-              <input
-                value={form.quote}
-                onChange={(e) => setForm({ ...form, quote: e.target.value })}
-                className={inputStyle}
-                placeholder="예: 미래를 향한 첫 걸음"
               />
             </div>
 

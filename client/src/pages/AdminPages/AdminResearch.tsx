@@ -99,7 +99,7 @@ export default function AdminResearch() {
     'block w-full file:cursor-pointer text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white hover:file:bg-slate-600 cursor-pointer';
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 animate-fade-in-up pb-10 h-screen overflow-y-auto">
+    <div className="w-full max-w-7xl mx-auto space-y-8 animate-fade-in-up pb-10">
       <div className="flex flex-col gap-1 px-2">
         <h1 className="text-2xl font-extrabold tracking-tight text-white/90">
           리서치 관리
@@ -132,9 +132,9 @@ export default function AdminResearch() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {/* 제목 */}
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2 md:col-span-2">
               <label className="text-xs text-gray-400 ml-1 mb-1 block">
                 제목(필수)
               </label>

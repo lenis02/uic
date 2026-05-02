@@ -23,7 +23,6 @@ interface Executive {
   fullRole: string;
   greeting: string;
   content: string;
-  quote: string;
   image: string;
 }
 
@@ -56,9 +55,6 @@ const GreetingSection = ({ data }: { data: Executive }) => (
         </p>
         {/* 모바일 텍스트 폰트 크기 최적화 */}
         <p className="font-light whitespace-pre-line text-xs md:text-base">{data.content}</p>
-        {/* <p className="font-light italic border-l-2 border-white pl-4 text-xs md:text-base">
-          {data.quote}
-        </p> */}
       </div>
 
       {/* 2. 이미지 및 이름 영역 (오른쪽/아래) */}
@@ -141,7 +137,6 @@ const AboutPage = () => {
           fullRole: res.data.fullRole || '',
           greeting: res.data.greeting || '',
           content: res.data.content || '',
-          quote: res.data.quote || '',
           // 이미지가 없으면 기본 로고 사용
           image: res.data.imageUrl ? res.data.imageUrl : assets.logo_uic,
         });

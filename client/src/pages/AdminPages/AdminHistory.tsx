@@ -64,7 +64,7 @@ export default function AdminHistory() {
     'w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-gray-300 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent outline-none transition-all';
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-8 animate-fade-in-up pb-10 h-screen overflow-y-auto">
+    <div className="w-full max-w-5xl mx-auto space-y-8 animate-fade-in-up pb-10">
       {/* 헤더 섹션 */}
       <div className="flex flex-col gap-1 px-2">
         <h1 className="text-2xl font-extrabold tracking-tight text-white/90">
@@ -82,10 +82,10 @@ export default function AdminHistory() {
         </h3>
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-12 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-12 gap-4"
         >
           {/* 연도 입력 (2칸) */}
-          <div className="md:col-span-2">
+          <div className="sm:col-span-2">
             <input
               placeholder="연도 (2024)"
               className={inputStyle}
@@ -95,7 +95,7 @@ export default function AdminHistory() {
           </div>
 
           {/* 날짜 입력 (2칸) */}
-          <div className="md:col-span-2">
+          <div className="sm:col-span-2">
             <input
               placeholder="날짜 (08.22)"
               className={inputStyle}
@@ -105,7 +105,7 @@ export default function AdminHistory() {
           </div>
 
           {/* 내용 입력 (6칸) */}
-          <div className="md:col-span-6">
+          <div className="sm:col-span-6">
             <input
               placeholder="내용을 입력하세요 (예: 제 1회 해커톤 개최)"
               className={inputStyle}
@@ -115,7 +115,7 @@ export default function AdminHistory() {
           </div>
 
           {/* 추가 버튼 (2칸) */}
-          <div className="md:col-span-2">
+          <div className="sm:col-span-2">
             <button
               type="submit"
               className="w-full h-full cursor-pointer min-h-[48px] bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-900/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
