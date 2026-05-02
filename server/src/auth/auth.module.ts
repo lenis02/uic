@@ -28,7 +28,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
         return {
           secret: jwtSecret ?? 'dev-only-jwt-secret',
-          signOptions: { expiresIn: '1d' },
+          signOptions: { expiresIn: '1d', algorithm: 'HS256' },
         };
       },
     }),

@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  ParseIntPipe,
   UseGuards,
   UseInterceptors,
   UploadedFile,
@@ -44,16 +45,16 @@ export class PopupController {
   @UseGuards(AdminGuard)
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: Partial<CreatePopupDto>,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.popupService.update(+id, dto, file);
+    return this.popupService.update(id, dto, file);
   }
 
   @Delete(':id')
   @UseGuards(AdminGuard)
-  remove(@Param('id') id: string) {
-    return this.popupService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.popupService.remove(id);
   }
 }

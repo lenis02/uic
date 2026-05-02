@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { HistoryModule } from './history/history.module';
@@ -11,12 +12,15 @@ import { ContactModule } from './contact/contact.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PopupModule } from './popup/popup.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }]),
 
     // 👇 메일 설정 변경
     MailerModule.forRootAsync({
@@ -61,6 +65,9 @@ import { PopupModule } from './popup/popup.module';
     CloudinaryModule,
     PopupModule,
   ],
-  providers: [CloudinaryService],
+  providers: [
+    CloudinaryService,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
 })
 export class AppModule {}

@@ -1,5 +1,5 @@
 // src/modules/members/dto/create-member.dto.ts
-import { IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateMemberDto {
@@ -10,18 +10,22 @@ export class CreateMemberDto {
 
   @IsString()
   @IsNotEmpty({ message: '이름을 입력해주세요' })
+  @MaxLength(50)
   name: string;
 
   @IsString()
   @IsNotEmpty({ message: '직책을 입력해주세요 (예: 회장, 리서처)' })
+  @MaxLength(100)
   position: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(100)
   workplace: string;
 
-  @IsString()
+  @IsEmail()
   @IsOptional()
+  @MaxLength(254)
   email: string;
 
   @IsString()

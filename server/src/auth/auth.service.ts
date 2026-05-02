@@ -18,13 +18,13 @@ export class AuthService {
     const admin = await this.adminRepository.findOne({ where: { username } });
 
     if (!admin) {
-      throw new UnauthorizedException('관리자 계정을 찾을 수 없습니다.');
+      throw new UnauthorizedException('아이디 또는 비밀번호가 올바르지 않습니다.');
     }
 
     // 암호화된 비밀번호 비교
     const isMatch = await bcrypt.compare(pass, admin.password);
     if (!isMatch) {
-      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+      throw new UnauthorizedException('아이디 또는 비밀번호가 올바르지 않습니다.');
     }
 
     // 마지막 로그인 시간 업데이트
@@ -50,7 +50,7 @@ export class AuthService {
     }
 
     // 새 비밀번호 암호화
-    const salt = await bcrypt.genSalt();
+    const salt = await bcrypt.genSalt(12);
     admin.password = await bcrypt.hash(newPass, salt);
 
     return this.adminRepository.save(admin);
@@ -70,7 +70,7 @@ export class AuthService {
         return;
       }
 
-      const salt = await bcrypt.genSalt();
+      const salt = await bcrypt.genSalt(12);
       const hashedPassword = await bcrypt.hash(defaultPassword, salt);
       await this.adminRepository.save({
         username: defaultUsername,

@@ -6,6 +6,7 @@ import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
 import { ConfigService } from '@nestjs/config';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -24,6 +25,7 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.use(helmet());
   app.disable('x-powered-by');
 
   const bodyLimit = configService.get<string>('REQUEST_BODY_LIMIT') ?? '10mb';
@@ -57,6 +59,8 @@ async function bootstrap() {
 
   const port = Number(configService.get<string>('PORT') ?? 3000);
   await app.listen(port);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  if (!isProduction) {
+    console.log(`Application is running on: ${await app.getUrl()}`);
+  }
 }
 bootstrap();

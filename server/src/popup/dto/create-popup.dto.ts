@@ -1,9 +1,9 @@
-import { IsBoolean, IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDateString, IsOptional, IsUrl } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreatePopupDto {
   @IsOptional()
-  @IsString()
+  @IsUrl()
   linkUrl?: string;
 
   @IsDateString()
