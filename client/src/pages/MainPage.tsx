@@ -4,6 +4,7 @@ import SectionsBase from '../components/SectionsBase.tsx';
 import Vision from './MainSections/Vision.tsx';
 import UICNetwork from './MainSections/UICNetwork.tsx';
 import UICPartner from './MainSections/UICPartner.tsx';
+import PopupBanner from '../components/PopupBanner.tsx';
 
 const MainPage = () => {
   const [showArrow, setShowArrow] = useState(true);
@@ -22,6 +23,7 @@ const MainPage = () => {
       // 💡 수정: 모바일에서는 스냅 해제, md(태블릿) 이상에서만 snap 활성화
       className="relative font-pre h-screen w-full overflow-y-auto md:snap-y md:snap-mandatory bg-uic-dark scroll-smooth custom-scrollbar scrollbar-hide"
     >
+      <PopupBanner />
       <MainSidebar />
       <SectionsBase showArrow={showArrow} />
 

@@ -68,4 +68,13 @@ export const api = {
   // [추가] 문의 메일 발송
   sendContactEmail: (data: { name: string; email: string; message: string }) =>
     instance.post('/contact', data),
+
+  // --- 팝업 (Popup) ---
+  getPopups: () => instance.get('/popup'),
+  getActivePopups: () => instance.get('/popup/active'),
+  createPopup: (data: FormData) =>
+    instance.post('/popup', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  updatePopup: (id: number, data: FormData) =>
+    instance.patch(`/popup/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  deletePopup: (id: number) => instance.delete(`/popup/${id}`),
 };

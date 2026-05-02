@@ -18,6 +18,7 @@ const AdminHistory = lazy(() => import('./pages/AdminPages/AdminHistory'));
 const AdminMembers = lazy(() => import('./pages/AdminPages/AdminMembers'));
 const AdminResearch = lazy(() => import('./pages/AdminPages/AdminResearch'));
 const AdminGreeting = lazy(() => import('./pages/AdminPages/AdminGreeting'));
+const AdminPopup = lazy(() => import('./pages/AdminPages/AdminPopup'));
 
 const AppContent = () => {
   useAutoLogout(30 * 60 * 1000);
@@ -42,6 +43,7 @@ const AppContent = () => {
             <Route path="history" element={<AdminHistory />} />
             <Route path="members" element={<AdminMembers />} />
             <Route path="research" element={<AdminResearch />} />
+            <Route path="popup" element={<AdminPopup />} />
           </Route>
         </Route>
 

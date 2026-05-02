@@ -3,4 +3,5 @@
 -- If this fails, run: SELECT column_name FROM information_schema.columns WHERE table_name = 'research';
 
 ALTER TABLE research DROP COLUMN IF EXISTS "thumbnailUrl";
-ALTER TABLE research DROP COLUMN IF EXISTS description;
+ALTER TABLE research DROP COLUMN IF EXISTS "description";
+

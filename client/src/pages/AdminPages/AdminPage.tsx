@@ -20,6 +20,7 @@ export default function AdminLayout() {
     { path: '/admin/history', label: '연혁 관리' },
     { path: '/admin/members', label: '멤버 관리' },
     { path: '/admin/research', label: '리서치 관리' },
+    { path: '/admin/popup', label: '팝업 관리' },
   ];
 
   const handleLogout = () => {

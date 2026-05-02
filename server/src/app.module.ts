@@ -10,6 +10,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ContactModule } from './contact/contact.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { PopupModule } from './popup/popup.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     GreetingModule,
     ContactModule,
     CloudinaryModule,
+    PopupModule,
   ],
   providers: [CloudinaryService],
 })
