@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Recurse -Directory -Name)",
+      "PowerShell(head *)",
+      "Bash(psql *)",
+      "Bash(node -e ' *)",
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(Get-ChildItem *)",
+      "Bash(npm run *)",
+      "Bash(git restore *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@nestjs/throttler/package.json'\\).version\\)\")"
+    ]
+  }
+}
