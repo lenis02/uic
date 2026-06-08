@@ -41,12 +41,12 @@ export default function PopupBanner() {
   if (popups.length === 0) return null;
 
   return (
-    // 모바일: 어두운 배경 오버레이 + 중앙 정렬 / 데스크탑(md~): 좌상단 배치 + 바깥 클릭 통과
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 pointer-events-auto md:block md:bg-transparent md:pointer-events-none">
+    // 모바일: 어두운 배경 오버레이 + 중앙 정렬 / 데스크탑(md~): 배경 없이 화면 정중앙 + 바깥 클릭 통과
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 pointer-events-auto md:bg-transparent md:pointer-events-none">
       {popups.map((popup) => (
         <div
           key={popup.id}
-          className="relative pointer-events-auto bg-slate-900 border border-white/10 shadow-2xl overflow-hidden w-fit md:absolute md:top-0 md:left-0"
+          className="relative pointer-events-auto bg-slate-900 border border-white/10 shadow-2xl overflow-hidden w-fit"
         >
           <div
             className={popup.linkUrl ? 'cursor-pointer' : ''}
