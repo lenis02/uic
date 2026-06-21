@@ -12,6 +12,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GreetingService } from './greeting.service';
 import { CreateGreetingDto } from './dto/create-greeting.dto';
+import { UpdateGreetingDto } from './dto/update-greeting.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { imageUploadOptions } from '../common/utils/multer.options';
 
@@ -47,7 +48,7 @@ export class GreetingController {
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   async update(
     @Param('role') role: string,
-    @Body() dto: CreateGreetingDto,
+    @Body() dto: UpdateGreetingDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
     // role을 DTO에 합쳐서 서비스로 전달

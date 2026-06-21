@@ -57,6 +57,10 @@ export class MembersService {
     const { deleteImage, ...rest } = dto;
     Object.assign(member, rest);
 
+    // 빈 문자열로 들어온 선택 항목은 null로 정규화 (update는 검증/변환을 거치지 않음)
+    if (member.email === '') member.email = null;
+    if (member.workplace === '') member.workplace = null;
+
     // 3️⃣ 파일이 새로 왔을 때만 이미지 교체! (덮어쓰기 방지)
     if (file) {
       const uploadResult = await this.cloudinaryService.uploadImage(file);

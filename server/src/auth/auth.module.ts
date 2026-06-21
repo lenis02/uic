@@ -26,6 +26,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           );
         }
 
+        if (!jwtSecret) {
+          console.warn(
+            '⚠️  JWT_SECRET is not set — falling back to an insecure dev secret. Do NOT use this in production.',
+          );
+        }
+
         return {
           secret: jwtSecret ?? 'dev-only-jwt-secret',
           signOptions: { expiresIn: '1d', algorithm: 'HS256' },

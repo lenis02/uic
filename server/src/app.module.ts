@@ -9,7 +9,6 @@ import { GreetingModule } from './greeting/greeting.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ContactModule } from './contact/contact.module';
-import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PopupModule } from './popup/popup.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -65,9 +64,6 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     CloudinaryModule,
     PopupModule,
   ],
-  providers: [
-    CloudinaryService,
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
-  ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

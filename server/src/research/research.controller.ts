@@ -14,6 +14,7 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ResearchService } from './research.service';
 import { CreateResearchDto } from './dto/create-research.dto';
+import { UpdateResearchDto } from './dto/update-research.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { researchUploadOptions } from '../common/utils/multer.options';
@@ -50,7 +51,7 @@ export class ResearchController {
   )
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateResearchDto: CreateResearchDto,
+    @Body() updateResearchDto: UpdateResearchDto,
     @UploadedFiles() files: { pdf?: Express.Multer.File[] },
   ) {
     return this.researchService.update(id, updateResearchDto, files || {});

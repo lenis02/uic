@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Popup } from './entities/popup.entity';
@@ -29,6 +33,7 @@ export class PopupService {
   }
 
   async create(dto: CreatePopupDto, file: Express.Multer.File) {
+    if (!file) throw new BadRequestException('이미지를 첨부해주세요.');
     const uploaded = await this.cloudinaryService.uploadAsWebp(file);
     const popup = this.popupRepository.create({
       imageUrl: (uploaded as any).secure_url,
@@ -48,7 +53,7 @@ export class PopupService {
       const uploaded = await this.cloudinaryService.uploadAsWebp(file);
       popup.imageUrl = (uploaded as any).secure_url;
     }
-    if (dto.linkUrl !== undefined) popup.linkUrl = dto.linkUrl;
+    if (dto.linkUrl !== undefined) popup.linkUrl = dto.linkUrl || null;
     if (dto.startDate) popup.startDate = new Date(dto.startDate);
     if (dto.endDate) popup.endDate = new Date(dto.endDate);
     if (dto.isActive !== undefined) popup.isActive = Boolean(dto.isActive);

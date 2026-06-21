@@ -6,8 +6,8 @@ export class Popup extends BaseEntity {
   @Column()
   imageUrl: string;
 
-  @Column({ nullable: true })
-  linkUrl: string;
+  @Column({ type: 'varchar', nullable: true })
+  linkUrl: string | null;
 
   @Column({ type: 'timestamp' })
   startDate: Date;

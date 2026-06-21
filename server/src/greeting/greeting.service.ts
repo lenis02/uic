@@ -38,7 +38,10 @@ export class GreetingService {
   }
 
   // 👇 [핵심 수정] file을 받아서 처리하는 로직으로 변경
-  async createOrUpdate(dto: CreateGreetingDto, file?: Express.Multer.File) {
+  async createOrUpdate(
+    dto: Partial<CreateGreetingDto> & { role: string },
+    file?: Express.Multer.File,
+  ) {
     // 1. 기존 데이터 조회
     const existing = await this.greetingRepository.findOne({
       where: { role: dto.role },

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Research } from './entities/research.entity';
 import { CreateResearchDto } from './dto/create-research.dto';
+import { UpdateResearchDto } from './dto/update-research.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
@@ -48,7 +49,7 @@ export class ResearchService {
 
   async update(
     id: number,
-    dto: Partial<CreateResearchDto>,
+    dto: UpdateResearchDto,
     files: { pdf?: Express.Multer.File[] },
   ) {
     const research = await this.researchRepository.findOne({ where: { id } });

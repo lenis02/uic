@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateGreetingDto {
   @IsString()
@@ -24,7 +24,4 @@ export class CreateGreetingDto {
   @IsString()
   @IsNotEmpty({ message: '멋있는 말 한마디만 입력해주세요' })
   quote: string;
-
-  @IsOptional()
-  order?: number;
 }

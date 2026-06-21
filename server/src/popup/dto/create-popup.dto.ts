@@ -2,6 +2,7 @@ import { IsBoolean, IsDateString, IsOptional, IsUrl } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreatePopupDto {
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsOptional()
   @IsUrl()
   linkUrl?: string;
