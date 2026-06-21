@@ -43,7 +43,7 @@ export class MembersController {
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: Partial<CreateMemberDto>,
+    @Body() dto: Partial<CreateMemberDto> & { deleteImage?: string },
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.membersService.update(id, dto, file);

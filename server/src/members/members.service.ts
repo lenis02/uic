@@ -47,19 +47,23 @@ export class MembersService {
   // 🔹 수정 로직
   async update(
     id: number,
-    dto: Partial<CreateMemberDto>,
+    dto: Partial<CreateMemberDto> & { deleteImage?: string },
     file?: Express.Multer.File,
   ) {
     const member = await this.memberRepository.findOne({ where: { id } });
     if (!member) throw new NotFoundException('멤버를 찾을 수 없습니다.');
 
-    // 2️⃣ 순서 중요: 텍스트 정보를 먼저 덮어쓰고...
-    Object.assign(member, dto);
+    // 2️⃣ 순서 중요: 텍스트 정보를 먼저 덮어쓰고... (deleteImage는 컬럼이 아니므로 제외)
+    const { deleteImage, ...rest } = dto;
+    Object.assign(member, rest);
 
     // 3️⃣ 파일이 새로 왔을 때만 이미지 교체! (덮어쓰기 방지)
     if (file) {
       const uploadResult = await this.cloudinaryService.uploadImage(file);
       member.imageUrl = uploadResult.secure_url;
+    } else if (deleteImage === 'true') {
+      // 4️⃣ 파일은 없고 삭제 요청만 온 경우 이미지 제거
+      member.imageUrl = null;
     }
 
     return await this.memberRepository.save(member);

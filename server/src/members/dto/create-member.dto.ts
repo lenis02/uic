@@ -1,6 +1,6 @@
 // src/modules/members/dto/create-member.dto.ts
 import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateMemberDto {
   @Type(() => Number)
@@ -23,10 +23,11 @@ export class CreateMemberDto {
   @MaxLength(100)
   workplace: string;
 
+  @Transform(({ value }) => (value === '' ? null : value))
   @IsEmail()
   @IsOptional()
   @MaxLength(254)
-  email: string;
+  email?: string | null;
 
   @IsString()
   @IsOptional()
