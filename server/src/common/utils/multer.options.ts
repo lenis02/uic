@@ -27,7 +27,7 @@ const rejectFile = (
 
 export const imageUploadOptions: Options = {
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: 25 * 1024 * 1024,
   },
   fileFilter: (req, file, callback) => {
     if (!IMAGE_MIME_WHITELIST.has(file.mimetype)) {

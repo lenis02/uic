@@ -169,6 +169,8 @@ export default function AdminGreeting() {
               * 4:5 비율 최적화
               <br />
               (클릭하여 파일 선택)
+              <br />
+              (최대 25MB)
             </p>
           </div>
 

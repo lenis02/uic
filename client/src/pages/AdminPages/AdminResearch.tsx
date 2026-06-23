@@ -194,6 +194,7 @@ export default function AdminResearch() {
                 onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
                 className={fileInputStyle}
               />
+              <p className="text-[11px] text-gray-500">최대 25MB</p>
             </div>
           </div>
 
