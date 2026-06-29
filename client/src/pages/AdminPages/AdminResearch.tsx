@@ -7,6 +7,9 @@ const CATEGORIES = ['대상', '최우수상', '우수상', '장려상', '수상�
 export default function AdminResearch() {
   const [researchList, setResearchList] = useState<any[]>([]);
 
+  // 🔹 연도 필터 상태 ('ALL'이면 전체 보기)
+  const [selectedYear, setSelectedYear] = useState<string | 'ALL'>('ALL');
+
   // 수정 모드인지 확인하기 위한 상태 (null이면 생성 모드, ID가 있으면 수정 모드)
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -34,6 +37,17 @@ export default function AdminResearch() {
   useEffect(() => {
     fetchResearch();
   }, []);
+
+  // 🔹 등록된 연도 목록 (중복 제거 후 최신순)
+  const years = Array.from(
+    new Set(researchList.map((r) => r.year).filter(Boolean))
+  ).sort((a, b) => Number(b) - Number(a));
+
+  // 🔹 선택된 연도로 필터링
+  const filteredResearch =
+    selectedYear === 'ALL'
+      ? researchList
+      : researchList.filter((r) => String(r.year) === String(selectedYear));
 
   // [수정 모드 진입 함수]
   const handleEditClick = (item: any) => {
@@ -210,17 +224,44 @@ export default function AdminResearch() {
         </form>
       </div>
 
+      {/* 🟠 연도 필터 */}
+      <div className="flex gap-2 overflow-x-auto pb-2 custom-scroll px-1">
+        <button
+          onClick={() => setSelectedYear('ALL')}
+          className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
+            selectedYear === 'ALL'
+              ? 'bg-white text-black shadow'
+              : 'bg-slate-800 text-gray-400 hover:bg-slate-700'
+          }`}
+        >
+          전체 보기
+        </button>
+        {years.map((year) => (
+          <button
+            key={year}
+            onClick={() => setSelectedYear(year)}
+            className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
+              selectedYear === year
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+                : 'bg-slate-800 text-gray-400 hover:bg-slate-700'
+            }`}
+          >
+            {year}
+          </button>
+        ))}
+      </div>
+
       {/* 2. 리스트 */}
       <div className="px-2">
         <h3 className="text-lg font-bold text-white/80 mb-4 ml-1">
           업로드된 리서치{' '}
           <span className="text-sm font-normal text-gray-500">
-            ({researchList.length})
+            ({filteredResearch.length})
           </span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {researchList.map((r) => (
+          {filteredResearch.map((r) => (
             <div
               key={r.id}
               className="group bg-slate-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/30 hover:shadow-lg transition-all flex flex-col p-4"
