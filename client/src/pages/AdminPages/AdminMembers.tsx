@@ -50,7 +50,7 @@ export default function AdminMembers() {
 
   const [form, setForm] = useState({
     name: '',
-    position: 'Member',
+    position: '회장',
     workplace: '',
     email: '',
     generation: 0,
