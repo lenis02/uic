@@ -100,10 +100,10 @@ const MembersPage = () => {
                   <button
                     key={gen}
                     onClick={() => setActiveGen(gen)}
-                    className={`px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl text-xs md:text-base text-left font-bold transition-all duration-300 whitespace-nowrap lg:whitespace-normal cursor-pointer ${
+                    className={`border-l-4 pl-3 md:pl-4 pr-3 md:pr-4 py-2 md:py-3 text-xs md:text-base text-left font-bold transition-colors duration-200 whitespace-nowrap lg:whitespace-normal cursor-pointer ${
                       activeGen === gen
-                        ? 'text-blue-400 bg-blue-400/10 border-b-4 lg:border-b-0 lg:border-r-4 border-blue-400 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
-                        : 'text-gray-600 hover:text-gray-400 hover:bg-white/5'
+                        ? 'border-blue-500 text-white'
+                        : 'border-transparent text-gray-600 hover:text-gray-400'
                     }`}
                   >
                     {gen}th{' '}
