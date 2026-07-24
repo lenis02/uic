@@ -233,14 +233,14 @@ const ResearchPage = () => {
   }
 
   return (
-    <main className="relative w-full h-screen overflow-hidden bg-[#050505] text-white pt-20 md:pt-28 pb-4 md:pb-6">
+    <main className="relative w-full h-screen overflow-hidden bg-[#050505] text-white pt-20 md:pt-32 pb-4 md:pb-6">
       <img
         src={assets.bg_research}
         alt="배경"
         className="fixed inset-0 z-0 w-full h-full object-cover opacity-20 pointer-events-none"
       />
 
-      <div className="relative mt-4 z-10 max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col">
+      <div className="relative mt-8 z-10 max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col">
         <div className="flex flex-col w-full h-full bg-black/40 backdrop-blur-xl p-4 md:p-6 lg:p-8 overflow-hidden border border-white/5 shadow-2xl rounded-lg md:rounded-sm">
           {/* [상단 영역] 타이틀 & 검색바 */}
           <header className="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 shrink-0">
