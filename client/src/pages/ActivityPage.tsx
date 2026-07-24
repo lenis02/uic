@@ -116,7 +116,7 @@ const ActivityPage = () => {
                 <img
                   src={act.image}
                   alt={act.title}
-                  className="w-full h-full  object-cover opacity-60 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
             </div>
