@@ -177,3 +177,206 @@ body {
   font-weight: 900;
   font-display: swap;
 }
+
+/* ──────────────────────────────────────────────
+   메인 §3 Network / §4 Partners
+   투명 타일 + 1행 가로 무한 마퀴 + 전체보기 모달
+   ────────────────────────────────────────────── */
+
+/* 투명 타일 */
+.uic-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  padding: 24px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s, background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+.uic-tile:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(196, 181, 253, 0.5);
+  box-shadow: 0 18px 42px -18px rgba(124, 58, 237, 0.55);
+}
+
+/* 로고 원형 배지 (기본 흰 배경) */
+.uic-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.5);
+  flex: none;
+}
+.uic-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+}
+/* 로고 자체가 밝은 색인 대학은 어두운 배경을 깔아야 보인다 */
+.uic-logo-dark {
+  background: #111827;
+}
+
+/* 파트너용 가로형 타일 */
+.uic-tile-wide {
+  padding: 20px;
+}
+.uic-tile-wide .uic-logo {
+  width: auto;
+  min-width: 120px;
+  height: 52px;
+  border-radius: 12px;
+  padding: 0 20px;
+  background: #fff;
+}
+
+/* 가로 무한 마퀴 */
+@keyframes uicMarq {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.uic-marqwrap {
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.uic-marq-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: uicMarq linear infinite;
+}
+.uic-marqwrap:hover .uic-marq-track {
+  animation-play-state: paused;
+}
+.uic-marq-net {
+  animation-duration: 70s;
+}
+.uic-marq-part {
+  animation-duration: 44s;
+}
+.uic-marq-item {
+  flex: 0 0 auto;
+  width: 148px;
+  margin-right: 16px;
+}
+.uic-marq-item-wide {
+  flex: 0 0 auto;
+  width: 232px;
+  height: 116px;
+  margin-right: 20px;
+}
+
+/* 모션 최소화 환경에서는 자동 스크롤을 멈춘다 */
+@media (prefers-reduced-motion: reduce) {
+  .uic-marq-track {
+    animation: none;
+  }
+  .uic-marqwrap {
+    overflow-x: auto;
+  }
+  .uic-tile {
+    transition: none;
+  }
+}
+
+/* 전체보기 버튼 */
+.uic-viewall {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 13px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  font-family: inherit;
+}
+.uic-viewall:hover {
+  background: rgba(124, 58, 237, 0.22);
+  border-color: #c4b5fd;
+  transform: translateY(-2px);
+}
+
+/* 전체보기 모달 */
+@keyframes uicFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.uic-modal-back {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 8, 12, 0.78);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  animation: uicFade 0.25s ease;
+}
+.uic-modal {
+  width: 100%;
+  max-width: 1180px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(20, 16, 34, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+.uic-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex: none;
+}
+.uic-modal-body {
+  overflow-y: auto;
+  padding: 32px;
+}
+.uic-modal-close {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex: none;
+}
+.uic-modal-close:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
