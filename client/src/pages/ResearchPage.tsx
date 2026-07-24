@@ -330,14 +330,14 @@ const ResearchPage = () => {
             ref={scrollRef}
             className="flex-1 overflow-y-auto pr-1 md:pr-2 custom-scrollbar scrollbar-hide">
             {processedReports.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 w-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6 w-full">
                 {processedReports.map((item) => {
                   const style = awardStyle(item.category);
 
                   return (
                     <article
                       key={item.id}
-                      className="group relative flex items-start gap-3 overflow-hidden rounded-lg border border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm pl-5 pr-3 py-3 hover:border-blue-500/35 hover:bg-[#0c0c0c] transition-colors duration-200 shadow-md"
+                      className="group relative flex items-start gap-4 overflow-hidden rounded-lg border border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm pl-6 pr-4 py-5 hover:border-blue-500/35 hover:bg-[#0c0c0c] transition-colors duration-200 shadow-md"
                     >
                       <div
                         className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${style.bar}`}
@@ -346,7 +346,7 @@ const ResearchPage = () => {
 
                       <div className="min-w-0 flex-1">
                         {/* 메타: 한 줄로 압축 */}
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1.5 text-[10px] md:text-[11px] text-white/45">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2.5 text-[10px] md:text-[11px] text-white/45">
                           <span
                             className={`px-2 py-0.5 rounded border font-bold ${style.badge}`}
                           >
@@ -374,7 +374,7 @@ const ResearchPage = () => {
                           <span>{formatDate(item.createdAt)}</span>
                         </div>
 
-                        <h3 className="text-sm md:text-[15px] font-bold leading-snug text-white/95 group-hover:text-white transition-colors line-clamp-2">
+                        <h3 className="text-[15px] md:text-base font-bold leading-relaxed text-white/95 group-hover:text-white transition-colors line-clamp-2">
                           {item.title}
                         </h3>
                       </div>
