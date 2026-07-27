@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import FooterBar from '../components/FooterBar';
 
 // 파일 경로 설정 (public 폴더 기준)
@@ -9,7 +10,7 @@ const JoinUs = () => {
     <section
       id="join"
       // 모바일에서는 스크롤을 허용하고, 데스크탑은 기존처럼 overflow-hidden 유지. pt-32 -> pt-24로 모바일 상단 여백 축소.
-      className="relative h-[100dvh] w-full snap-start flex flex-col items-center justify-between bg-[#050505] text-white overflow-y-auto md:overflow-hidden pt-32 scrollbar-hide"
+      className="relative h-[100dvh] w-full snap-start flex flex-col items-center justify-between bg-[#050505] text-white overflow-y-auto md:overflow-hidden pt-24 scrollbar-hide"
     >
       {/* 배경 장식 */}
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-800/20 blur-[120px] rounded-full" />
@@ -17,7 +18,7 @@ const JoinUs = () => {
 
       {/* 상단 타이틀 영역 */}
       {/* mt-8 -> mt-2 md:mt-8로 모바일 여백 축소 */}
-      <div className="relative mt-2 md:mt-8 z-10 text-center mb-6 md:mb-8 select-none shrink-0">
+      <div className="relative mt-2 md:mt-4 z-10 text-center mb-4 md:mb-4 select-none shrink-0">
         <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-white/80">
           JOIN US
         </h1>
@@ -26,7 +27,9 @@ const JoinUs = () => {
           UIC와 함께 성장을 도모할 열정적인 분을 기다립니다.
           <br />
           {/* 모바일 폰트 크기 축소 text-base md:text-2xl */}
-          <span className="lowercase text-base md:text-2xl mt-1 inline-block">&lt;koreauic@gmail.com&gt;</span>
+          <span className="lowercase text-base md:text-2xl mt-1 inline-block">
+            &lt;koreauic@gmail.com&gt;
+          </span>
         </p>
       </div>
 
@@ -37,7 +40,6 @@ const JoinUs = () => {
 
         {/* p-10 -> p-4 md:p-10 모바일 패딩 축소 */}
         <div className="relative h-full w-full flex flex-col md:flex-row p-4 md:p-10 gap-4 md:gap-6">
-          
           {/* [왼쪽] Club Membership */}
           <div className="group relative flex-1 bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-xl border border-white/10 transition-all duration-500 overflow-hidden flex flex-col rounded-xl md:rounded-none min-h-[240px] md:min-h-0">
             {/* p-8 -> p-6 md:p-8 모바일 패딩 축소 */}
@@ -51,7 +53,7 @@ const JoinUs = () => {
               <p className="text-gray-400 text-center text-xs md:text-sm leading-relaxed mb-6 md:mb-8 break-keep">
                 동아리 가입을 위한 단체 지원 프로세스입니다.
               </p>
-              
+
               <div className="space-y-3 md:space-y-4">
                 {/* 모바일은 정중앙 정렬되도록 -ml-4를 md:-ml-4로 변경 */}
                 <div className="flex items-center justify-center md:-ml-4 gap-2 md:gap-3">
@@ -75,7 +77,9 @@ const JoinUs = () => {
               download="UIC_Club_Application.pptx"
               className="absolute bottom-4 md:bottom-8 left-4 md:left-8 right-4 md:right-8 h-[44px] md:h-[56px] text-sm md:text-base bg-white text-black font-bold rounded-xl md:rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg overflow-hidden group/btn cursor-pointer flex items-center justify-center z-10"
             >
-              <span className="relative z-10">지원서 양식 다운로드 (.pptx)</span>
+              <span className="relative z-10">
+                지원서 양식 다운로드 (.pptx)
+              </span>
               <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-white opacity-0 group-hover/btn:opacity-100 transition-opacity" />
             </a>
 
@@ -94,7 +98,7 @@ const JoinUs = () => {
               <p className="text-gray-400 text-center text-xs md:text-sm leading-relaxed mb-6 md:mb-8 break-keep">
                 신규 회원을 위한 개인 지원 프로세스입니다.
               </p>
-              
+
               <div className="space-y-3 md:space-y-4 md:-ml-4">
                 <div className="flex w-full justify-center items-center gap-2 md:gap-3">
                   <div className="w-1.5 h-1.5 rounded-full md:mt-2 bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
@@ -127,6 +131,14 @@ const JoinUs = () => {
           </div>
         </div>
       </div>
+
+      {/* 지원 카드 아래에 ContactUs로 넘어가는 보조 CTA 배치 */}
+      <Link
+        to="/contact"
+        className="relative z-10 shrink-0 mb-3 md:mb-4 whitespace-nowrap px-6 py-2 md:px-8 md:py-2.5 rounded-xl md:rounded-2xl border border-white/60 text-white text-sm md:text-base font-bold tracking-tight transition-all duration-300 hover:bg-white/10 hover:border-white active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+      >
+        문의하러 가기
+      </Link>
 
       <FooterBar />
     </section>
