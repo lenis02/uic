@@ -20,12 +20,30 @@ export default function AdminLayout() {
     setMenuOpen(false);
   }, [location.pathname]);
 
-  const menuItems = [
-    { path: '/admin/greeting', label: '인사말 관리' },
-    { path: '/admin/history', label: '연혁 관리' },
-    { path: '/admin/members', label: '멤버 관리' },
-    { path: '/admin/research', label: '리서치 관리' },
-    { path: '/admin/popup', label: '팝업 관리' },
+  const menuGroups = [
+    {
+      title: '메인 페이지 관리',
+      items: [
+        { path: '/admin/popup', label: '팝업 관리' },
+        { path: '/admin/network', label: '참여 대학 관리' },
+        { path: '/admin/partner', label: '협력사 관리' },
+      ],
+    },
+    {
+      title: 'About Us 관리',
+      items: [
+        { path: '/admin/greeting', label: '인사말 관리' },
+        { path: '/admin/history', label: '연혁 관리' },
+      ],
+    },
+    {
+      title: '멤버 페이지 관리',
+      items: [{ path: '/admin/members', label: '멤버 목록 관리' }],
+    },
+    {
+      title: '리서치 페이지 관리',
+      items: [{ path: '/admin/research', label: '리서치 데이터 관리' }],
+    },
   ];
 
   const handleLogout = () => {
@@ -33,36 +51,49 @@ export default function AdminLayout() {
     navigate('/login');
   };
 
+  const NavItem = ({ item }: { item: { path: string; label: string } }) => {
+    const isActive = location.pathname === item.path;
+    return (
+      <li>
+        <Link
+          to={item.path}
+          className={`block px-4 py-2.5 rounded-xl text-[15px] font-medium transition-all duration-300 ease-in-out border border-transparent ${
+            isActive
+              ? 'bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 text-white shadow-lg shadow-blue-900/30 scale-[1.02]'
+              : 'text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] hover:border-blue-500/30 hover:shadow-md'
+          }`}
+        >
+          {item.label}
+        </Link>
+      </li>
+    );
+  };
+
   const NavContent = () => (
     <>
-      <div className="mb-8 px-2 mt-4">
-        <h2 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-white/70">
+      <div className="mb-6 px-2 mt-2">
+        <h2 className="text-xl lg:text-2xl font-extrabold tracking-tight text-white/70">
           UIC ADMIN
         </h2>
-        <p className="text-sm text-gray-300 mt-2 font-light tracking-wider opacity-80">
+        <p className="text-xs text-gray-300 mt-1 font-light tracking-wider opacity-80">
           Management System
         </p>
       </div>
 
-      <ul className="space-y-3">
-        {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <li key={item.path}>
-              <Link
-                to={item.path}
-                className={`block px-5 py-3.5 rounded-xl font-medium transition-all duration-300 ease-in-out border border-transparent ${
-                  isActive
-                    ? 'bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 text-white shadow-lg shadow-blue-900/30 scale-[1.02]'
-                    : 'text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-[#001a4d] hover:via-[#003399] hover:to-[#001a4d] hover:border-blue-500/30 hover:shadow-md'
-                }`}
-              >
-                {item.label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="space-y-5">
+        {menuGroups.map((group) => (
+          <div key={group.title}>
+            <h3 className="px-3 mb-1.5 text-[10px] font-bold tracking-[0.18em] uppercase text-gray-500">
+              {group.title}
+            </h3>
+            <ul className="space-y-1.5">
+              {group.items.map((item) => (
+                <NavItem key={item.path} item={item} />
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </>
   );
 

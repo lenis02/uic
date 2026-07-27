@@ -77,4 +77,20 @@ export const api = {
   updatePopup: (id: number, data: FormData) =>
     instance.patch(`/popup/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
   deletePopup: (id: number) => instance.delete(`/popup/${id}`),
+
+  // --- 참여 대학 (Network) ---
+  getNetworks: () => instance.get('/network'),
+  createNetwork: (data: FormData) =>
+    instance.post('/network', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  updateNetwork: (id: number, data: FormData) =>
+    instance.patch(`/network/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  deleteNetwork: (id: number) => instance.delete(`/network/${id}`),
+
+  // --- 협력사 (Partner) ---
+  getPartners: () => instance.get('/partner'),
+  createPartner: (data: FormData) =>
+    instance.post('/partner', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  updatePartner: (id: number, data: FormData) =>
+    instance.patch(`/partner/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  deletePartner: (id: number) => instance.delete(`/partner/${id}`),
 };

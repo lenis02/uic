@@ -1,47 +1,38 @@
 'use client';
-import { useState } from 'react';
-import { assets } from '../../../assets/assets';
+import { useEffect, useState } from 'react';
+import { api } from '../../api/api';
 import ViewAllModal from '../../components/ViewAllModal';
 
-const partners = [
-  { name: '삼성증권', logo: 'logo_coop0' },
-  { name: '한국투자증권', logo: 'logo_coop1' },
-  { name: '미래에셋증권', logo: 'logo_coop2' },
-  { name: 'NH투자증권', logo: 'logo_coop3' },
-  { name: 'KB증권', logo: 'logo_coop4' },
-  { name: '신한투자증권', logo: 'logo_coop5' },
-  { name: '하나증권', logo: 'logo_coop6' },
-  { name: '키움증권', logo: 'logo_coop7' },
-  { name: '대신증권', logo: 'logo_coop8' },
-  { name: '메리츠증권', logo: 'logo_coop9' },
-  { name: '토스증권', logo: 'logo_coop10' },
-  { name: '카카오페이증권', logo: 'logo_coop11' },
-  { name: '카', logo: 'logo_coop12' },
-  { name: '카카오', logo: 'logo_coop13' },
-];
+interface Partner {
+  id: number;
+  name: string;
+  logoUrl: string | null;
+}
 
-type Partner = (typeof partners)[number];
-
-const PartnerTile = ({ partner }: { partner: Partner }) => {
-  const logoSrc = assets[partner.logo as keyof typeof assets];
-
-  return (
-    <div className="uic-tile uic-tile-wide h-full">
-      <div className="uic-logo">
-        {logoSrc ? (
-          <img src={logoSrc} alt={partner.name} loading="lazy" />
-        ) : (
-          <span className="text-sm font-bold text-gray-400 text-center break-keep">
-            {partner.name}
-          </span>
-        )}
-      </div>
+const PartnerTile = ({ partner }: { partner: Partner }) => (
+  <div className="uic-tile uic-tile-wide h-full">
+    <div className="uic-logo">
+      {partner.logoUrl ? (
+        <img src={partner.logoUrl} alt={partner.name} loading="lazy" />
+      ) : (
+        <span className="text-sm font-bold text-gray-400 text-center break-keep">
+          {partner.name}
+        </span>
+      )}
     </div>
-  );
-};
+  </div>
+);
 
 const UICPartner = () => {
+  const [partners, setPartners] = useState<Partner[]>([]);
   const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    api
+      .getPartners()
+      .then((res) => setPartners(res.data))
+      .catch(() => console.error('협력사 목록 불러오기 실패'));
+  }, []);
 
   // Network와 동일하게 목록을 두 번 이어붙여 끊김 없는 루프를 만든다.
   const marqueeItems = [...partners, ...partners];
@@ -65,7 +56,7 @@ const UICPartner = () => {
       <div className="uic-marqwrap z-10">
         <div className="uic-marq-track uic-marq-part">
           {marqueeItems.map((partner, idx) => (
-            <div key={`${partner.name}-${idx}`} className="uic-marq-item-wide">
+            <div key={`${partner.id}-${idx}`} className="uic-marq-item-wide">
               <PartnerTile partner={partner} />
             </div>
           ))}
@@ -101,7 +92,7 @@ const UICPartner = () => {
         >
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
             {partners.map((partner) => (
-              <PartnerTile key={partner.name} partner={partner} />
+              <PartnerTile key={partner.id} partner={partner} />
             ))}
           </div>
         </ViewAllModal>
