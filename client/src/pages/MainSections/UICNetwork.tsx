@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { assets } from '../../../assets/assets';
+import ViewAllModal from '../../components/ViewAllModal';
 
 // 대학 정보 및 이미지
 const universities = [
@@ -58,190 +59,110 @@ const universities = [
   { name: `연합동아리 UFIC` },
 ];
 
-const UICNetwork = () => {
-  const ROWS = 3;
-  const COLS = 7;
-  const ITEMS_PER_PAGE = ROWS * COLS;
-  const [currentPage, setCurrentPage] = useState(0);
-  const totalPages = Math.ceil(universities.length / ITEMS_PER_PAGE);
+// 로고 자체가 밝은 색이라 흰 배경에서는 보이지 않는 대학들
+const LIGHT_LOGOS = [
+  '가톨릭대학교',
+  '경기대학교',
+  '한성대학교',
+  '홍익대학교',
+];
 
-  const currentData = universities.slice(
-    currentPage * ITEMS_PER_PAGE,
-    (currentPage + 1) * ITEMS_PER_PAGE,
+type University = (typeof universities)[number];
+
+const UniversityTile = ({ uni }: { uni: University }) => {
+  const logoSrc = uni.logo ? assets[uni.logo as keyof typeof assets] : null;
+  const needsDarkBg = LIGHT_LOGOS.includes(uni.name);
+
+  return (
+    <div className="uic-tile h-full">
+      <div className={`uic-logo ${needsDarkBg ? 'uic-logo-dark' : ''}`}>
+        {logoSrc ? (
+          <img src={logoSrc} alt={uni.name} loading="lazy" />
+        ) : (
+          <span
+            className={`text-[9px] font-bold text-center px-1 break-keep ${
+              needsDarkBg ? 'text-gray-300' : 'text-gray-600'
+            }`}
+          >
+            {uni.name}
+          </span>
+        )}
+      </div>
+      <span className="text-[13px] font-semibold text-gray-200 text-center leading-tight break-keep">
+        {uni.name}
+      </span>
+    </div>
   );
+};
 
-  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 0));
-  const nextPage = () =>
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+const UICNetwork = () => {
+  const [showAll, setShowAll] = useState(false);
+
+  // 끊김 없는 무한 루프를 위해 목록을 두 번 이어붙인다.
+  // 트랙 전체가 정확히 2배이므로 -50%까지 이동하면 시작 지점과 동일해진다.
+  const marqueeItems = [...universities, ...universities];
 
   return (
     <section
       id="network"
-      className="relative h-screen w-full md:snap-start flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen w-full md:snap-start flex flex-col items-center justify-center overflow-hidden px-6 py-24 md:py-28"
     >
-      <div className="relative z-10 mt-20 md:mt-32 bg-white w-[70%] md:w-[85%] h-[60%] md:h-[65%] max-w-[1200px] max-h-[850px] rounded-[24px] md:rounded-[40px] shadow-xl flex flex-col items-center justify-between p-4 md:p-6 lg:p-10">
-        {/* 헤더 */}
-        <div className="text-center mb-4 shrink-0">
-          <h2 className="text-2xl md:text-4xl lg:text-4xl font-bold text-gray-900">
-            NETWORK
-          </h2>
-          <p className="text-xs md:text-sm mt-1 text-gray-500">
-            전국 53개 대학 투자동아리와 함께하는 UIC
-          </p>
-        </div>
+      {/* 헤더 */}
+      <div className="text-center mb-8 md:mb-11 shrink-0 z-10">
+        <span className="block text-[13px] md:text-sm font-semibold tracking-[0.3em] text-purple-300 mb-3">
+          NETWORK
+        </span>
+        <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-snug break-keep">
+          전국 <span className="text-purple-300">53개</span> 대학 투자동아리와
+          함께
+        </h2>
+      </div>
 
-        {/* =========================================
-            [1] 모바일 레이아웃 (카드 제거 -> 4열 심플 그리드 세로 스크롤)
-            ========================================= */}
-        <div className="flex md:hidden flex-1 w-full overflow-y-auto scrollbar-hide py-2 px-1">
-          <div className="grid grid-cols-3 gap-y-8 gap-x-2 w-full content-start">
-            {universities.map((uni) => {
-              const isDarkBg = [
-                  '가톨릭대학교',
-                  '경기대학교',
-                  '한성대학교',
-                  '홍익대학교',
-                ].includes(uni.name);
-              const logoSrc = uni.logo
-                ? assets[uni.logo as keyof typeof assets]
-                : null;
-
-              return (
-                <div
-                  key={uni.name}
-                  className="flex flex-col items-center gap-1.5 w-full"
-                >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkBg ? 'bg-gray-900' : 'bg-gray-100'}`}>
-                    {logoSrc ? (
-                      <img
-                        src={logoSrc}
-                        alt={uni.name}
-                        loading="lazy"
-                        className="w-full h-full object-contain p-2"
-                      />
-                    ) : (
-                      <span className="text-[8px] font-bold text-center text-gray-500 px-1 break-keep">
-                        {uni.name}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-[9px] text-gray-600 font-medium w-full max-w-[4.5rem] mx-auto text-center leading-tight line-clamp-2 break-words">
-                    {uni.name}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* =========================================
-            [2] 데스크탑 레이아웃 (페이징 버튼 + 3x7 그리드)
-            ========================================= */}
-        <div className="hidden md:flex flex-1 w-full items-center justify-between min-h-0">
-          <button
-            onClick={prevPage}
-            disabled={currentPage === 0}
-            className={`p-2 shrink-0 transition-opacity ${
-              currentPage === 0
-                ? 'opacity-20 select-none'
-                : 'opacity-100 cursor-pointer'
-            }`}
-          >
-            <svg
-              className="w-10 h-10 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-
-          <div className="flex-1 h-full w-full flex items-center justify-center overflow-hidden">
-            <div className="grid grid-cols-7 grid-rows-3 w-full h-full content-center items-center justify-items-center m-auto gap-y-6">
-              {currentData.map((uni) => {
-                const isDarkBg = [
-                  '가톨릭대학교',
-                  '경기대학교',
-                  '한성대학교',
-                  '홍익대학교',
-                ].includes(uni.name);
-                const logoSrc = uni.logo
-                  ? assets[uni.logo as keyof typeof assets]
-                  : null;
-
-                return (
-                  <div
-                    key={uni.name}
-                    className="flex flex-col items-center gap-3 w-full"
-                  >
-                    <div
-                      className={`w-20 h-20 rounded-full flex items-center justify-center shadow-sm ${isDarkBg ? 'bg-gray-900' : 'bg-gray-100'} transform-gpu hover:-translate-y-1 transition-transform`}
-                    >
-                      {logoSrc ? (
-                        <img
-                          src={logoSrc}
-                          alt={uni.name}
-                          loading="lazy"
-                          className="w-full h-full object-contain p-3"
-                        />
-                      ) : (
-                        <span className="text-[10px] font-bold text-center text-gray-600 px-1 break-keep">
-                          {uni.name}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-xs text-gray-700 font-semibold w-full max-w-[5.75rem] text-center leading-snug line-clamp-2 break-words">
-                      {uni.name}
-                    </span>
-                  </div>
-                );
-              })}
+      {/* 1행 무한 마퀴 */}
+      <div className="uic-marqwrap z-10">
+        <div className="uic-marq-track uic-marq-net">
+          {marqueeItems.map((uni, idx) => (
+            <div key={`${uni.name}-${idx}`} className="uic-marq-item">
+              <UniversityTile uni={uni} />
             </div>
-          </div>
-
-          <button
-            onClick={nextPage}
-            disabled={currentPage === totalPages - 1}
-            className={`p-2 shrink-0 transition-opacity ${
-              currentPage === totalPages - 1
-                ? 'opacity-20 select-none'
-                : 'opacity-100 cursor-pointer'
-            }`}
-          >
-            <svg
-              className="w-10 h-10 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* 데스크탑 전용 페이지 인디케이터 */}
-        <div className="hidden md:flex gap-3 mt-4 -mb-2 shrink-0">
-          {Array.from({ length: totalPages }).map((_, idx) => (
-            <div
-              key={idx}
-              className={`w-2.5 h-2.5 rounded-full ${
-                idx === currentPage ? 'bg-purple-600' : 'bg-gray-200'
-              }`}
-            />
           ))}
         </div>
       </div>
+
+      {/* 전체 보기 */}
+      <button
+        type="button"
+        className="uic-viewall mt-8 md:mt-10 z-10"
+        onClick={() => setShowAll(true)}
+      >
+        전체 대학 한번에 보기
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {showAll && (
+        <ViewAllModal
+          label="NETWORK"
+          labelColor="#c4b5fd"
+          title="전국 53개 대학 투자동아리"
+          onClose={() => setShowAll(false)}
+        >
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-[18px]">
+            {universities.map((uni) => (
+              <UniversityTile key={uni.name} uni={uni} />
+            ))}
+          </div>
+        </ViewAllModal>
+      )}
     </section>
   );
 };
