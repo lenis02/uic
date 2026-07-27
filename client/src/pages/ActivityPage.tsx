@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { assets } from '../../assets/assets';
 import FooterBar from '../components/FooterBar';
 
@@ -150,6 +151,16 @@ const ActivityPage = () => {
               </ul>
             </div>
           </div>
+
+          {/* 마지막 활동(직무콘서트) 아래 여백에 JoinUs로 넘어가는 CTA 배치 */}
+          {index === activities.length - 1 && (
+            <Link
+              to="/join"
+              className="absolute bottom-10 md:bottom-16 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl border border-white/60 text-white text-sm md:text-base font-bold tracking-tight transition-all duration-300 hover:bg-white/10 hover:border-white active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            >
+              지금 바로 지원하기
+            </Link>
+          )}
         </section>
       ))}
 

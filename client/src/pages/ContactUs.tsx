@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { assets } from '../../assets/assets';
 import FooterBar from '../components/FooterBar';
 
@@ -10,7 +10,18 @@ const ContactUs = () => {
     message: '',
   });
   const [loading, setLoading] = useState(false);
-  const [copyStatus, setCopyStatus] = useState<string | null>(null);
+  const [toast, setToast] = useState<{
+    text: string;
+    tone: 'info' | 'error';
+  } | null>(null);
+  const toastTimer = useRef<number | null>(null);
+
+  // 알림 토스트 표시. 연속 호출 시 앞선 타이머가 새 토스트를 지우지 않도록 정리한다.
+  const showToast = (text: string, tone: 'info' | 'error' = 'info') => {
+    setToast({ text, tone });
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 2500);
+  };
 
   // [2] 입력값 변경 핸들러
   const handleChange = (
@@ -25,7 +36,8 @@ const ContactUs = () => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.message) {
-      return alert('이름, 이메일, 내용을 모두 입력해 주세요.');
+      showToast('이름, 이메일, 내용을 모두 입력해 주세요.', 'error');
+      return;
     }
 
     try {
@@ -43,14 +55,14 @@ const ContactUs = () => {
         throw new Error(data.message || '전송 실패');
       }
 
-      alert('문의사항이 성공적으로 접수되었습니다! 곧 답변 드리겠습니다.');
+      showToast('문의사항이 접수되었습니다. 곧 답변 드리겠습니다.');
       setFormData({ name: '', email: '', message: '' });
     } catch (error: any) {
       console.error('Email sending failed:', error);
       const errorMessage = Array.isArray(error.message)
         ? error.message[0]
         : error.message || '전송 중 오류가 발생했습니다.';
-      alert(errorMessage);
+      showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -61,8 +73,7 @@ const ContactUs = () => {
     const cleanText =
       label === 'Direct Contact' ? text.replace(/[^0-9+]/g, '') : text;
     navigator.clipboard.writeText(cleanText).then(() => {
-      setCopyStatus(`${label} 복사 완료!`);
-      setTimeout(() => setCopyStatus(null), 2000);
+      showToast(`${label} 복사 완료!`);
     });
   };
 
@@ -80,14 +91,22 @@ const ContactUs = () => {
         className="fixed inset-0 z-0 w-full h-full object-cover opacity-20 pointer-events-none"
       />
 
-      {/* 복사 알림 토스트 */}
+      {/* 복사 완료 및 폼 제출 결과 알림 토스트 */}
       <div
+        role="status"
+        aria-live="polite"
         className={`fixed top-20 md:top-24 left-1/2 -translate-x-1/2 z-[120] transition-all duration-500 transform ${
-          copyStatus ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0 pointer-events-none'
+          toast ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0 pointer-events-none'
         }`}
       >
-        <div className="bg-blue-600 text-white px-6 md:px-8 py-2 md:py-3 rounded-full font-bold shadow-[0_0_20px_rgba(37,99,235,0.4)] text-xs md:text-sm whitespace-nowrap">
-          {copyStatus}
+        <div
+          className={`text-white px-6 md:px-8 py-2 md:py-3 rounded-full font-bold text-xs md:text-sm max-w-[90vw] text-center break-keep ${
+            toast?.tone === 'error'
+              ? 'bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.4)]'
+              : 'bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.4)]'
+          }`}
+        >
+          {toast?.text}
         </div>
       </div>
 
