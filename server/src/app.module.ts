@@ -11,6 +11,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ContactModule } from './contact/contact.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PopupModule } from './popup/popup.module';
+import { NetworkModule } from './network/network.module';
+import { PartnerModule } from './partner/partner.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
@@ -63,6 +65,8 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     ContactModule,
     CloudinaryModule,
     PopupModule,
+    NetworkModule,
+    PartnerModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
