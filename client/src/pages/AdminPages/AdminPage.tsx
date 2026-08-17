@@ -27,6 +27,7 @@ export default function AdminLayout() {
         { path: '/admin/popup', label: '팝업 관리' },
         { path: '/admin/network', label: '참여 대학 관리' },
         { path: '/admin/partner', label: '협력사 관리' },
+        { path: '/admin/advertisement', label: '광고 배너 관리' },
       ],
     },
     {

@@ -102,6 +102,18 @@ export const api = {
   updateJoinForm: (type: string, data: FormData) =>
     instance.patch(`/joinus/${type}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
 
+  // --- 광고 배너 (Advertisement) ---
+  // 공개용은 활성 광고만, 관리자용은 비활성까지 포함해서 위치별로 묶여 온다.
+  getAdvertisements: () => instance.get('/advertisement'),
+  getAllAdvertisements: () => instance.get('/advertisement/admin'),
+  createAdvertisement: (data: FormData) =>
+    instance.post('/advertisement', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  updateAdvertisement: (id: number, data: FormData) =>
+    instance.patch(`/advertisement/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  deleteAdvertisement: (id: number) => instance.delete(`/advertisement/${id}`),
+  updateAdPlacement: (placement: string, barHeight: number) =>
+    instance.patch(`/advertisement/placement/${placement}`, { barHeight }),
+
   // --- 협력사 (Partner) ---
   getPartners: () => instance.get('/partner'),
   createPartner: (data: FormData) =>
