@@ -167,9 +167,10 @@ const JoinUs = () => {
                     {bullets.map((bullet, i) => (
                       <div
                         key={i}
-                        className="flex items-center justify-center gap-2 md:gap-3"
+                        className="flex items-start justify-start gap-2 md:gap-3"
                       >
-                        <div className={card.dot} />
+                        {/* 왼쪽 정렬이라 불릿이 2줄이 돼도 도트는 첫 줄에 맞춘다. */}
+                        <div className={`mt-[5px] md:mt-[7px] ${card.dot}`} />
                         <p className="text-xs md:text-sm text-gray-400 font-medium break-keep">
                           {bullet}
                         </p>
