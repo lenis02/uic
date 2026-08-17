@@ -1,31 +1,33 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { api } from '../api/api';
 
-type AdPlacement = 'top' | 'bottom';
+type AdType = 'anchored' | 'floating';
+type AdSection = 'home' | 'vision' | 'network' | 'partner';
+type AdEdge = 'top' | 'bottom';
+type AdSide = 'left' | 'right';
 
 interface Advertisement {
   id: number;
-  placement: AdPlacement;
+  type: AdType;
+  section: AdSection | null;
+  edge: AdEdge | null;
+  side: AdSide | null;
+  width: number;
+  height: number;
   imageUrl: string;
   linkUrl: string | null;
   altText: string;
 }
 
-interface PlacementGroup {
-  placement: AdPlacement;
-  barHeight: number;
-  ads: Advertisement[];
-}
-
-// 하단 바를 닫으면 이 키를 남겨 다시 뜨지 않게 한다.
-const BOTTOM_CLOSED_KEY = 'uic_ad_bottom_closed';
-// 같은 위치에 광고가 여러 개면 이 간격으로 순환한다.
+// 추적형 배너를 닫으면 이 키를 남겨 다시 뜨지 않게 한다.
+const FLOATING_CLOSED_KEY = 'uic_ad_floating_closed';
+// 같은 자리에 광고가 여러 개면 이 간격으로 순환한다.
 const ROTATE_INTERVAL_MS = 5000;
 
 const useRotatingAd = (ads: Advertisement[]) => {
   // 인덱스를 직접 들고 있지 않고 tick만 올린 뒤 나머지 연산으로 고른다.
-  // 목록 길이가 바뀌어도 범위를 벗어나지 않는다.
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -42,8 +44,7 @@ const useRotatingAd = (ads: Advertisement[]) => {
   return ads[tick % ads.length];
 };
 
-// 띠 전체를 이미지가 채운다. 라벨/닫기 버튼은 그 위에 겹쳐 올린다.
-const AdImage = ({ ad }: { ad: Advertisement }) => {
+const AdCreative = ({ ad }: { ad: Advertisement }) => {
   const image = (
     <img
       src={ad.imageUrl}
@@ -52,83 +53,92 @@ const AdImage = ({ ad }: { ad: Advertisement }) => {
     />
   );
 
-  if (!ad.linkUrl) return <div className="w-full h-full">{image}</div>;
-
   return (
-    <a
-      href={ad.linkUrl}
-      target="_blank"
-      rel="noopener sponsored"
-      className="block w-full h-full"
-    >
-      {image}
-    </a>
-  );
-};
-
-// 이미지 위에 얹는 광고 표기. 레이아웃 폭을 차지하지 않도록 absolute.
-const AdLabel = ({
-  text,
-  color,
-  className,
-}: {
-  text: string;
-  color: string;
-  className: string;
-}) => (
-  <span
-    style={{ color }}
-    className={`absolute top-1/2 -translate-y-1/2 z-10 px-1.5 py-0.5 rounded bg-black/45 backdrop-blur-sm text-[10px] font-bold tracking-[0.2em] pointer-events-none ${className}`}
-  >
-    {text}
-  </span>
-);
-
-const TopStrip = ({ group, offset }: { group: PlacementGroup; offset: number }) => {
-  const ad = useRotatingAd(group.ads);
-  if (!ad) return null;
-
-  return (
-    <div
-      style={{ top: offset, height: group.barHeight }}
-      // 네비(z-100)보다 아래, 콘텐츠보다 위.
-      className="fixed left-0 right-0 z-[80] overflow-hidden border-y border-white/10"
-    >
-      <AdImage ad={ad} />
-      <AdLabel text="SPONSORED" color="#c4b5fd" className="left-3" />
+    <div className="relative w-full h-full overflow-hidden rounded-lg border border-white/10 shadow-2xl">
+      {ad.linkUrl ? (
+        <a
+          href={ad.linkUrl}
+          target="_blank"
+          rel="noopener sponsored"
+          className="block w-full h-full"
+        >
+          {image}
+        </a>
+      ) : (
+        image
+      )}
+      <span className="absolute left-2 top-2 z-10 px-1.5 py-0.5 rounded bg-black/45 backdrop-blur-sm text-[9px] font-bold tracking-[0.2em] text-white/70 pointer-events-none">
+        AD
+      </span>
     </div>
   );
 };
 
-const BottomBar = ({ group }: { group: PlacementGroup }) => {
-  const [closed, setClosed] = useState(
-    () => localStorage.getItem(BOTTOM_CLOSED_KEY) === '1',
+/** 위치 고정형: 대상 섹션 안에 심어서 섹션과 함께 스크롤된다. */
+const AnchoredAd = ({
+  section,
+  edge,
+  ads,
+}: {
+  section: AdSection;
+  edge: AdEdge;
+  ads: Advertisement[];
+}) => {
+  const ad = useRotatingAd(ads);
+  const [host, setHost] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setHost(document.getElementById(section));
+  }, [section]);
+
+  if (!ad || !host) return null;
+
+  return createPortal(
+    <div
+      style={{ width: ad.width, height: ad.height }}
+      // 네비가 fixed로 모든 섹션 위를 덮으므로, 위쪽 자리는 네비 높이만큼 내려서 시작한다.
+      className={`absolute left-1/2 -translate-x-1/2 z-20 max-w-[92%] ${
+        edge === 'top' ? 'top-28 md:top-[170px]' : 'bottom-8 md:bottom-12'
+      }`}
+    >
+      <AdCreative ad={ad} />
+    </div>,
+    host,
   );
-  const ad = useRotatingAd(group.ads);
+};
+
+/** 추적형: 좌우 여백에 고정되어 스크롤 내내 따라온다. */
+const FloatingAd = ({ side, ads }: { side: AdSide; ads: Advertisement[] }) => {
+  const [closed, setClosed] = useState(
+    () => localStorage.getItem(`${FLOATING_CLOSED_KEY}_${side}`) === '1',
+  );
+  const ad = useRotatingAd(ads);
 
   if (closed || !ad) return null;
 
   const handleClose = () => {
     setClosed(true);
-    localStorage.setItem(BOTTOM_CLOSED_KEY, '1');
+    localStorage.setItem(`${FLOATING_CLOSED_KEY}_${side}`, '1');
   };
 
   return (
     <motion.div
-      initial={{ y: 80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      initial={{ opacity: 0, x: side === 'left' ? -40 : 40 }}
+      animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      style={{ height: group.barHeight }}
-      // 모바일 네비 드로어(z-90)보다는 아래에 둔다.
-      className="fixed left-0 right-0 bottom-0 z-[85] overflow-hidden border-t border-white/[0.12]"
+      style={{ width: ad.width, height: ad.height }}
+      // 좌측은 섹션 내비 점(MainSidebar, left-8)을 피해 안쪽으로 들여둔다.
+      // 여백이 없는 좁은 화면에서는 아예 띄우지 않는다.
+      className={`hidden xl:block fixed top-1/2 -translate-y-1/2 z-[85] ${
+        side === 'left' ? 'left-24' : 'right-6'
+      }`}
     >
-      <AdImage ad={ad} />
-      <AdLabel text="AD" color="#93c5fd" className="left-4 md:left-[18px]" />
+      <AdCreative ad={ad} />
       <button
         type="button"
         onClick={handleClose}
         aria-label="광고 닫기"
-        className="absolute right-4 md:right-[18px] top-1/2 -translate-y-1/2 z-10 w-[26px] h-[26px] rounded-full bg-black/45 backdrop-blur-sm text-[#cfcfe0] text-[15px] leading-none flex items-center justify-center hover:bg-black/65 transition-colors cursor-pointer"
+        className="absolute -top-2 -right-2 z-20 w-6 h-6 rounded-full bg-black/70 backdrop-blur-sm border border-white/15 text-[#cfcfe0] text-[13px] leading-none flex items-center justify-center hover:bg-black/90 transition-colors cursor-pointer"
       >
         ×
       </button>
@@ -137,15 +147,13 @@ const BottomBar = ({ group }: { group: PlacementGroup }) => {
 };
 
 const SponsorBanners = () => {
-  const [groups, setGroups] = useState<PlacementGroup[]>([]);
-  // 네비 높이가 반응형으로 크게 달라져서(데스크탑 160px) 실측해서 붙인다.
-  const [navHeight, setNavHeight] = useState(0);
+  const [ads, setAds] = useState<Advertisement[]>([]);
 
   useEffect(() => {
     const fetchAds = async () => {
       try {
         const res = await api.getAdvertisements();
-        setGroups(res.data);
+        setAds(res.data);
       } catch (err) {
         console.error('광고 로딩 실패:', err);
       }
@@ -154,25 +162,35 @@ const SponsorBanners = () => {
     fetchAds();
   }, []);
 
-  useEffect(() => {
-    const nav = document.getElementById('main-navbar');
-    if (!nav) return;
+  // 같은 자리(섹션+위아래 / 좌우)끼리 묶어야 순환이 자리마다 따로 돈다.
+  const anchoredSlots = new Map<string, Advertisement[]>();
+  const floatingSlots = new Map<AdSide, Advertisement[]>();
 
-    const update = () => setNavHeight(nav.getBoundingClientRect().height);
-    update();
-
-    const observer = new ResizeObserver(update);
-    observer.observe(nav);
-    return () => observer.disconnect();
-  }, []);
-
-  const top = groups.find((g) => g.placement === 'top');
-  const bottom = groups.find((g) => g.placement === 'bottom');
+  ads.forEach((ad) => {
+    if (ad.type === 'anchored' && ad.section && ad.edge) {
+      const key = `${ad.section}:${ad.edge}`;
+      anchoredSlots.set(key, [...(anchoredSlots.get(key) ?? []), ad]);
+    } else if (ad.type === 'floating' && ad.side) {
+      floatingSlots.set(ad.side, [...(floatingSlots.get(ad.side) ?? []), ad]);
+    }
+  });
 
   return (
     <>
-      {top && <TopStrip group={top} offset={navHeight} />}
-      {bottom && <BottomBar group={bottom} />}
+      {[...anchoredSlots.entries()].map(([key, slotAds]) => {
+        const [section, edge] = key.split(':') as [AdSection, AdEdge];
+        return (
+          <AnchoredAd
+            key={key}
+            section={section}
+            edge={edge}
+            ads={slotAds}
+          />
+        );
+      })}
+      {[...floatingSlots.entries()].map(([side, slotAds]) => (
+        <FloatingAd key={side} side={side} ads={slotAds} />
+      ))}
     </>
   );
 };

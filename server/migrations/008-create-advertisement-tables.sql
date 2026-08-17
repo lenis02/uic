@@ -1,6 +1,14 @@
+-- 광고 배치 모델.
+-- type = anchored(위치 고정형: 섹션 + 위/아래) 또는 floating(추적형: 좌/우 여백)
+-- 크기는 광고마다 가로·세로 px로 들고 있는다.
 CREATE TABLE IF NOT EXISTS advertisement (
   id SERIAL PRIMARY KEY,
-  placement VARCHAR NOT NULL,
+  type VARCHAR NOT NULL,
+  section VARCHAR,
+  edge VARCHAR,
+  side VARCHAR,
+  width INTEGER NOT NULL,
+  height INTEGER NOT NULL,
   "imageUrl" VARCHAR NOT NULL,
   "linkUrl" VARCHAR,
   "altText" VARCHAR NOT NULL DEFAULT '',
@@ -9,16 +17,3 @@ CREATE TABLE IF NOT EXISTS advertisement (
   "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
   "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
-
-CREATE TABLE IF NOT EXISTS ad_placement (
-  id SERIAL PRIMARY KEY,
-  placement VARCHAR NOT NULL UNIQUE,
-  "barHeight" INTEGER NOT NULL,
-  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
-  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
--- 위치별 기본 띠 높이. 핸드오프 규격(상단 58 / 하단 66)을 그대로 쓴다.
-INSERT INTO ad_placement (placement, "barHeight")
-VALUES ('top', 58), ('bottom', 66)
-ON CONFLICT (placement) DO NOTHING;
