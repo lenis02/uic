@@ -13,6 +13,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PopupModule } from './popup/popup.module';
 import { NetworkModule } from './network/network.module';
 import { PartnerModule } from './partner/partner.module';
+import { ActivityModule } from './activity/activity.module';
+import { JoinusModule } from './joinus/joinus.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
@@ -67,6 +69,8 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     PopupModule,
     NetworkModule,
     PartnerModule,
+    ActivityModule,
+    JoinusModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })

@@ -86,6 +86,22 @@ export const api = {
     instance.patch(`/network/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
   deleteNetwork: (id: number) => instance.delete(`/network/${id}`),
 
+  // --- 활동 (Activity) ---
+  getActivities: () => instance.get('/activity'),
+  createActivity: (data: FormData) =>
+    instance.post('/activity', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  updateActivity: (id: number, data: FormData) =>
+    instance.patch(`/activity/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  deleteActivity: (id: number) => instance.delete(`/activity/${id}`),
+  // 화면에 보이는 순서대로의 id 목록을 넘기면 서버가 sortOrder를 1부터 다시 매긴다.
+  reorderActivities: (ids: number[]) =>
+    instance.patch('/activity/reorder', { ids }),
+
+  // --- 지원 안내 (JoinUs) ---
+  getJoinForms: () => instance.get('/joinus'),
+  updateJoinForm: (type: string, data: FormData) =>
+    instance.patch(`/joinus/${type}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+
   // --- 협력사 (Partner) ---
   getPartners: () => instance.get('/partner'),
   createPartner: (data: FormData) =>

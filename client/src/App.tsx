@@ -21,6 +21,8 @@ const AdminGreeting = lazy(() => import('./pages/AdminPages/AdminGreeting'));
 const AdminPopup = lazy(() => import('./pages/AdminPages/AdminPopup'));
 const AdminNetwork = lazy(() => import('./pages/AdminPages/AdminNetwork'));
 const AdminPartner = lazy(() => import('./pages/AdminPages/AdminPartner'));
+const AdminActivity = lazy(() => import('./pages/AdminPages/AdminActivity'));
+const AdminJoinus = lazy(() => import('./pages/AdminPages/AdminJoinus'));
 
 const AppContent = () => {
   useAutoLogout(30 * 60 * 1000);
@@ -48,6 +50,8 @@ const AppContent = () => {
             <Route path="popup" element={<AdminPopup />} />
             <Route path="network" element={<AdminNetwork />} />
             <Route path="partner" element={<AdminPartner />} />
+            <Route path="activity" element={<AdminActivity />} />
+            <Route path="joinus" element={<AdminJoinus />} />
           </Route>
         </Route>
 
