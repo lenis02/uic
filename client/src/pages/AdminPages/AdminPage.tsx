@@ -44,6 +44,14 @@ export default function AdminLayout() {
       title: '리서치 페이지 관리',
       items: [{ path: '/admin/research', label: '리서치 데이터 관리' }],
     },
+    {
+      title: '활동 페이지 관리',
+      items: [{ path: '/admin/activity', label: '활동 목록 관리' }],
+    },
+    {
+      title: '지원 페이지 관리',
+      items: [{ path: '/admin/joinus', label: '지원 안내 관리' }],
+    },
   ];
 
   const handleLogout = () => {

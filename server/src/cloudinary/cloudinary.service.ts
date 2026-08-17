@@ -56,6 +56,32 @@ export class CloudinaryService {
     });
   }
 
+  // 지원서 양식(pptx/docx/hwp)용. 이미지가 아니므로 raw로 올린다.
+  async uploadDocument(
+    file: Express.Multer.File,
+  ): Promise<UploadApiResponse | UploadApiErrorResponse> {
+    return new Promise((resolve, reject) => {
+      const upload = cloudinary.uploader.upload_stream(
+        {
+          folder: 'uic_join_forms',
+          resource_type: 'raw',
+          use_filename: true,
+          unique_filename: true,
+          access_mode: 'public',
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          if (!result)
+            return reject(
+              new InternalServerErrorException('업로드 결과가 없습니다.'),
+            );
+          resolve(result);
+        },
+      );
+      toStream(file.buffer).pipe(upload);
+    });
+  }
+
   async uploadAsWebp(
     file: Express.Multer.File,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {

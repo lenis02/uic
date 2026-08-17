@@ -1,12 +1,100 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FooterBar from '../components/FooterBar';
+import { api } from '../api/api';
 
-// 파일 경로 설정 (public 폴더 기준)
-const CLUB_FILE_URL = '/files/UIC 동아리 및 학회 가입 등록원 (2026).pptx';
-const INDIVIDUAL_FILE_URL = '/files/UIC 개인회원 가입 등록원 (2026).pptx';
-const JOINT_FILE_URL = '/files/UIC 연합세션 참가 신청서 (2026).pptx';
+type JoinFormType = 'club' | 'individual' | 'joint';
+
+interface JoinForm {
+  type: JoinFormType;
+  description: string;
+  bullets: string;
+  fileUrl: string | null;
+  fileName: string | null;
+}
+
+// 카드 3종의 고정 요소(제목/테마 색). 문구와 파일은 관리자 화면에서 관리한다.
+const CARDS: {
+  type: JoinFormType;
+  heading: string;
+  accent: string;
+  accentGradient: string;
+  dot: string;
+  buttonGlow: string;
+  downloadName: string;
+  fallbackDescription: string;
+  fallbackBullets: string[];
+  fallbackFileUrl: string;
+}[] = [
+  {
+    type: 'club',
+    heading: 'Club',
+    accent: 'Membership',
+    accentGradient: 'from-purple-400 via-purple-500 to-indigo-600',
+    dot: 'shrink-0 w-1.5 h-1.5 bg-purple-500 shadow-[0_0_8px_#a855f7]',
+    buttonGlow: 'from-purple-100 to-white',
+    downloadName: 'UIC_Club_Application.pptx',
+    fallbackDescription: '동아리 가입을 위한 단체 지원 프로세스입니다.',
+    fallbackBullets: ['PDF 형식 변환 제출 준수', '활동 계획서 및 동아리 소개서 필수'],
+    fallbackFileUrl: '/files/UIC 동아리 및 학회 가입 등록원 (2026).pptx',
+  },
+  {
+    type: 'individual',
+    heading: 'Individual',
+    accent: 'Membership',
+    accentGradient: 'from-cyan-500 via-blue-600 to-gray-400',
+    dot: 'shrink-0 w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#22d3ee]',
+    buttonGlow: 'from-cyan-100 to-white',
+    downloadName: 'UIC_Individual_Application.pptx',
+    fallbackDescription: '신규 회원을 위한 개인 지원 프로세스입니다.',
+    fallbackBullets: ['PDF 형식 변환 제출 준수', '주 단위로 합격 여부 발표'],
+    fallbackFileUrl: '/files/UIC 개인회원 가입 등록원 (2026).pptx',
+  },
+  {
+    type: 'joint',
+    heading: 'Joint',
+    accent: 'Session',
+    accentGradient: 'from-teal-300 via-emerald-400 to-teal-600',
+    dot: 'shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]',
+    buttonGlow: 'from-emerald-100 to-white',
+    downloadName: 'UIC_Joint_Session_Application.pptx',
+    fallbackDescription:
+      'UIC 소속 동아리·학회 간 교류를 위한 연합세션 참가 프로세스입니다.',
+    fallbackBullets: [
+      'PDF 형식 변환 제출 준수',
+      '리서치·운용보고서 등 활동 자료 첨부 필수',
+    ],
+    fallbackFileUrl: '/files/UIC 연합세션 참가 신청서 (2026).pptx',
+  },
+];
+
+const splitBullets = (bullets: string) =>
+  bullets
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
 
 const JoinUs = () => {
+  const [forms, setForms] = useState<Partial<Record<JoinFormType, JoinForm>>>({});
+
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        const res = await api.getJoinForms();
+        const next: Partial<Record<JoinFormType, JoinForm>> = {};
+        (res.data as JoinForm[]).forEach((form) => {
+          next[form.type] = form;
+        });
+        setForms(next);
+      } catch (err) {
+        // 실패해도 아래 fallback 문구로 그대로 렌더된다.
+        console.error('지원 안내 로딩 실패:', err);
+      }
+    };
+
+    fetchForms();
+  }, []);
+
   return (
     <section
       id="join"
@@ -42,143 +130,72 @@ const JoinUs = () => {
 
         {/* p-10 -> p-4 lg:p-10 모바일/태블릿 패딩 축소, 3열은 lg부터 */}
         <div className="relative h-full w-full flex flex-col lg:flex-row p-4 lg:p-10 gap-4 lg:gap-6">
-          {/* [왼쪽] Club Membership */}
-          {/* flex-1은 lg(가로 배치)에서만 적용. 세로 스택에서 flex-1은 높이를 균등 분배해 내용이 잘림 */}
-          <div className="group relative lg:flex-1 min-w-0 bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-xl border border-white/10 transition-all duration-500 overflow-hidden flex flex-col rounded-xl lg:rounded-none min-h-[240px] lg:min-h-0">
-            {/* p-8 -> p-6 lg:p-8 모바일 패딩 축소 */}
-            <div className="h-full overflow-y-auto p-6 lg:p-8 pb-20 lg:pb-32 scrollbar-hide">
-              <h2 className="text-xl text-center md:text-2xl xl:text-3xl font-bold mb-2 md:mb-4 tracking-tight leading-tight">
-                Club <br className="hidden lg:block" />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-purple-500 to-indigo-600 font-black">
-                  Membership
-                </span>
-              </h2>
-              <p className="text-gray-400 text-center text-xs md:text-sm leading-relaxed mb-6 md:mb-8 break-keep">
-                동아리 가입을 위한 단체 지원 프로세스입니다.
-              </p>
+          {CARDS.map((card) => {
+            const saved = forms[card.type];
+            const description = saved?.description || card.fallbackDescription;
+            const bullets = saved
+              ? splitBullets(saved.bullets)
+              : card.fallbackBullets;
+            const fileUrl = saved?.fileUrl || card.fallbackFileUrl;
+            // 양식 파일은 pptx/docx/hwp 중 무엇이든 될 수 있어 확장자를 실제 파일에서 읽는다.
+            const extension = (saved?.fileName || fileUrl)
+              .split('.')
+              .pop()
+              ?.toLowerCase();
 
-              <div className="space-y-3 md:space-y-4">
-                <div className="flex items-center justify-center gap-2 md:gap-3">
-                  <div className="shrink-0 w-1.5 h-1.5 bg-purple-500 shadow-[0_0_8px_#a855f7]" />
-                  <p className="text-xs md:text-sm text-gray-400 font-medium break-keep">
-                    PDF 형식 변환 제출 준수
+            return (
+              // flex-1은 lg(가로 배치)에서만 적용. 세로 스택에서 flex-1은 높이를 균등 분배해 내용이 잘림
+              <div
+                key={card.type}
+                className="group relative lg:flex-1 min-w-0 bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-xl border border-white/10 transition-all duration-500 overflow-hidden flex flex-col rounded-xl lg:rounded-none min-h-[240px] lg:min-h-0"
+              >
+                {/* p-8 -> p-6 lg:p-8 모바일 패딩 축소. 불릿이 2줄로 늘어나도 버튼과 붙지 않게 pb-28 */}
+                <div className="h-full overflow-y-auto p-6 lg:p-8 pb-28 lg:pb-32 scrollbar-hide">
+                  <h2 className="text-center text-xl md:text-2xl xl:text-3xl font-bold mb-2 md:mb-4 tracking-tight leading-tight">
+                    {card.heading} <br className="hidden lg:block" />
+                    <span
+                      className={`bg-clip-text text-transparent bg-gradient-to-r ${card.accentGradient} font-black`}
+                    >
+                      {card.accent}
+                    </span>
+                  </h2>
+                  <p className="text-gray-400 text-center text-xs md:text-sm leading-relaxed mb-6 md:mb-8 break-keep">
+                    {description}
                   </p>
+
+                  <div className="space-y-3 md:space-y-4">
+                    {bullets.map((bullet, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-center gap-2 md:gap-3"
+                      >
+                        <div className={card.dot} />
+                        <p className="text-xs md:text-sm text-gray-400 font-medium break-keep">
+                          {bullet}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex items-center justify-center gap-2 md:gap-3">
-                  <div className="shrink-0 w-1.5 h-1.5 bg-purple-500 shadow-[0_0_8px_#a855f7]" />
-                  <p className="text-xs md:text-sm text-gray-400 font-medium break-keep">
-                    활동 계획서 및 동아리 소개서 필수
-                  </p>
-                </div>
+
+                {/* 다운로드 버튼: 여백 및 높이 축소 */}
+                <a
+                  href={fileUrl}
+                  download={saved?.fileName || card.downloadName}
+                  className="absolute bottom-4 lg:bottom-8 left-4 xl:left-8 right-4 xl:right-8 h-[44px] lg:h-[56px] text-sm xl:text-base bg-white text-black font-bold rounded-xl lg:rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg overflow-hidden group/btn cursor-pointer flex items-center justify-center z-10"
+                >
+                  <span className="relative z-10 whitespace-nowrap">
+                    지원서 양식 다운로드{extension ? ` (.${extension})` : ''}
+                  </span>
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${card.buttonGlow} opacity-0 group-hover/btn:opacity-100 transition-opacity`}
+                  />
+                </a>
+
+                <div className="absolute bottom-0 left-0 w-full h-24 lg:h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
               </div>
-            </div>
-
-            {/* Club 다운로드 버튼: 여백 및 높이 축소 */}
-            <a
-              href={CLUB_FILE_URL}
-              download="UIC_Club_Application.pptx"
-              className="absolute bottom-4 lg:bottom-8 left-4 xl:left-8 right-4 xl:right-8 h-[44px] lg:h-[56px] text-sm xl:text-base bg-white text-black font-bold rounded-xl lg:rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg overflow-hidden group/btn cursor-pointer flex items-center justify-center z-10"
-            >
-              <span className="relative z-10 whitespace-nowrap">
-                지원서 양식 다운로드 (.pptx)
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-white opacity-0 group-hover/btn:opacity-100 transition-opacity" />
-            </a>
-
-            <div className="absolute bottom-0 left-0 w-full h-24 lg:h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-          </div>
-
-          {/* [가운데] Individual Membership */}
-          {/* flex-1은 lg(가로 배치)에서만 적용. 세로 스택에서 flex-1은 높이를 균등 분배해 내용이 잘림 */}
-          <div className="group relative lg:flex-1 min-w-0 bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-xl border border-white/10 transition-all duration-500 overflow-hidden flex flex-col rounded-xl lg:rounded-none min-h-[240px] lg:min-h-0">
-            <div className="h-full overflow-y-auto p-6 lg:p-8 pb-20 lg:pb-32 scrollbar-hide">
-              <h2 className="text-center text-xl md:text-2xl xl:text-3xl font-bold mb-2 md:mb-4 tracking-tight leading-tight">
-                Individual <br className="hidden lg:block" />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 via-blue-600 to-gray-400 font-black">
-                  Membership
-                </span>
-              </h2>
-              <p className="text-gray-400 text-center text-xs md:text-sm leading-relaxed mb-6 md:mb-8 break-keep">
-                신규 회원을 위한 개인 지원 프로세스입니다.
-              </p>
-
-              <div className="space-y-3 md:space-y-4">
-                <div className="flex items-center justify-center gap-2 md:gap-3">
-                  <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
-                  <p className="text-xs md:text-sm text-gray-400 font-medium break-keep">
-                    PDF 형식 변환 제출 준수
-                  </p>
-                </div>
-                <div className="flex items-center justify-center gap-2 md:gap-3">
-                  <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
-                  <p className="text-xs md:text-sm text-gray-400 font-medium break-keep">
-                    주 단위로 합격 여부 발표
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Individual 다운로드 버튼 */}
-            <a
-              href={INDIVIDUAL_FILE_URL}
-              download="UIC_Individual_Application.pptx"
-              className="absolute bottom-4 lg:bottom-8 left-4 xl:left-8 right-4 xl:right-8 h-[44px] lg:h-[56px] text-sm xl:text-base bg-white text-black font-bold rounded-xl lg:rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg overflow-hidden group/btn cursor-pointer flex items-center justify-center z-10"
-            >
-              <span className="relative z-10 whitespace-nowrap">
-                지원서 양식 다운로드 (.pptx)
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-100 to-white opacity-0 group-hover/btn:opacity-100 transition-opacity" />
-            </a>
-
-            <div className="absolute bottom-0 left-0 w-full h-24 lg:h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-          </div>
-
-          {/* [오른쪽] Joint Session */}
-          {/* flex-1은 lg(가로 배치)에서만 적용. 세로 스택에서 flex-1은 높이를 균등 분배해 내용이 잘림 */}
-          <div className="group relative lg:flex-1 min-w-0 bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-xl border border-white/10 transition-all duration-500 overflow-hidden flex flex-col rounded-xl lg:rounded-none min-h-[240px] lg:min-h-0">
-            {/* 불릿이 2줄이라 모바일에서 다운로드 버튼과 붙지 않도록 pb-20 -> pb-28 */}
-            <div className="h-full overflow-y-auto p-6 lg:p-8 pb-28 lg:pb-32 scrollbar-hide">
-              <h2 className="text-center text-xl md:text-2xl xl:text-3xl font-bold mb-2 md:mb-4 tracking-tight leading-tight">
-                Joint <br className="hidden lg:block" />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-emerald-400 to-teal-600 font-black">
-                  Session
-                </span>
-              </h2>
-              <p className="text-gray-400 text-center text-xs md:text-sm leading-relaxed mb-6 md:mb-8 break-keep">
-                UIC 소속 동아리·학회 간 교류를 위한 연합세션 참가
-                프로세스입니다.
-              </p>
-
-              <div className="space-y-3 md:space-y-4">
-                <div className="flex items-center justify-center gap-2 md:gap-3">
-                  <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
-                  <p className="text-xs md:text-sm text-gray-400 font-medium break-keep">
-                    PDF 형식 변환 제출 준수
-                  </p>
-                </div>
-                <div className="flex items-center justify-center gap-2 md:gap-3">
-                  <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
-                  <p className="text-xs md:text-sm text-gray-400 font-medium break-keep">
-                    리서치·운용보고서 등<br/>활동 자료 첨부 필수
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Joint Session 다운로드 버튼 */}
-            <a
-              href={JOINT_FILE_URL}
-              download="UIC_Joint_Session_Application.pptx"
-              className="absolute bottom-4 lg:bottom-8 left-4 xl:left-8 right-4 xl:right-8 h-[44px] lg:h-[56px] text-sm xl:text-base bg-white text-black font-bold rounded-xl lg:rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg overflow-hidden group/btn cursor-pointer flex items-center justify-center z-10"
-            >
-              <span className="relative z-10 whitespace-nowrap">
-                지원서 양식 다운로드 (.pptx)
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-100 to-white opacity-0 group-hover/btn:opacity-100 transition-opacity" />
-            </a>
-
-            <div className="absolute bottom-0 left-0 w-full h-24 lg:h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-          </div>
+            );
+          })}
         </div>
       </div>
 

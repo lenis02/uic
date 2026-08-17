@@ -1,54 +1,49 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { assets } from '../../assets/assets';
 import FooterBar from '../components/FooterBar';
+import { api } from '../api/api';
 
-const activities = [
-  {
-    id: 'general-meeting',
-    title: '정기총회',
-    description: [
-      '월 1회 정기적으로 총회 진행',
-      '소속원 니즈 바탕의 연사 초청 (투교협)',
-      '학술 교류 및 친목 도모',
-      'UIC 소속 동아리 회원 전원 참여',
-    ],
-    image: assets.activity1,
-  },
-  {
-    id: 'joint-session',
-    title: '연합세션',
-    description: [
-      'UIC 소속 동아리들 간의 소규모 학술 교류',
-      '3개 이상의 학교 혹은 동아리 간 진행',
-      '주식, 증권, 금융 관련 자유 주제 발표 및 토론',
-    ],
-    image: assets.activity2,
-  },
-  {
-    id: 'investment-concert',
-    title: '투자콘서트',
-    description: [
-      '매년 개최되는 UIC 최대 규모의 리서치 대회',
-      '금융투자협회 회장상 수여',
-      // 강조하고 싶은 부분을 태그로 감쌉니다.
-      '<span class="font-black">UIC 소속 동아리 회원만</span> 참여 가능한 전통적 대회 (13회차)',
-      '투자 업계 명사 강연 및 CFA 현직자 심사 진행',
-    ],
-    image: assets.activity3,
-  },
-  {
-    id: 'job-concert',
-    title: '직무콘서트',
-    description: [
-      'CFA 한국협회 X UIC 금융권 직무 토크쇼 개최',
-      'IB, WM, 리서치 등 다양한 직무의 현직자 멘토링',
-      '자유로운 분위기 속에서 현직자와의 직접 소통 가능',
-    ],
-    image: assets.activity4,
-  },
-];
+interface Activity {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string | null;
+  sortOrder: number;
+}
+
+// 관리자 화면에서 이미지를 올리기 전까지는 기존 번들 이미지를 그대로 쓴다.
+// 번들 이미지는 빌드 때 해시가 붙어서 DB에 URL로 심어둘 수 없기 때문.
+const FALLBACK_IMAGES: Record<string, string> = {
+  정기총회: assets.activity1,
+  연합세션: assets.activity2,
+  투자콘서트: assets.activity3,
+  직무콘서트: assets.activity4,
+};
+
+const resolveImage = (activity: Activity) => {
+  if (!activity.imageUrl) return FALLBACK_IMAGES[activity.title] ?? '';
+  return activity.imageUrl.startsWith('http')
+    ? activity.imageUrl
+    : `${import.meta.env.VITE_API_URL}${activity.imageUrl}`;
+};
 
 const ActivityPage = () => {
+  const [activities, setActivities] = useState<Activity[]>([]);
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const res = await api.getActivities();
+        setActivities(res.data);
+      } catch (err) {
+        console.error('활동 로딩 실패:', err);
+      }
+    };
+
+    fetchActivities();
+  }, []);
+
   return (
     // h-[100dvh]를 사용하여 모바일 브라우저의 상하단 바 이슈 방지
     <main className="relative w-full h-[100dvh] overflow-y-auto md:snap-y md:snap-mandatory bg-[#050505] text-white scrollbar-hide">
@@ -96,6 +91,7 @@ const ActivityPage = () => {
       </section>
 
       {/* [활동 섹션들] */}
+      {/* 좌우 배치는 렌더 순서 기준으로 번갈아간다. 첫 번째는 이미지(좌)/설명(우). */}
       {activities.map((act, index) => (
         <section
           key={act.id}
@@ -115,7 +111,7 @@ const ActivityPage = () => {
               {/* 모바일 aspect-video 유지 */}
               <div className="relative aspect-video md:aspect-[3/2] rounded-xl md:rounded-2xl overflow-hidden bg-black/80 border border-white/10 shadow-2xl">
                 <img
-                  src={act.image}
+                  src={resolveImage(act)}
                   alt={act.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
@@ -134,25 +130,29 @@ const ActivityPage = () => {
 
               {/* 리스트 여백 축소 (space-y-3) */}
               <ul className="space-y-3 md:space-y-5 xl:translate-x-[0%] md:translate-x-[12%]">
-                {act.description.map((desc, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-3 md:gap-4 group/item"
-                  >
-                    {/* 모바일 도트 위치 미세 조정 */}
-                    <div className="mt-1.5 md:mt-2.5 w-1.5 h-1.5 md:w-2 md:h-2 shrink-0 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] group-hover/item:scale-125 transition-all" />
-                    <p
-                      // 모바일 텍스트 축소 (text-sm), 긴 글자 안 깨지게 break-keep 적용
-                      className="text-gray-300 text-sm md:text-lg lg:text-lg group-hover/item:text-white transition-colors leading-relaxed break-keep"
-                      dangerouslySetInnerHTML={{ __html: desc }}
-                    />
-                  </li>
-                ))}
+                {act.description
+                  .split('\n')
+                  .map((line) => line.trim())
+                  .filter(Boolean)
+                  .map((desc, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 md:gap-4 group/item"
+                    >
+                      {/* 모바일 도트 위치 미세 조정 */}
+                      <div className="mt-1.5 md:mt-2.5 w-1.5 h-1.5 md:w-2 md:h-2 shrink-0 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] group-hover/item:scale-125 transition-all" />
+                      <p
+                        // 모바일 텍스트 축소 (text-sm), 긴 글자 안 깨지게 break-keep 적용
+                        className="text-gray-300 text-sm md:text-lg lg:text-lg group-hover/item:text-white transition-colors leading-relaxed break-keep"
+                        dangerouslySetInnerHTML={{ __html: desc }}
+                      />
+                    </li>
+                  ))}
               </ul>
             </div>
           </div>
 
-          {/* 마지막 활동(직무콘서트) 아래 여백에 JoinUs로 넘어가는 CTA 배치 */}
+          {/* 마지막 활동 아래 여백에 JoinUs로 넘어가는 CTA 배치 */}
           {index === activities.length - 1 && (
             <Link
               to="/join"
