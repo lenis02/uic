@@ -1,5 +1,5 @@
 // src/pages/MembersPage.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { assets } from '../../assets/assets';
 import { api } from '../api/api';
 
@@ -30,6 +30,7 @@ const MembersPage = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [activeGen, setActiveGen] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const listRef = useRef<HTMLElement>(null);
 
   // 1. 데이터 불러오기
   useEffect(() => {
@@ -55,6 +56,12 @@ const MembersPage = () => {
 
     fetchMembers();
   }, []);
+
+  // 기수 전환 시 멤버 리스트를 항상 맨 위부터 보여준다.
+  // 페인트 전에 실행되므로 이전 스크롤 위치가 잠깐 보이는 일이 없다.
+  useLayoutEffect(() => {
+    if (listRef.current) listRef.current.scrollTop = 0;
+  }, [activeGen]);
 
   // 2. 기수 목록 추출
   const generations = Array.from(
@@ -117,7 +124,10 @@ const MembersPage = () => {
           </aside>
 
           {/* [우측] 멤버 리스트 영역 */}
-          <section className="flex-1 h-full overflow-y-auto pr-2 md:pr-4 z-20 scrollbar-hide">
+          <section
+            ref={listRef}
+            className="flex-1 h-full overflow-y-auto pr-2 md:pr-4 z-20 scrollbar-hide"
+          >
             <header className="mb-8 md:mb-16">
               <div className="group w-fit">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter text-white/80">
@@ -158,7 +168,7 @@ const MembersPage = () => {
                         }
                         className={`object-cover transition-all duration-700 ${
                           member.imageUrl
-                            ? 'w-full h-full opacity-80 group-hover:opacity-100 group-hover:scale-105'
+                            ? 'w-full h-full opacity-100 group-hover:scale-105'
                             : 'w-1/2 opacity-30 group-hover:opacity-50 grayscale'
                         }`}
                         alt={member.name}
