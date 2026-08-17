@@ -28,13 +28,38 @@ export class ActivityService {
       imageUrl = uploaded.secure_url;
     }
 
+    // 새 활동은 항상 맨 아래에 붙인다. 순서 변경은 reorder로 따로 한다.
+    const last = await this.activityRepository.findOne({
+      where: {},
+      order: { sortOrder: 'DESC' },
+    });
+
     const activity = this.activityRepository.create({
       title: dto.title,
       description: dto.description,
-      sortOrder: dto.sortOrder ?? 1,
+      sortOrder: (last?.sortOrder ?? 0) + 1,
       imageUrl,
     });
     return this.activityRepository.save(activity);
+  }
+
+  // 받은 id 순서대로 sortOrder를 1부터 다시 매긴다.
+  async reorder(ids: number[]) {
+    const activities = await this.activityRepository.find();
+    const known = new Set(activities.map((a) => a.id));
+
+    const missing = ids.filter((id) => !known.has(id));
+    if (missing.length > 0) {
+      throw new NotFoundException(
+        `활동 ID ${missing.join(', ')}를 찾을 수 없습니다.`,
+      );
+    }
+
+    await this.activityRepository.save(
+      ids.map((id, index) => ({ id, sortOrder: index + 1 })),
+    );
+
+    return this.findAll();
   }
 
   async update(
@@ -54,7 +79,6 @@ export class ActivityService {
     }
     if (dto.title !== undefined) activity.title = dto.title;
     if (dto.description !== undefined) activity.description = dto.description;
-    if (dto.sortOrder !== undefined) activity.sortOrder = dto.sortOrder;
 
     return this.activityRepository.save(activity);
   }

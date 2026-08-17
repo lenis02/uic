@@ -15,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ActivityService } from './activity.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
+import { ReorderActivityDto } from './dto/reorder-activity.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { imageUploadOptions } from '../common/utils/multer.options';
 
@@ -35,6 +36,13 @@ export class ActivityController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.activityService.create(dto, file);
+  }
+
+  // ':id'보다 먼저 선언해야 'reorder'가 id로 잡히지 않는다.
+  @Patch('reorder')
+  @UseGuards(AdminGuard)
+  reorder(@Body() dto: ReorderActivityDto) {
+    return this.activityService.reorder(dto.ids);
   }
 
   @Patch(':id')

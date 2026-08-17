@@ -93,6 +93,9 @@ export const api = {
   updateActivity: (id: number, data: FormData) =>
     instance.patch(`/activity/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
   deleteActivity: (id: number) => instance.delete(`/activity/${id}`),
+  // 화면에 보이는 순서대로의 id 목록을 넘기면 서버가 sortOrder를 1부터 다시 매긴다.
+  reorderActivities: (ids: number[]) =>
+    instance.patch('/activity/reorder', { ids }),
 
   // --- 지원 안내 (JoinUs) ---
   getJoinForms: () => instance.get('/joinus'),

@@ -1,5 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateActivityDto {
   @IsString()
@@ -10,10 +9,4 @@ export class CreateActivityDto {
   @IsString()
   @IsNotEmpty({ message: '활동 설명을 한 줄 이상 입력해주세요.' })
   description: string;
-
-  @IsOptional()
-  @Transform(({ value }) => (value === '' ? undefined : Number(value)))
-  @IsInt()
-  @Min(1)
-  sortOrder?: number;
 }
