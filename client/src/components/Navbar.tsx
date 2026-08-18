@@ -17,7 +17,11 @@ const Navbar = () => {
 
   return (
     // 💡 px-4 md:px-8 xl:px-12 로 화면이 줄어들 때 좌우 여백을 유동적으로 조절
-    <nav className="fixed top-0 w-full z-[100] bg-transparent px-8 md:px-12 xl:px-12 py-4">
+    // id는 스폰서 상단 배너가 네비 높이를 실측해 그 아래에 붙기 위해 필요하다.
+    <nav
+      id="main-navbar"
+      className="fixed top-0 w-full z-[100] bg-transparent px-8 md:px-12 xl:px-12 py-4"
+    >
       <div className="max-w-[1600px] mx-auto flex items-center justify-between h-full min-h-[60px] md:min-h-[80px] pt-2 md:pt-4">
         
         {/* 1. 로고 */}

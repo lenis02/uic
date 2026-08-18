@@ -5,6 +5,7 @@ import Vision from './MainSections/Vision.tsx';
 import UICNetwork from './MainSections/UICNetwork.tsx';
 import UICPartner from './MainSections/UICPartner.tsx';
 import PopupBanner from '../components/PopupBanner.tsx';
+import SponsorBanners from '../components/SponsorBanners.tsx';
 
 const MainPage = () => {
   const [showArrow, setShowArrow] = useState(true);
@@ -24,6 +25,8 @@ const MainPage = () => {
       className="relative font-pre h-screen w-full overflow-y-auto md:snap-y md:snap-mandatory bg-uic-dark scroll-smooth custom-scrollbar scrollbar-hide"
     >
       <PopupBanner />
+      {/* 스냅 섹션의 h-screen 계산을 깨지 않도록 배너는 fixed로 띄운다. */}
+      <SponsorBanners />
       <MainSidebar />
       <SectionsBase showArrow={showArrow} />
 
