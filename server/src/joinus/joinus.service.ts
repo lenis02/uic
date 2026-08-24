@@ -7,14 +7,12 @@ import {
   JoinFormType,
 } from './entities/join-form.entity';
 import { UpdateJoinFormDto } from './dto/update-join-form.dto';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class JoinusService {
   constructor(
     @InjectRepository(JoinForm)
     private joinFormRepository: Repository<JoinForm>,
-    private cloudinaryService: CloudinaryService,
   ) {}
 
   // 카드 3종은 항상 club -> individual -> joint 순으로 내려준다.
@@ -35,26 +33,16 @@ export class JoinusService {
     );
   }
 
-  async update(
-    type: JoinFormType,
-    dto: UpdateJoinFormDto,
-    file?: Express.Multer.File,
-  ) {
+  async update(type: JoinFormType, dto: UpdateJoinFormDto) {
     const existing = await this.joinFormRepository.findOne({ where: { type } });
-
-    // 새 파일을 올렸을 때만 교체한다. 안 올리면 기존 파일 유지.
-    let uploadedUrl: string | null = null;
-    if (file) {
-      const uploaded = await this.cloudinaryService.uploadDocument(file);
-      uploadedUrl = (uploaded as { secure_url: string }).secure_url;
-    }
 
     if (existing) {
       if (dto.description !== undefined) existing.description = dto.description;
       if (dto.bullets !== undefined) existing.bullets = dto.bullets;
-      if (file) {
-        existing.fileUrl = uploadedUrl;
-        existing.fileName = file.originalname;
+      // 새 파일 URL이 왔을 때만 교체한다. 안 보내면 기존 파일 유지.
+      if (dto.fileUrl !== undefined) {
+        existing.fileUrl = dto.fileUrl;
+        existing.fileName = dto.fileName ?? dto.fileUrl;
       }
       return this.joinFormRepository.save(existing);
     }
@@ -63,8 +51,8 @@ export class JoinusService {
       type,
       description: dto.description ?? '',
       bullets: dto.bullets ?? '',
-      fileUrl: uploadedUrl,
-      fileName: file ? file.originalname : null,
+      fileUrl: dto.fileUrl ?? null,
+      fileName: dto.fileUrl ? (dto.fileName ?? dto.fileUrl) : null,
     });
     return this.joinFormRepository.save(created);
   }

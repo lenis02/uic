@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../../api/api';
+import { api, type JoinFormPayload } from '../../api/api';
+import { uploadToCloudinary } from '../../api/cloudinary';
+import UploadOrLinkField, {
+  emptyUploadChoice,
+  type UploadChoice,
+} from '../../components/admin/UploadOrLinkField';
 
 type JoinFormType = 'club' | 'individual' | 'joint';
 
@@ -47,7 +52,9 @@ export default function AdminJoinus() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [upload, setUpload] = useState<UploadChoice>(emptyUploadChoice);
+  // 링크로 등록할 때 카드에 보여줄 이름. 비우면 링크 자체가 표시된다.
+  const [linkName, setLinkName] = useState('');
 
   const fetchForms = async () => {
     try {
@@ -75,7 +82,8 @@ export default function AdminJoinus() {
 
   // 탭을 옮기면 고르던 파일은 버린다. 다른 카드에 잘못 올라가면 안 되기 때문.
   useEffect(() => {
-    setFile(null);
+    setUpload(emptyUploadChoice);
+    setLinkName('');
   }, [selected]);
 
   const current = forms[selected];
@@ -87,25 +95,30 @@ export default function AdminJoinus() {
       [selected]: { ...prev[selected], ...partial },
     }));
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) setFile(selectedFile);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (saving) return;
 
-    const formData = new FormData();
-    formData.append('description', current.description);
-    formData.append('bullets', current.bullets);
-    if (file) formData.append('file', file);
-
     setSaving(true);
     try {
-      await api.updateJoinForm(selected, formData);
+      const payload: JoinFormPayload = {
+        description: current.description,
+        bullets: current.bullets,
+      };
+
+      // 새 파일/링크를 지정했을 때만 보낸다. 안 보내면 기존 파일이 유지된다.
+      if (upload.mode === 'file' && upload.file) {
+        payload.fileUrl = await uploadToCloudinary(upload.file, 'joinForm');
+        payload.fileName = upload.file.name;
+      } else if (upload.mode === 'link' && upload.url.trim()) {
+        payload.fileUrl = upload.url.trim();
+        payload.fileName = linkName.trim() || undefined;
+      }
+
+      await api.updateJoinForm(selected, payload);
       alert(`${currentTab.label} 지원 안내가 저장되었습니다.`);
-      setFile(null);
+      setUpload(emptyUploadChoice);
+      setLinkName('');
       await fetchForms();
     } catch (err) {
       alert(`저장 실패: ${errorMessage(err)}`);
@@ -206,29 +219,29 @@ export default function AdminJoinus() {
               )}
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-              <span className="text-xs text-gray-500 shrink-0 w-20">
-                새 파일
-              </span>
-              <input
-                type="file"
+            <div className="space-y-2">
+              <span className="text-xs text-gray-500">새 파일</span>
+              <UploadOrLinkField
                 accept={ACCEPT}
-                onChange={handleFileChange}
-                className="text-sm text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-white/10 file:text-gray-200 hover:file:bg-white/20 file:cursor-pointer cursor-pointer"
+                value={upload}
+                onChange={setUpload}
+                disabled={saving}
               />
+              {upload.mode === 'link' && (
+                <input
+                  type="text"
+                  value={linkName}
+                  disabled={saving}
+                  onChange={(e) => setLinkName(e.target.value)}
+                  placeholder="카드에 표시할 이름 (예: 2026 동아리 지원서.hwp)"
+                  className={`${inputStyle} rounded-xl text-sm`}
+                />
+              )}
             </div>
-
-            {file && (
-              <p className="text-xs text-cyan-300">
-                저장 시 <span className="font-bold">{file.name}</span> 으로
-                교체됩니다.
-              </p>
-            )}
           </div>
 
           <p className="mt-2 text-[11px] text-gray-500">
-            PPTX / DOCX / HWP, 최대 25MB. 파일을 고르지 않으면 기존 파일이
-            그대로 유지됩니다.
+            파일을 고르거나 링크를 넣지 않으면 기존 파일이 그대로 유지됩니다.
           </p>
         </div>
 

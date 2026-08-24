@@ -7,17 +7,13 @@ import {
   Body,
   Param,
   UseGuards,
-  UseInterceptors,
-  UploadedFiles,
   ParseIntPipe,
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ResearchService } from './research.service';
 import { CreateResearchDto } from './dto/create-research.dto';
 import { UpdateResearchDto } from './dto/update-research.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
-import { researchUploadOptions } from '../common/utils/multer.options';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('research')
 export class ResearchController {
@@ -30,31 +26,19 @@ export class ResearchController {
 
   @Post()
   @ApiBearerAuth()
-  @ApiConsumes('multipart/form-data')
   @UseGuards(AdminGuard)
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'pdf', maxCount: 1 }], researchUploadOptions),
-  )
-  async create(
-    @Body() createResearchDto: CreateResearchDto,
-    @UploadedFiles() files: { pdf?: Express.Multer.File[] },
-  ) {
-    return this.researchService.create(createResearchDto, files || {});
+  async create(@Body() createResearchDto: CreateResearchDto) {
+    return this.researchService.create(createResearchDto);
   }
 
   @Patch(':id')
   @ApiBearerAuth()
-  @ApiConsumes('multipart/form-data')
   @UseGuards(AdminGuard)
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'pdf', maxCount: 1 }], researchUploadOptions),
-  )
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateResearchDto: UpdateResearchDto,
-    @UploadedFiles() files: { pdf?: Express.Multer.File[] },
   ) {
-    return this.researchService.update(id, updateResearchDto, files || {});
+    return this.researchService.update(id, updateResearchDto);
   }
 
   @Delete(':id')

@@ -170,7 +170,7 @@ export default function AdminGreeting() {
               <br />
               (클릭하여 파일 선택)
               <br />
-              (최대 25MB)
+              (최대 4MB)
             </p>
           </div>
 

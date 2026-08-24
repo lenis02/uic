@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../../api/api';
+import { api, type ResearchPayload } from '../../api/api';
+import { uploadToCloudinary } from '../../api/cloudinary';
+import UploadOrLinkField, {
+  emptyUploadChoice,
+  type UploadChoice,
+} from '../../components/admin/UploadOrLinkField';
 
 // ✅ 선택 가능한 카테고리 ('전체' 제외)
 const CATEGORIES = ['대상', '최우수상', '우수상', '장려상', '수상작', '기타'];
+
+const errorMessage = (err: unknown) => {
+  if (err instanceof Error && !('response' in err)) return err.message;
+  const msg = (err as { response?: { data?: { message?: string | string[] } } })
+    ?.response?.data?.message;
+  return Array.isArray(msg) ? msg.join(', ') : (msg ?? '내용을 확인해주세요.');
+};
 
 export default function AdminResearch() {
   const [researchList, setResearchList] = useState<any[]>([]);
@@ -20,7 +32,8 @@ export default function AdminResearch() {
     year: '',
   });
 
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [upload, setUpload] = useState<UploadChoice>(emptyUploadChoice);
+  const [saving, setSaving] = useState(false);
 
   const fetchResearch = async () => {
     try {
@@ -57,7 +70,7 @@ export default function AdminResearch() {
       category: item.category || '기타',
       year: item.year,
     });
-    setPdfFile(null);
+    setUpload(emptyUploadChoice);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -65,52 +78,64 @@ export default function AdminResearch() {
   const handleCancelEdit = () => {
     setEditingId(null);
     setForm({ title: '', category: '기타', year: '' });
-    setPdfFile(null);
+    setUpload(emptyUploadChoice);
+  };
+
+  // 업로드 모드면 Cloudinary에 직접 올린 URL을, 링크 모드면 입력한 링크를 쓴다.
+  // 둘 다 비어 있으면(수정 모드) 기존 pdfUrl을 그대로 둔다.
+  const resolvePdfUrl = async () => {
+    if (upload.mode === 'link') return upload.url.trim() || undefined;
+    if (!upload.file) return undefined;
+
+    // 예: report_1700000000000.pdf 형식으로 완벽하게 영어/숫자화
+    const extension = upload.file.name.split('.').pop();
+    const safeFile = new File(
+      [upload.file],
+      `report_${Date.now()}.${extension}`,
+      { type: upload.file.type }
+    );
+    return await uploadToCloudinary(safeFile, 'research');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (saving) return;
 
-    if (!editingId && (!pdfFile || !form.title)) {
-      return alert('제목과 PDF 파일은 필수입니다.');
-    }
-
-    const formData = new FormData();
-    formData.append('title', form.title);
-    formData.append('category', form.category); // 👈 카테고리 전송
-    formData.append('year', form.year);
-
-    const makeSafeFile = (file: File, prefix: string) => {
-      const extension = file.name.split('.').pop();
-      // 예: report_1700000000000.pdf 형식으로 완벽하게 영어/숫자화
-      const safeName = `${prefix}_${Date.now()}.${extension}`;
-      return new File([file], safeName, { type: file.type });
-    };
-
-    if (pdfFile) {
-      formData.append('pdf', makeSafeFile(pdfFile, 'report'));
-    }
-
+    setSaving(true);
     try {
+      const pdfUrl = await resolvePdfUrl();
+
+      if (!editingId && (!pdfUrl || !form.title)) {
+        alert('제목과 PDF 파일(또는 드라이브 링크)은 필수입니다.');
+        return;
+      }
+
+      const payload: Partial<ResearchPayload> = {
+        title: form.title,
+        category: form.category,
+        year: form.year,
+        ...(pdfUrl ? { pdfUrl } : {}),
+      };
+
       if (editingId) {
-        await api.updateResearch(editingId, formData);
+        await api.updateResearch(editingId, payload);
         alert('리서치가 수정되었습니다!');
       } else {
-        await api.createResearch(formData);
+        await api.createResearch(payload as ResearchPayload);
         alert('리서치가 등록되었습니다!');
       }
       handleCancelEdit();
       fetchResearch();
     } catch (err) {
       console.error(err);
-      alert('작업 실패! 내용을 확인해주세요.');
+      alert(`작업 실패! ${errorMessage(err)}`);
+    } finally {
+      setSaving(false);
     }
   };
 
   const inputStyle =
     'w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent outline-none transition-all';
-  const fileInputStyle =
-    'block w-full file:cursor-pointer text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white hover:file:bg-slate-600 cursor-pointer';
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 animate-fade-in-up pb-10">
@@ -202,24 +227,24 @@ export default function AdminResearch() {
                 <span className="bg-blue-500/10 p-1 rounded">📄</span>
                 PDF 파일 {editingId ? '(변경 시에만 선택)' : '(필수)'}
               </label>
-              <input
-                type="file"
+              <UploadOrLinkField
                 accept=".pdf"
-                onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
-                className={fileInputStyle}
+                value={upload}
+                onChange={setUpload}
+                disabled={saving}
               />
-              <p className="text-[11px] text-gray-500">최대 25MB</p>
             </div>
           </div>
 
           <button
-            className={`cursor-pointer w-full h-12 rounded-xl font-bold text-white transition-all duration-300 ${
+            disabled={saving}
+            className={`cursor-pointer w-full h-12 rounded-xl font-bold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
               editingId
                 ? 'bg-green-600 hover:bg-green-700'
                 : 'bg-gradient-to-r from-cyan-600 via-blue-700 to-gray-800 hover:shadow-lg'
             }`}
           >
-            {editingId ? '수정 완료' : '리서치 업로드 시작'}
+            {saving ? '업로드 중...' : editingId ? '수정 완료' : '리서치 업로드 시작'}
           </button>
         </form>
       </div>
