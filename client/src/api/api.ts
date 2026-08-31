@@ -1,6 +1,21 @@
 // src/api/api.ts
 import { instance } from './axios';
 import { setToken } from './auth';
+
+export interface ResearchPayload {
+  title: string;
+  category: string;
+  year: string;
+  pdfUrl?: string;
+}
+
+export interface JoinFormPayload {
+  description?: string;
+  bullets?: string;
+  fileUrl?: string;
+  fileName?: string;
+}
+
 export const api = {
   // --- 인증 (Auth) ---
   login: async (username: string, password: string) => {
@@ -15,14 +30,10 @@ export const api = {
   deleteHistory: (id: number | string) => instance.delete(`/history/${id}`),
 
   // --- 리서치 (Research) ---
-  // 리서치 생성 (파일 업로드 포함)
-  createResearch: (formData: FormData) => {
-    return instance.post('/research', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
+  // PDF는 브라우저가 Cloudinary로 직접 올리고(api/cloudinary.ts) 여기엔 URL만 온다.
+  createResearch: (data: ResearchPayload) => instance.post('/research', data),
   getResearch: () => instance.get('/research'),
-  updateResearch: (id: number, data: FormData) =>
+  updateResearch: (id: number, data: Partial<ResearchPayload>) =>
     instance.patch(`/research/${id}`, data),
   deleteResearch: (id: number) => instance.delete(`/research/${id}`),
   increaseResearchView: (id: number) => instance.patch(`/research/${id}/views`),
@@ -99,8 +110,8 @@ export const api = {
 
   // --- 지원 안내 (JoinUs) ---
   getJoinForms: () => instance.get('/joinus'),
-  updateJoinForm: (type: string, data: FormData) =>
-    instance.patch(`/joinus/${type}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  updateJoinForm: (type: string, data: JoinFormPayload) =>
+    instance.patch(`/joinus/${type}`, data),
 
   // --- 광고 배너 (Advertisement) ---
   // 공개용은 활성 광고만, 관리자용은 비활성까지 포함한다.

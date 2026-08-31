@@ -185,7 +185,7 @@ export default function AdminLogoBoard({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <p className="text-gray-500 text-sm">로고 이미지 선택 (JPG / PNG / WebP)</p>
-                <p className="text-gray-500 text-xs">선택하지 않으면 이름만 표시됩니다 · 최대 25MB</p>
+                <p className="text-gray-500 text-xs">선택하지 않으면 이름만 표시됩니다 · 최대 4MB</p>
               </>
             )}
             <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp"
@@ -251,7 +251,7 @@ export default function AdminLogoBoard({
                       {editPreview
                         ? <img src={editPreview} className="max-h-28 rounded-lg object-contain" />
                         : <p className="text-gray-500 text-sm">클릭하여 로고 등록</p>}
-                      <p className="text-gray-500 text-xs">클릭하면 교체됩니다 · 최대 25MB</p>
+                      <p className="text-gray-500 text-xs">클릭하면 교체됩니다 · 최대 4MB</p>
                       <input ref={editFileRef} type="file" accept="image/jpeg,image/png,image/webp"
                         className="hidden" onChange={(e) => handleFileChange(e, true)} />
                     </div>

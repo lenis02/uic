@@ -301,7 +301,7 @@ export default function AdminMembers() {
                 className="absolute inset-0 cursor-pointer opacity-0"
               />
             </div>
-            <p className="text-[10px] text-gray-500">권장 비율 4:5 · 최대 25MB</p>
+            <p className="text-[10px] text-gray-500">권장 비율 4:5 · 최대 4MB</p>
           </div>
 
           {/* ... 나머지 등록 폼 입력 필드들 (기존 코드 유지) ... */}
@@ -459,7 +459,7 @@ export default function AdminMembers() {
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-gray-500 text-center">최대 25MB</p>
+                <p className="text-[10px] text-gray-500 text-center">최대 4MB</p>
 
                 {/* 정보 수정 Inputs (기존 코드 유지) */}
                 <div className="flex gap-2">

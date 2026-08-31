@@ -9,12 +9,11 @@ const IMAGE_MIME_WHITELIST = new Set([
 ]);
 const IMAGE_EXT_WHITELIST = new Set(['.jpg', '.jpeg', '.png', '.webp']);
 
-const PDF_MIME_WHITELIST = new Set(['application/pdf']);
-const PDF_EXT_WHITELIST = new Set(['.pdf']);
-
-// 지원서 양식 파일. HWP는 브라우저/OS마다 MIME이 제각각이고
-// application/octet-stream으로 올라오는 경우가 흔해서 확장자로 판별한다.
-const JOIN_FORM_EXT_WHITELIST = new Set(['.pptx', '.docx', '.hwp']);
+// Vercel 함수는 요청 body 4.5MB를 넘으면 413으로 잘려서 여기까지 오지도 못한다.
+// 플랜과 무관한 하드 리밋이라 설정으로 못 늘린다. 그래서 그 아래인 4MB로 잡고,
+// 더 큰 파일이 필요한 리서치/지원서 양식은 브라우저에서 Cloudinary로 직접 올린다.
+// (server/src/uploads 참고)
+const MAX_PROXIED_UPLOAD_BYTES = 4 * 1024 * 1024;
 
 const hasAllowedExtension = (
   filename: string,
@@ -31,7 +30,7 @@ const rejectFile = (
 
 export const imageUploadOptions: Options = {
   limits: {
-    fileSize: 25 * 1024 * 1024,
+    fileSize: MAX_PROXIED_UPLOAD_BYTES,
   },
   fileFilter: (req, file, callback) => {
     if (!IMAGE_MIME_WHITELIST.has(file.mimetype)) {
@@ -41,40 +40,5 @@ export const imageUploadOptions: Options = {
       return rejectFile(callback, 'Invalid image file extension.');
     }
     callback(null, true);
-  },
-};
-
-export const joinFormUploadOptions: Options = {
-  limits: {
-    fileSize: 25 * 1024 * 1024,
-  },
-  fileFilter: (req, file, callback) => {
-    if (!hasAllowedExtension(file.originalname, JOIN_FORM_EXT_WHITELIST)) {
-      return rejectFile(
-        callback,
-        'PPTX, DOCX, HWP 파일만 업로드할 수 있습니다.',
-      );
-    }
-    callback(null, true);
-  },
-};
-
-export const researchUploadOptions: Options = {
-  limits: {
-    fileSize: 25 * 1024 * 1024,
-  },
-  fileFilter: (req, file, callback) => {
-    if (file.fieldname === 'pdf') {
-      if (!PDF_MIME_WHITELIST.has(file.mimetype)) {
-        return rejectFile(callback, 'The pdf field only accepts PDF files.');
-      }
-      if (!hasAllowedExtension(file.originalname, PDF_EXT_WHITELIST)) {
-        return rejectFile(callback, 'The pdf field has an invalid extension.');
-      }
-      callback(null, true);
-      return;
-    }
-
-    rejectFile(callback, `Unexpected file field: ${file.fieldname}`);
   },
 };

@@ -16,6 +16,7 @@ import { PartnerModule } from './partner/partner.module';
 import { ActivityModule } from './activity/activity.module';
 import { JoinusModule } from './joinus/joinus.module';
 import { AdvertisementModule } from './advertisement/advertisement.module';
+import { UploadsModule } from './uploads/uploads.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
@@ -73,6 +74,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     ActivityModule,
     JoinusModule,
     AdvertisementModule,
+    UploadsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })

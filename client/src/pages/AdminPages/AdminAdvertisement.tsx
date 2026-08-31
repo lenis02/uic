@@ -485,7 +485,7 @@ function AdEditor({ initial, submitLabel, onSubmit, onDelete }: AdEditorProps) {
           <p className="text-[11px] text-gray-500 leading-tight">
             소재는 위에서 정한 {width}×{height}px 틀에 맞춰 채워집니다.
             <br />
-            (JPG / PNG / WEBP, 최대 25MB)
+            (JPG / PNG / WEBP, 최대 4MB)
           </p>
         </div>
 

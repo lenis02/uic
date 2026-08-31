@@ -160,7 +160,7 @@ function ActivityEditor({
           <p className="text-[11px] text-gray-500 leading-tight">
             * 3:2 비율 최적화
             <br />
-            (JPG / PNG / WEBP, 최대 25MB)
+            (JPG / PNG / WEBP, 최대 4MB)
           </p>
         </div>
 
